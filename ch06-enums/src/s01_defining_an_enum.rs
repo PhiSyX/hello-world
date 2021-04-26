@@ -27,6 +27,7 @@ pub fn section_1() {
   m.call();
 
 }
+
 #[derive(Debug)]
 enum IpAddrKind {
   V4,
@@ -49,7 +50,6 @@ fn route(ip_kind: IpAddrKind) {
   dbg!(ip_kind);
 }
 
-
 enum Message {
   Quit,
   Move { x: i32, y: i32 },
@@ -62,12 +62,13 @@ struct MoveMessage {
     x: i32,
     y: i32,
 }
+
 struct WriteMessage(String); // tuple struct
 struct ChangeColorMessage(i32, i32, i32); // tuple struct
 
 impl Message {
   fn call(&self) {
-      // method body would be defined here
+    // method body would be defined here
   }
 }
 

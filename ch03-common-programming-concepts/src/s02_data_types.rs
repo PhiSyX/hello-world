@@ -62,8 +62,6 @@ fn char_type() {
 
 
 
-
-
 //? Compound types can group multiple values into one type.
 //? Rust has two primitive compound types: tuples and arrays.
 fn compound_types() {
