@@ -1,8 +1,11 @@
-mod contention_measure;
-mod help;
-mod normalized_lockfree;
-mod operation_record;
-mod waitfree_simulator;
+mod atomic;
+mod cas;
+mod contention;
+mod help_queue;
+mod lockfree;
+mod node;
+mod operation;
+mod waitfree;
 
 /*
 

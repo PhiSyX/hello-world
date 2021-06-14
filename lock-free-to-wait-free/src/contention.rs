@@ -1,11 +1,11 @@
-pub struct ContentionMeasure(pub usize);
+pub(crate) struct Contention;
 
 const CONTENTION_THRESHOLD: usize = 2;
 
-pub struct Contention;
+pub(crate) struct ContentionMeasure(pub(crate) usize);
 
 impl ContentionMeasure {
-  pub fn detected(&mut self) -> Result<(), Contention> {
+  pub(crate) fn detected(&mut self) -> Result<(), Contention> {
     self.0 += 1;
     if self.0 < CONTENTION_THRESHOLD {
       Ok(())
@@ -14,7 +14,7 @@ impl ContentionMeasure {
     }
   }
 
-  pub fn use_slow_path(&self) -> bool {
+  pub(crate) fn use_slow_path(&self) -> bool {
     self.0 > CONTENTION_THRESHOLD
   }
 }
