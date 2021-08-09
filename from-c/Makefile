@@ -1,6 +1,6 @@
 CXXFLAGS:=-std=gnu++17 -Wall -O3 -MMD -MP -ggdb -pthread -fopenmp -Iext/flat_hash_map
 
-PROGRAMS = test
+PROGRAMS = sort 
 
 all: $(PROGRAMS)
 
@@ -9,5 +9,5 @@ clean:
 
 -include *.
 
-test: test.o 
+sort: sort.o 
 	g++ -std=gnu++17 $^ -o $@ -pthread -fopenmp
