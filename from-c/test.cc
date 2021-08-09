@@ -4,6 +4,7 @@
 #include <memory>
 
 int cmp(const void *a, const void *b);
+void fn();
 
 int main(int argc, char **argv)
 {
@@ -33,6 +34,8 @@ int main(int argc, char **argv)
         std::sort(vec.begin(), vec.end(), [](const auto &a, const auto &b)
                   { return a < b; });
     }
+
+    fn();
 }
 
 int cmp(const void *a, const void *b)
