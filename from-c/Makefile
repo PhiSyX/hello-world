@@ -1,6 +1,6 @@
 CXXFLAGS:=-std=gnu++17 -Wall -O3 -MMD -MP -ggdb -pthread -fopenmp -Iext/flat_hash_map
 
-PROGRAMS = sort 
+PROGRAMS = sort template 
 
 all: $(PROGRAMS)
 
@@ -11,3 +11,7 @@ clean:
 
 sort: sort.o 
 	g++ -std=gnu++17 $^ -o $@ -pthread -fopenmp
+
+
+template: template.o 
+	g++ -std=gnu++17 $^ -o $@ -pthread 
