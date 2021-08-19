@@ -1,3 +1,6 @@
 .vscode
 target/
 *.lock
+rustlings/*
+!rustlings/exercises/
+
