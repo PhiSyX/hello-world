@@ -1,6 +1,6 @@
 CXXFLAGS:=-std=gnu++17
 
-PROGRAMS = ch01
+PROGRAMS = ch01 ch02
 
 all: $(PROGRAMS)
 
@@ -10,4 +10,7 @@ clean:
 -include *.
 
 ch01: ch01.o 
+	g++ -std=gnu++17 $^ -o $@.out
+
+ch02: ch02.o 
 	g++ -std=gnu++17 $^ -o $@.out
