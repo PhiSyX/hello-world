@@ -1,14 +1,17 @@
+#include <array>
 #include <string>
 #include <vector>
 #include "print.hpp"
 
-// Vecteur : tableau dynamique
-//    Taille non connue à la compilation
-//
-//   Point négatif :
-//     - Récupérer un index inexistant d'un tableau nous renvoie n'importe quoi.
+/// Vecteur : tableau dynamique
+///    Taille non connue à la compilation
+///
+///   Point négatif :
+///     - Récupérer un index inexistant d'un tableau nous renvoie n'importe quoi.
 void use_vector()
 {
+    println("use_vector");
+
     std::vector<int> const v_int{1, 2, 3, 4, 5};
     std::vector<double> const v_double{2.71828, 3.14159};
     std::vector<std::string> const v_string{"foo", "bar", "foobar"};
@@ -63,7 +66,7 @@ void use_vector()
     println(v_mut_string[0]);
 }
 
-// Calcul de moyenne
+/// Calcul de moyenne
 void exercices_vector()
 {
     std::vector<double> notes{};
@@ -98,7 +101,7 @@ void exercices_vector()
     }
 }
 
-// Minimum est maximum
+/// Minimum est maximum
 void exercices_vector_2()
 {
     // Remplir un tableau de chiffre aléatoires
@@ -131,7 +134,7 @@ void exercices_vector_2()
     println("Min :", min, "Max :", max);
 }
 
-// Séparer les pairs des impairs
+/// Séparer les pairs des impairs
 void exercices_vector_3()
 {
     std::vector<int> v_pair{};
@@ -154,7 +157,7 @@ void exercices_vector_3()
     println("Les valeurs impairs sont :", v_impair);
 }
 
-// Compter les occurrences d'une valeur
+/// Compter les occurrences d'une valeur
 void exercices_vector_4()
 {
     std::vector<char> const v_char{'a', 'b', 'b', 'c', 'c', 'c', 'd', 'd', 'd', 'd'};
@@ -171,6 +174,47 @@ void exercices_vector_4()
     println("Le nombre de d est :", count);
 }
 
+/// Array : tableau statique
+///   Taille connue à la compilation et ne peut varier
+///
+///   Point négatif :
+///     - Récupérer un index inexistant d'un tableau nous renvoie n'importe quoi.
+void use_array()
+{
+    println("use_array");
+
+    std::array<int, 5> a_int{1, 2, 3, 4, 5};
+    std::array<double, 2> const a_double{1.0, 2.0};
+    std::array<std::string, 3> const a_string{"foo", "bar", "foobar"};
+
+    for (auto const &item : a_int)
+    {
+        println("Avant", item);
+    }
+
+    a_int.fill(42);
+
+    for (auto const &item : a_int)
+    {
+        println("Apres", item);
+    }
+
+    for (auto const &item : a_double)
+    {
+        println(item);
+    }
+
+    for (auto const &item : a_string)
+    {
+        println(item);
+    }
+
+    println(a_int[42]);
+
+    println("Taille :", a_int.size());
+    println("Taille :", std::size(a_double));
+}
+
 int main()
 {
     use_vector();
@@ -178,6 +222,8 @@ int main()
     exercices_vector_2();
     exercices_vector_3();
     exercices_vector_4();
+
+    use_array();
 
     return EXIT_SUCCESS;
 }
