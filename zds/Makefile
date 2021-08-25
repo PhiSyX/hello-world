@@ -1,6 +1,6 @@
 CXXFLAGS:=-std=gnu++17
 
-PROGRAMS = ch01 ch02 ch03 ch04 ch05
+PROGRAMS = ch01 ch02 ch03 ch04 ch05 ch06
 
 all: $(PROGRAMS)
 
@@ -22,4 +22,7 @@ ch04: ch04.o
 	g++ -std=gnu++17 $^ -o $@.out
 
 ch05: ch05.o 
+	g++ -std=gnu++17 $^ -o $@.out
+
+ch06: ch06.o
 	g++ -std=gnu++17 $^ -o $@.out
