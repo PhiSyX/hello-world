@@ -32,6 +32,8 @@
 *.exe
 *.out
 *.app
+*.lock
 
 .vscode/
 testdata/
+target/
