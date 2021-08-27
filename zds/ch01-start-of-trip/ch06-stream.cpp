@@ -1,8 +1,7 @@
 #include <ctime>
 #include <fstream>
-#include <iostream>
 #include <vector>
-#include "print.hpp"
+#include "../print.hpp"
 
 /// Lire dans un fichier
 void read_file()

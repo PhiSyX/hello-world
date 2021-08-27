@@ -1,4 +1,4 @@
-#include "print.hpp";
+#include "../print.hpp"
 
 // Les booléens
 void booleans()

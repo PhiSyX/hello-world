@@ -9,20 +9,20 @@ clean:
 
 -include *.
 
-ch01: ch01.o 
+ch01: ch01-iostream-println.o 
 	g++ -std=gnu++17 $^ -o $@.out
 
-ch02: ch02.o 
+ch02: ch02-memory.o 
 	g++ -std=gnu++17 $^ -o $@.out
 
-ch03: ch03.o 
+ch03: ch03-condition.o 
 	g++ -std=gnu++17 $^ -o $@.out
 
-ch04: ch04.o 
+ch04: ch04-loop.o 
 	g++ -std=gnu++17 $^ -o $@.out
 
-ch05: ch05.o 
+ch05: ch05-array.o 
 	g++ -std=gnu++17 $^ -o $@.out
 
-ch06: ch06.o
+ch06: ch06-stream.o
 	g++ -std=gnu++17 $^ -o $@.out
