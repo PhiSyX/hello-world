@@ -1,3 +1,5 @@
+#![feature(label_break_value)]
+
 mod s01_syntax;
 use s01_syntax::section_1;
 
@@ -8,7 +10,7 @@ mod s03_lifetime_syntax;
 use s03_lifetime_syntax::section_3;
 
 fn main() {
-  section_1();
-  section_2();
-  section_3();
+    section_1();
+    section_2();
+    section_3();
 }
