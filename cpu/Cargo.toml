@@ -12,3 +12,7 @@ path = "src/cpu_1.rs"
 [[bin]]
 name = "cpu_2"
 path = "src/cpu_2.rs"
+
+[[bin]]
+name = "cpu_3"
+path = "src/cpu_3.rs"
