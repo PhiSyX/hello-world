@@ -8,3 +8,7 @@ edition = "2021"
 [[bin]]
 name = "cpu_1"
 path = "src/cpu_1.rs"
+
+[[bin]]
+name = "cpu_2"
+path = "src/cpu_2.rs"
