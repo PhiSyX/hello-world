@@ -11,16 +11,16 @@ enum Suit
 
 enum Face
 {
-    One = 1,
-    Two,
-    Three,
-    Four,
-    Five,
+    Un = 1,
+    Deux,
+    Trois,
+    Quatre,
+    Cinq,
     Six,
-    Seven,
-    Eight,
-    Nine,
-    Ten,
+    Sept,
+    Huit,
+    Neuf,
+    Dix,
 
     Valet,
     Reine,
@@ -56,12 +56,12 @@ int main(void)
 {
     struct Hand hand = {0};
 
-    struct Card c1 = {Pique, (int)Pique, Ten, (int)Ten, false};
+    struct Card c1 = {Pique, (int)Pique, Dix, (int)Dix, false};
     struct Card c2 = {Coeur, (int)Coeur, Reine, (int)Reine, false};
-    struct Card c3 = {Diamand, (int)Diamand, Five, (int)Five, false};
+    struct Card c3 = {Diamand, (int)Diamand, Cinq, (int)Cinq, false};
     struct Card c4 = {Trèfle, (int)Trèfle, As, (int)As, false};
     struct Card c5 = {Coeur, (int)Coeur, Valet, (int)Valet, false};
-    struct Card c6 = {Trèfle, (int)Trèfle, Two, (int)Two, false};
+    struct Card c6 = {Trèfle, (int)Trèfle, Deux, (int)Deux, false};
 
     hand = add_card(hand, c1);
     hand = add_card(hand, c2);
@@ -204,31 +204,31 @@ void print_card(struct Card card)
 {
     switch (card.face)
     {
-    case Two:
+    case Deux:
         printf("    2 ");
         break;
-    case Three:
+    case Trois:
         printf("    3 ");
         break;
-    case Four:
+    case Quatre:
         printf("    4 ");
         break;
-    case Five:
+    case Cinq:
         printf("    5 ");
         break;
     case Six:
         printf("    6 ");
         break;
-    case Seven:
+    case Sept:
         printf("    7 ");
         break;
-    case Eight:
+    case Huit:
         printf("    8 ");
         break;
-    case Nine:
+    case Neuf:
         printf("    9 ");
         break;
-    case Ten:
+    case Dix:
         printf("   10 ");
         break;
     case Valet:
