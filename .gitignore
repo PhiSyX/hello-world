@@ -4,4 +4,5 @@ target/
 *.lock
 rustlings/*
 !rustlings/exercises/
-
+.editorconfig
+.rustfmt.toml
