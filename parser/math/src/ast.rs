@@ -4,7 +4,8 @@ use std::error;
 // Énumération //
 // ----------- //
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub enum Node {
     Add(Box<Node>, Box<Node>),
     Sub(Box<Node>, Box<Node>),

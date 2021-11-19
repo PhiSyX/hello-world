@@ -30,7 +30,8 @@ fn main() {
                     eprintln!("\t Entrez une expression arithmétique valide.");
                 }
             })
-            .unwrap();
+            .expect("Erreur io::stdin#read_line");
+
         println!();
     }
 }

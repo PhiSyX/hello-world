@@ -1,5 +1,10 @@
+// ----------- //
+// Énumération //
+// ----------- //
+
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub enum Token {
     Add,
     Sub,
@@ -13,7 +18,8 @@ pub enum Token {
     EOF,
 }
 
-#[derive(PartialEq, PartialOrd, Debug)]
+#[derive(Debug)]
+#[derive(PartialEq, PartialOrd)]
 pub enum OperatorPrecedence {
     DefaultZero,
     AddSub,

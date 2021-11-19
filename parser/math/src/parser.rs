@@ -20,7 +20,6 @@ pub struct Parser<'a> {
 // Énumération //
 // ----------- //
 
-#[derive(Debug)]
 pub enum ParseError {
     UnableToParse(String),
     InvalidOperator(String),
@@ -77,7 +76,7 @@ impl Parser<'_> {
                 break;
             }
 
-            let right_expression = self.try_convert_token_to_node(left_expression.clone())?;
+            let right_expression = self.try_convert_token_to_node(left_expression)?;
 
             left_expression = right_expression;
         }
@@ -193,7 +192,7 @@ impl Parser<'_> {
 }
 
 // -------------- //
-// Implémentation //
+// Implémentation // -> Interface
 // -------------- //
 
 impl fmt::Display for ParseError {
