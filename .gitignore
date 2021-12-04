@@ -6,3 +6,5 @@ rustlings/*
 !rustlings/exercises/
 .editorconfig
 .rustfmt.toml
+*.exe
+*.pdb
