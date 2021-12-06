@@ -35,9 +35,10 @@ impl Display for BytesRead {
 // --- //
 
 pub(crate) fn run() -> io::Result<()> {
-    let mut f = File::open("Cargo.toml")?;
-    let read_bytes = read_bytes::<_, 1024>(&mut f)?;
-    println!("{}", read_bytes);
+    let mut file = File::open("Cargo.toml")?;
+    let output = read_bytes::<_, 1024>(&mut file)?;
+    println!("{}", output);
+
     Ok(())
 }
 
