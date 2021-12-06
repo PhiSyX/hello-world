@@ -1,31 +1,35 @@
 #include <stdio.h>
 
 // ------ //
-// Header // -> définition des fonctions
+// Header // -> définition des signatures de fonctions, constantes
 // ------ //
 
 #define LF "\n"
 
-void printw(char *w1, char *w2);
+void
+printw(char* w1, char* w2);
 
 // ---- //
 // Main //
 // ---- //
 
-int main()
+int
+main()
 {
-    printw("Hello", "world");
-    printw("Salut", "comment va-t'on?");
-    printw("Ho", "petit sacripant");
-    printw("Nous te souhaitons la bienvenue cher visiteur", "profite bien bien de ce code source");
-    return 0;
+  printw("Hello", "world");
+  printw("Salut", "comment va-t'on?");
+  printw("Ho", "petit sacripant");
+  printw("Nous te souhaitons la bienvenue cher visiteur",
+         "profite bien bien de ce code source");
+  return 0;
 }
 
 // Application des en-têtes de fonctions
 
-void printw(char *w1, char *w2)
+void
+printw(char* w1, char* w2)
 {
-    printf("%s, %s!%s", w1, w2, LF);
+  printf("%s, %s!%s", w1, w2, LF);
 }
 
 /* eof ; end of line */
