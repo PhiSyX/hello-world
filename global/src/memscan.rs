@@ -5,7 +5,7 @@ fn noop() -> *const i32 {
     &noop_local as *const i32
 }
 
-pub fn memscan() {
+pub fn run() {
     let local_str = "a";
     let local_int = 42;
     let boxed_str = Box::new('b');

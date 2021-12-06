@@ -14,7 +14,7 @@ struct MacAddr([u8; 6]);
 // -------------- //
 
 impl MacAddr {
-    fn new() -> MacAddr {
+    fn new() -> Self {
         let mut octets: [u8; 6] = [0; 6];
         rand::thread_rng().fill_bytes(&mut octets);
         octets[0] |= 0b_0000_0011;
@@ -49,7 +49,7 @@ impl Display for MacAddr {
 // Application //
 // ----------- //
 
-pub fn mac_addr() {
+pub fn run() {
     let mac = MacAddr::new();
 
     assert!(mac.is_local());

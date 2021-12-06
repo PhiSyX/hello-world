@@ -2,6 +2,6 @@ mod macaddr;
 mod memscan;
 
 fn main() {
-    memscan::memscan();
-    macaddr::mac_addr();
+    memscan::run();
+    macaddr::run();
 }
