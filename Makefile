@@ -5,4 +5,7 @@ cc: $(wildcard *.asm)
 		chmod u+x $(subst .asm,.out,$(file)) && \
 		rm $(subst .asm,.o,$(file)) ;)
 
-.PHONY: cc
+clear: 
+	rm -f *.out *.o
+
+.PHONY: cc clear
