@@ -1,0 +1,10 @@
+[package]
+name = "ibug-db"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ibug-db"
+path = "repl.rs"
+
+[dependencies]
