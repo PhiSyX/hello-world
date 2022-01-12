@@ -1,7 +1,10 @@
 #include <stdbool.h>
 
-#include "connection.c"
-#include "string_buffer.c"
+#include "connection.h"
+#include "meta_command.h"
+#include "prepare.h"
+#include "statement.h"
+#include "string_buffer.h"
 
 char*
 get_database_filename(int argc, char* argv[])
@@ -33,10 +36,28 @@ main(int argc, char* argv[])
 
     read_line(input);
 
-    if (strcmp(input->buffer, ".exit") == 0) {
-      exit(EXIT_SUCCESS);
-    } else {
-      printf("La commande '%s' est invalide.\n", input->buffer);
+    if (input->buffer[0] == '.') {
+      switch (do_meta_command(input)) {
+        case OK_SUCCESS:
+          continue;
+
+        case ERR_INVALID_COMMAND:
+          printf("Commande '%s' invalide\n", input->buffer);
+          continue;
+      }
     }
+
+    Statement statement;
+    switch (prepare_statement(input, &statement)) {
+      case OK_SUCCESS:
+        break;
+
+      case ERR_INVALID_STATEMENT:
+        printf("Instruction '%s' non reconnue.\n", input->buffer);
+        continue;
+    }
+
+    execute_statement(&statement);
+    printf("Exécutée.\n");
   }
 }

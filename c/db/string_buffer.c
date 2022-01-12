@@ -1,11 +1,7 @@
-#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct
-{
-  char* buffer;
-  size_t buffer_size;
-  ssize_t input_size;
-} StringBuffer;
+#include "string_buffer.h"
 
 StringBuffer*
 default_buffer()

@@ -1,11 +1,4 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct
-{
-  int fd;
-} Connection;
+#include "connection.h"
 
 Connection*
 open_connection(char* filename)
