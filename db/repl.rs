@@ -1,12 +1,18 @@
+mod connection;
+mod meta_command;
+mod prepare;
+mod statement;
+mod string_buffer;
+
 use std::{
     env,
     io::{self, Write},
 };
 
-mod connection;
-mod string_buffer;
-
 use connection::Connection;
+use meta_command::MetaCommand;
+use prepare::Prepare;
+use statement::Statement;
 use string_buffer::StringBuffer;
 
 #[allow(clippy::upper_case_acronyms)]
@@ -40,10 +46,24 @@ fn main() {
             break 'exit 1; // EXIT_FAILURE
         }
 
-        if input == ".exit" {
-            break 'exit 0; // EXIT_SUCCESS
-        } else {
-            println!("La commande '{}' est invalide.", input);
+        if let Some('.') = input.chars().next() {
+            match input.parse() {
+                | Ok(MetaCommand::Exit) => break 'exit 0,
+                | Err(err) => {
+                    eprintln!("{}", err);
+                    continue;
+                }
+            }
+        }
+
+        let mut statement = Statement::default();
+
+        match statement.prepare(&input) {
+            | Ok(prepare) => {
+                statement.execute(&prepare);
+                println!("Exécutée.");
+            }
+            | Err(err) => eprintln!("{}", err),
         }
     };
 
