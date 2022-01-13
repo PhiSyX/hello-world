@@ -3,8 +3,8 @@ impl<T> Reclaim for T {}
 
 pub trait Deleter {
     /// # Safety
-    /// `ptr` must have been allocated by the corresponding allocation method.
-    /// delete must be called at most once for each `ptr`.
+    /// `ptr` must have been allocated by the corresponding allocation
+    /// method. delete must be called at most once for each `ptr`.
     unsafe fn delete(&self, ptr: *mut dyn Reclaim);
 }
 
@@ -15,11 +15,13 @@ impl Deleter for unsafe fn(*mut (dyn Reclaim + 'static)) {
 }
 
 pub mod deleters {
+    use alloc::boxed::Box;
+
     use super::Reclaim;
 
     unsafe fn _drop_in_place(ptr: *mut dyn Reclaim) {
         // Safe by the contract on HazPtrObject::retire.
-        unsafe { std::ptr::drop_in_place(ptr) };
+        unsafe { core::ptr::drop_in_place(ptr) };
     }
 
     /// Always safe to use given requirements on HazPtrObject::retire,
@@ -28,8 +30,8 @@ pub mod deleters {
     pub const drop_in_place: unsafe fn(*mut dyn Reclaim) = _drop_in_place;
 
     unsafe fn _drop_box(ptr: *mut dyn Reclaim) {
-        // Safety: Safe by the safety gurantees of retire and because it's only used when
-        // retiring Box objects.
+        // Safety: Safe by the safety gurantees of retire and because it's
+        // only used when retiring Box objects.
         let _ = unsafe { Box::from_raw(ptr) };
     }
 

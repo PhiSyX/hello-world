@@ -3,6 +3,12 @@ name = "hazard-pointers"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+std = []
+
+default = ["std"]
 
 [dependencies]
+
+[target.'cfg(loom)'.dependencies]
+loom = "0.5"
