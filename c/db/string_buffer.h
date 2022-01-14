@@ -1,8 +1,7 @@
 #ifndef DB_STRING_BUFFER_H
 #define DB_STRING_BUFFER_H
 
-#include <stdlib.h>
-#include <string.h>
+#include <sys/types.h>
 
 typedef struct
 {

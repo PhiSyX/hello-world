@@ -7,7 +7,8 @@
 enum Prepare
 {
   OK_PREPARE,
-  ERR_INVALID_STATEMENT
+  ERR_INVALID_STATEMENT,
+  ERR_SYNTAX_ERROR
 };
 
 typedef enum Prepare PrepareResult;

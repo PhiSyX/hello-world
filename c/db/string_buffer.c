@@ -1,5 +1,7 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "string_buffer.h"
 
@@ -16,7 +18,7 @@ default_buffer()
 void
 read_line(StringBuffer* input)
 {
-  ssize_t bytes = getline(&(input->buffer), &(input->buffer_size), stdin);
+  ssize_t bytes = getline(&input->buffer, &input->buffer_size, stdin);
 
   if (bytes <= 0) {
     printf("Erreur lors de la lecture du buffer\n");
