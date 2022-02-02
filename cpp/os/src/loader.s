@@ -11,11 +11,13 @@
 
 .section .text 
 .extern kernel_main
+.extern call_ctors
 .global loader
 
 
 loader:
     mov $kernel_stack, %esp
+    call call_ctors
     push %eax
     push %ebx
     call kernel_main

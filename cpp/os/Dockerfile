@@ -1,8 +1,7 @@
-FROM debian:stable-slim
+FROM i386/debian:stable-slim
 
 RUN apt update
-RUN apt install -y g++ binutils  make
-RUN apt install -y libc6-dev-i386 
+RUN apt install -y g++ binutils make
 RUN apt install -y xorriso
 
 RUN mkdir /home/phisyx
