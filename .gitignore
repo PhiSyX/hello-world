@@ -34,6 +34,9 @@
 *.app
 *.lock
 
+*.iso
+*.bin
+
 .vscode/
 testdata/
 target/
