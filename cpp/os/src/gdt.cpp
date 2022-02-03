@@ -34,8 +34,15 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(u32 base,
   u8* target = (u8*)this;
 
   if (limit <= 65536) {
+    // 16-bit espace d'adressage
     target[6] = 0x40;
   } else {
+    // 32-bit espace d'adressage
+    // Maintenant, nous devons squeeze la limite (32 bits) en 2.5 (20 bits).
+    // Ça se fait en éliminant les 12 bits les moins significatifs, mais ça
+    // n'est légal que s'ils sont tous égaux à 1, donc ils sont implicitement
+    // toujours là.
+
     if ((limit & 0xFFF) != 0xFFF) {
       limit = (limit >> 12) - 1;
     } else {
@@ -45,15 +52,18 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(u32 base,
     target[6] = 0xC0;
   }
 
+  // Encode la limite
   target[0] = limit & 0xFF;
   target[1] = (limit >> 8) & 0xFF;
   target[6] |= (limit >> 16) & 0xF;
 
+  // Encode la base
   target[2] = base & 0xFF;
   target[3] = (base >> 8) & 0xFF;
   target[4] = (base >> 16) & 0xFF;
   target[7] = (base >> 24) & 0xFF;
 
+  // Type
   target[5] = flags;
 }
 
