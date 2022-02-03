@@ -20,8 +20,37 @@ printf(char* str)
   // conservera sa valeur même après être sortie de sa portée.
   static u16* video_memory = (u16*)0xb8000;
 
+  static u8 x = 0;
+  static u8 y = 0;
+
   for (int i = 0; str[i] != '\0'; ++i) {
-    video_memory[i] = (video_memory[i] & 0xFF00) | str[i];
+    switch (str[i]) {
+      case '\n':
+        x = 0;
+        y++;
+        break;
+
+      default:
+        video_memory[80 * y + x] = (video_memory[80 * y + x] & 0xFF00) | str[i];
+        x++;
+        break;
+    }
+
+    if (x >= 80) {
+      x = 0;
+      y++;
+    }
+
+    if (y >= 25) {
+      for (y = 0; y < 25; y++) {
+        for (x = 0; x < 80; x++) {
+          video_memory[80 * y + x] = (video_memory[80 * y + x] & 0xFF00) | ' ';
+        }
+      }
+
+      x = 0;
+      y = 0;
+    }
   }
 }
 
@@ -54,7 +83,8 @@ call_ctors()
 extern "C" void
 kernel_main(void* multiboot_struct, u32 magicnumber)
 {
-  printf("Hello, World from kernel.cpp file!");
+  printf("Hello, World depuis le fichier kernel.cpp!\n");
+  printf("Saut de ligne? Affichage de texte");
 
   GlobalDescriptorTable gdt;
 

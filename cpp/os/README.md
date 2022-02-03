@@ -7,3 +7,7 @@
 ## Segments de mémoire, table global de descripteurs.
 
 ![docs/screenshot-02.png](docs/screenshot-02.png)
+
+## Matériel - Communication / Ports
+
+![docs/screenshot-03.png](docs/screenshot-03.png)

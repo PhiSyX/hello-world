@@ -41,3 +41,5 @@
 testdata/
 target/
 .editorconfig
+
+*/os/Dockerfile

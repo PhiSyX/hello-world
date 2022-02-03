@@ -8,6 +8,7 @@ LDPARAMS = -melf_i386
 objects = \
 	obj/loader.o \
     obj/gdt.o \
+    obj/port.o \
 	obj/kernel.o
 
 obj/%.o: src/%.cpp
@@ -37,3 +38,6 @@ mykernel.iso: mykernel.bin
 	@echo '}' >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=$@ iso
 	rm -rf iso
+
+clean:
+	rm -rf $(objects) mykernel.bin mykernel.iso
