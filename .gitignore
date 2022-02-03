@@ -40,3 +40,4 @@
 .vscode/
 testdata/
 target/
+.editorconfig

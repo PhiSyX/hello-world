@@ -1,3 +1,4 @@
+#include "gdt.hpp"
 #include "types.hpp"
 
 void
@@ -25,6 +26,9 @@ extern "C" void
 kernel_main(void* multiboot_struct, u32 magicnumber)
 {
   printf("Hello, World from kernel.cpp file!");
+
+  GlobalDescriptorTable gdt;
+
   while (1)
     ;
 }
