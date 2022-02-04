@@ -88,7 +88,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("Saut de ligne? Affichage de texte");
 
   GlobalDescriptorTable gdt;
-  InterruptManager interrupts(&gdt);
+  InterruptManager interrupts(0x20, &gdt);
 
   interrupts.activate();
 

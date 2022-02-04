@@ -3,12 +3,9 @@
 .section .text
 .extern _ZN16InterruptManager16handle_interruptEjj
 
-.global _ZN16InterruptManager24ignore_interrupt_requestEv
-
-
 .macro handle_interrupt_exception number
-.global _ZN16InterruptManager24handle_interrupt_exception\number\()Ev
-_ZN16InterruptManager24handle_interrupt_exception\number\()Ev:
+.global _ZN16InterruptManager30handle_interrupt_exception\number\()Ev
+_ZN16InterruptManager30handle_interrupt_exception\number\()Ev:
     movb $\number, (interrupt_number)
     jmp int_bottom
 .endm
@@ -20,8 +17,44 @@ _ZN16InterruptManager28handle_interrupt_request\number\()Ev:
     jmp int_bottom
 .endm
 
+handle_interrupt_exception 0x00
+handle_interrupt_exception 0x01
+handle_interrupt_exception 0x02
+handle_interrupt_exception 0x03
+handle_interrupt_exception 0x04
+handle_interrupt_exception 0x05
+handle_interrupt_exception 0x06
+handle_interrupt_exception 0x07
+handle_interrupt_exception 0x08
+handle_interrupt_exception 0x09
+handle_interrupt_exception 0x0A
+handle_interrupt_exception 0x0B
+handle_interrupt_exception 0x0C
+handle_interrupt_exception 0x0D
+handle_interrupt_exception 0x0E
+handle_interrupt_exception 0x0F
+handle_interrupt_exception 0x10
+handle_interrupt_exception 0x11
+handle_interrupt_exception 0x12
+handle_interrupt_exception 0x13
+
 handle_interrupt_request 0x00
 handle_interrupt_request 0x01
+handle_interrupt_request 0x02
+handle_interrupt_request 0x03
+handle_interrupt_request 0x04
+handle_interrupt_request 0x05
+handle_interrupt_request 0x06
+handle_interrupt_request 0x07
+handle_interrupt_request 0x08
+handle_interrupt_request 0x09
+handle_interrupt_request 0x0A
+handle_interrupt_request 0x0B
+handle_interrupt_request 0x0C
+handle_interrupt_request 0x0D
+handle_interrupt_request 0x0E
+handle_interrupt_request 0x0F
+handle_interrupt_request 0x31
 
 int_bottom:
     pusha
@@ -33,7 +66,7 @@ int_bottom:
     pushl %esp
     push (interrupt_number)
     call _ZN16InterruptManager16handle_interruptEjj
-  ; add $5, %esp
+    add %esp, 6
     mov %eax, %esp
 
     popl %gs
@@ -42,6 +75,7 @@ int_bottom:
     popl %ds
     popa
 
+.global _ZN16InterruptManager24ignore_interrupt_requestEv
 _ZN16InterruptManager24ignore_interrupt_requestEv:
 
     iret
