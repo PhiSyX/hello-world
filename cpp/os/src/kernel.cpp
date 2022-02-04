@@ -1,4 +1,5 @@
 #include "gdt.hpp"
+#include "interrupts.hpp"
 #include "types.hpp"
 
 /// Affiche des informations en console
@@ -87,6 +88,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("Saut de ligne? Affichage de texte");
 
   GlobalDescriptorTable gdt;
+  InterruptManager interrupts(&gdt);
+
+  interrupts.activate();
 
   while (1)
     ;

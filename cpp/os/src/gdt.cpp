@@ -68,7 +68,7 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(u32 base,
 }
 
 u32
-GlobalDescriptorTable::SegmentDescriptor::Base() const
+GlobalDescriptorTable::SegmentDescriptor::base() const
 {
   u8* target = (u8*)this;
   u32 result = target[7];
@@ -79,7 +79,7 @@ GlobalDescriptorTable::SegmentDescriptor::Base() const
 }
 
 u32
-GlobalDescriptorTable::SegmentDescriptor::Limit() const
+GlobalDescriptorTable::SegmentDescriptor::limit() const
 {
   u8* target = (u8*)this;
   u32 result = target[6] & 0xF;
