@@ -3,9 +3,11 @@
 .section .text
 .extern _ZN16InterruptManager16handle_interruptEjj
 
+# $ nm obj/interrupt.o
+
 .macro handle_interrupt_exception number
-.global _ZN16InterruptManager30handle_interrupt_exception\number\()Ev
-_ZN16InterruptManager30handle_interrupt_exception\number\()Ev:
+.global _ZN16InterruptManager20handle_exception\number\()Ev
+_ZN16InterruptManager20handle_exception\number\()Ev:
     movb $\number, (interrupt_number)
     jmp int_bottom
 .endm
@@ -65,7 +67,7 @@ int_bottom:
 
     pushl %esp
     push (interrupt_number)
-    call _ZN16InterruptManager16handle_interruptEjj
+    call _ZN16InterruptManager16handle_interruptEhj
     add %esp, 6
     mov %eax, %esp
 
@@ -75,8 +77,8 @@ int_bottom:
     popl %ds
     popa
 
-.global _ZN16InterruptManager24ignore_interrupt_requestEv
-_ZN16InterruptManager24ignore_interrupt_requestEv:
+.global _ZN16InterruptManager16interrupt_ignoreEv
+_ZN16InterruptManager16interrupt_ignoreEv:
 
     iret
 

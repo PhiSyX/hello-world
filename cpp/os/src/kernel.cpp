@@ -1,5 +1,6 @@
 #include "gdt.hpp"
 #include "interrupts.hpp"
+#include "keyboard.hpp"
 #include "types.hpp"
 
 /// Affiche des informations en console
@@ -89,6 +90,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 
   GlobalDescriptorTable gdt;
   InterruptManager interrupts(0x20, &gdt);
+  KeyboardDriver keyboard(&interrupts);
 
   interrupts.activate();
 

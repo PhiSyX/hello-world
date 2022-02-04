@@ -10,6 +10,7 @@ objects = \
     obj/gdt.o \
     obj/port.o \
     obj/interrupts_stub.o obj/interrupts.o \
+    obj/keyboard.o \
 	obj/kernel.o
 
 obj/%.o: src/%.cpp
