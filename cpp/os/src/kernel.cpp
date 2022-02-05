@@ -1,3 +1,4 @@
+#include "driver.hpp"
 #include "gdt.hpp"
 #include "interrupts.hpp"
 #include "keyboard.hpp"
@@ -57,6 +58,73 @@ printf(char* str)
   }
 }
 
+void
+printh(u8 key)
+{
+  char* foo = "00";
+  char* hex = "0123456789ABCDEF";
+  foo[0] = hex[(key >> 4) & 0xF];
+  foo[1] = hex[key & 0xF];
+  printf(foo);
+}
+
+class PrintfKeyboardEventHandler : public KeyboardEventHandler
+{
+public:
+  void on_keydown(char c)
+  {
+    char* foo = " ";
+    foo[0] = c;
+    printf(foo);
+  }
+};
+
+class MouseToConsole : public MouseEventHandler
+{
+  i8 x, y;
+
+public:
+  MouseToConsole() {}
+
+  virtual void on_activate()
+  {
+    u16* video_memory = (u16*)0xb8000;
+    x = 40;
+    y = 12;
+    video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
+                               (video_memory[80 * y + x] & 0xF000) >> 4 |
+                               (video_memory[80 * y + x] & 0x00FF);
+  }
+
+  virtual void on_mousemove(int xoffset, int yoffset)
+  {
+    static u16* video_memory = (u16*)0xb8000;
+    video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
+                               (video_memory[80 * y + x] & 0xF000) >> 4 |
+                               (video_memory[80 * y + x] & 0x00FF);
+
+    x += xoffset;
+    if (x >= 80) {
+      x = 79;
+    }
+    if (x < 0) {
+      x = 0;
+    }
+
+    y += yoffset;
+    if (y >= 25) {
+      y = 24;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+
+    video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
+                               (video_memory[80 * y + x] & 0xF000) >> 4 |
+                               (video_memory[80 * y + x] & 0x00FF);
+  }
+};
+
 /// Défini un constructeur comme un pointeur vers une fonction
 typedef void (*constructor)();
 /// `start_ctors` est une variable de type `constructor` (pointeur vers une
@@ -86,13 +154,23 @@ call_ctors()
 extern "C" void
 kernel_main(void* multiboot_struct, u32 magicnumber)
 {
-  printf("Hello, World depuis le fichier kernel.cpp!\n");
-  printf("Saut de ligne? Affichage de texte");
+  printf("Demarrage du kernel!\n");
 
   GlobalDescriptorTable gdt;
   InterruptManager interrupts(0x20, &gdt);
-  KeyboardDriver keyboard(&interrupts);
-  MouseDriver mouse(&interrupts);
+  printf("Initialisation du materiel\n");
+
+  DriverManager driver_manager;
+
+  PrintfKeyboardEventHandler keyboard_handler;
+  KeyboardDriver keyboard(&interrupts, &keyboard_handler);
+  driver_manager.add(&keyboard);
+
+  MouseToConsole mouse_handler;
+  MouseDriver mouse(&interrupts, &mouse_handler);
+  driver_manager.add(&mouse);
+
+  driver_manager.enable_all();
 
   interrupts.activate();
 

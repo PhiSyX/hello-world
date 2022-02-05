@@ -8,6 +8,7 @@ LDPARAMS = -melf_i386
 objects = \
 	obj/loader.o \
     obj/gdt.o \
+    obj/driver.o \
     obj/port.o \
     obj/interrupts_stub.o obj/interrupts.o \
     obj/keyboard.o \

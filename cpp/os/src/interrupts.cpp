@@ -1,8 +1,5 @@
 #include "interrupts.hpp"
 
-void
-printf(char* str);
-
 InterruptHandler::InterruptHandler(InterruptManager* im, u8 in)
 {
   interrupt_number = in;
@@ -246,11 +243,8 @@ InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
   if (handlers[interrupt_number] != 0) {
     esp = handlers[interrupt_number]->handle_interrupt(esp);
   } else if (interrupt_number != hardware_interrupt_offset) {
-    char* foo = "UNHANDLED INTERRUPT 0x00";
-    char* hex = "0123456789ABCDEF";
-    foo[22] = hex[(interrupt_number >> 4) & 0xF];
-    foo[23] = hex[interrupt_number & 0xF];
-    printf(foo);
+    printf("UNHANDLED INTERRUPT 0x");
+    printh(interrupt_number);
   }
 
   if (hardware_interrupt_offset <= interrupt_number &&

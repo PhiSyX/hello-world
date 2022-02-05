@@ -1,11 +1,26 @@
 #ifndef __MOUSE_HPP__
 #define __MOUSE_HPP__
 
+#include "driver.hpp"
 #include "interrupts.hpp"
 #include "port.hpp"
 #include "types.hpp"
 
-class MouseDriver : public InterruptHandler
+class MouseEventHandler
+{
+public:
+  MouseEventHandler();
+
+public:
+  virtual void on_activate();
+  virtual void on_mousedown(u8 button);
+  virtual void on_mouseup(u8 button);
+  virtual void on_mousemove(i32 x, i32 y);
+};
+
+class MouseDriver
+  : public InterruptHandler
+  , public Driver
 {
   Port8Bit dataport;
   Port8Bit commandport;
@@ -14,14 +29,15 @@ class MouseDriver : public InterruptHandler
   u8 offset;
   u8 buttons;
 
-  i8 x, y;
+  MouseEventHandler* handler;
 
 public:
-  MouseDriver(InterruptManager* interrupt_manager);
+  MouseDriver(InterruptManager* manager, MouseEventHandler* handler);
   ~MouseDriver();
 
 public:
   virtual u32 handle_interrupt(u32 esp);
+  virtual void activate();
 };
 
 #endif

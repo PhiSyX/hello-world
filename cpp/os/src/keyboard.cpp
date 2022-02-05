@@ -1,9 +1,30 @@
 #include "keyboard.hpp"
 
-KeyboardDriver::KeyboardDriver(InterruptManager* manager)
-  : InterruptHandler(manager, 0x21)
+#include "keyboard.hpp"
+
+KeyboardEventHandler::KeyboardEventHandler() {}
+
+void
+KeyboardEventHandler::on_keydown(char)
+{}
+
+void
+KeyboardEventHandler::on_keyup(char)
+{}
+
+KeyboardDriver::KeyboardDriver(InterruptManager* input_manager,
+                               KeyboardEventHandler* handler)
+  : InterruptHandler(input_manager, 0x21)
   , dataport(0x60)
   , commandport(0x64)
+{
+  this->handler = handler;
+}
+
+KeyboardDriver::~KeyboardDriver() {}
+
+void
+KeyboardDriver::activate()
 {
   while (commandport.read() & 0x1) {
     dataport.read();
@@ -18,155 +39,151 @@ KeyboardDriver::KeyboardDriver(InterruptManager* manager)
   dataport.write(0xf4);
 }
 
-KeyboardDriver::~KeyboardDriver() {}
-
-void
-printf(char*);
-
 u32
 KeyboardDriver::handle_interrupt(u32 esp)
 {
   u8 key = dataport.read();
+
+  if (handler == 0) {
+    return esp;
+  }
+
   if (key < 0x80) {
     switch (key) {
       case 0x02:
-        printf("1");
+        handler->on_keydown('1');
         break;
       case 0x03:
-        printf("2");
+        handler->on_keydown('2');
         break;
       case 0x04:
-        printf("3");
+        handler->on_keydown('3');
         break;
       case 0x05:
-        printf("4");
+        handler->on_keydown('4');
         break;
       case 0x06:
-        printf("5");
+        handler->on_keydown('5');
         break;
       case 0x07:
-        printf("6");
+        handler->on_keydown('6');
         break;
       case 0x08:
-        printf("7");
+        handler->on_keydown('7');
         break;
       case 0x09:
-        printf("8");
+        handler->on_keydown('8');
         break;
       case 0x0A:
-        printf("9");
+        handler->on_keydown('9');
         break;
       case 0x0B:
-        printf("0");
+        handler->on_keydown('0');
         break;
 
       case 0x10:
-        printf("q");
+        handler->on_keydown('q');
         break;
       case 0x11:
-        printf("w");
+        handler->on_keydown('w');
         break;
       case 0x12:
-        printf("e");
+        handler->on_keydown('e');
         break;
       case 0x13:
-        printf("r");
+        handler->on_keydown('r');
         break;
       case 0x14:
-        printf("t");
+        handler->on_keydown('t');
         break;
       case 0x15:
-        printf("z");
+        handler->on_keydown('z');
         break;
       case 0x16:
-        printf("u");
+        handler->on_keydown('u');
         break;
       case 0x17:
-        printf("i");
+        handler->on_keydown('i');
         break;
       case 0x18:
-        printf("o");
+        handler->on_keydown('o');
         break;
       case 0x19:
-        printf("p");
+        handler->on_keydown('p');
         break;
 
       case 0x1E:
-        printf("a");
+        handler->on_keydown('a');
         break;
       case 0x1F:
-        printf("s");
+        handler->on_keydown('s');
         break;
       case 0x20:
-        printf("d");
+        handler->on_keydown('d');
         break;
       case 0x21:
-        printf("f");
+        handler->on_keydown('f');
         break;
       case 0x22:
-        printf("g");
+        handler->on_keydown('g');
         break;
       case 0x23:
-        printf("h");
+        handler->on_keydown('h');
         break;
       case 0x24:
-        printf("j");
+        handler->on_keydown('j');
         break;
       case 0x25:
-        printf("k");
+        handler->on_keydown('k');
         break;
       case 0x26:
-        printf("l");
+        handler->on_keydown('l');
         break;
 
       case 0x2C:
-        printf("y");
+        handler->on_keydown('y');
         break;
       case 0x2D:
-        printf("x");
+        handler->on_keydown('x');
         break;
       case 0x2E:
-        printf("c");
+        handler->on_keydown('c');
         break;
       case 0x2F:
-        printf("v");
+        handler->on_keydown('v');
         break;
       case 0x30:
-        printf("b");
+        handler->on_keydown('b');
         break;
       case 0x31:
-        printf("n");
+        handler->on_keydown('n');
         break;
       case 0x32:
-        printf("m");
+        handler->on_keydown('m');
         break;
       case 0x33:
-        printf(",");
+        handler->on_keydown(',');
         break;
       case 0x34:
-        printf(".");
+        handler->on_keydown('.');
         break;
       case 0x35:
-        printf("-");
+        handler->on_keydown('-');
         break;
 
       case 0x1C:
-        printf("\n");
+        handler->on_keydown('\n');
         break;
       case 0x39:
-        printf(" ");
+        handler->on_keydown(' ');
         break;
 
       default: {
-        char* foo = "KEYBOARD 0x00 ";
-        char* hex = "0123456789ABCDEF";
-        foo[11] = hex[(key >> 4) & 0xF];
-        foo[12] = hex[key & 0xF];
-        printf(foo);
+        printf("KEYBOARD 0x");
+        printh(key);
         break;
       }
     }
   }
-
   return esp;
 }

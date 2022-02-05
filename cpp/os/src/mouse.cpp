@@ -1,20 +1,47 @@
 #include "mouse.hpp"
 
-MouseDriver::MouseDriver(InterruptManager* manager)
-  : InterruptHandler(manager, 0x2C)
+void
+printf(char*);
+
+MouseEventHandler::MouseEventHandler() {}
+
+void
+MouseEventHandler::on_activate()
+{}
+
+void
+MouseEventHandler::on_mousedown(u8 button)
+{}
+
+void
+MouseEventHandler::on_mouseup(u8 button)
+{}
+
+void
+MouseEventHandler::on_mousemove(i32 x, i32 y)
+{}
+
+MouseDriver::MouseDriver(InterruptManager* input_manager,
+                         MouseEventHandler* handler)
+  : InterruptHandler(input_manager, 0x2C)
   , dataport(0x60)
   , commandport(0x64)
 {
-  u16* video_memory = (u16*)0xb8000;
+  this->handler = handler;
+}
 
+MouseDriver::~MouseDriver() {}
+
+void
+MouseDriver::activate()
+{
   offset = 0;
   buttons = 0;
-  x = 40;
-  y = 12;
 
-  video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
-                             (video_memory[80 * y + x] & 0xF000) >> 4 |
-                             (video_memory[80 * y + x] & 0x00FF);
+  if (handler != 0) {
+    handler->on_activate();
+  }
+
   commandport.write(0xA8);
   commandport.write(0x20);
 
@@ -27,18 +54,19 @@ MouseDriver::MouseDriver(InterruptManager* manager)
   dataport.read();
 }
 
-MouseDriver::~MouseDriver() {}
-
 u32
 MouseDriver::handle_interrupt(u32 esp)
 {
   u8 status = commandport.read();
-
   if (!(status & 0x20)) {
     return esp;
   }
 
   buffer[offset] = dataport.read();
+  if (handler == 0) {
+    return esp;
+  }
+
   offset = (offset + 1) % 3;
 
   if (offset != 0) {
@@ -46,31 +74,20 @@ MouseDriver::handle_interrupt(u32 esp)
   }
 
   if (buffer[1] != 0 || buffer[2] != 0) {
-    static u16* video_memory = (u16*)0xb8000;
-    video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
-                               (video_memory[80 * y + x] & 0xF000) >> 4 |
-                               (video_memory[80 * y + x] & 0x00FF);
-
-    x += buffer[1];
-    if (x >= 80) {
-      x = 79;
-    }
-    if (x < 0) {
-      x = 0;
-    }
-
-    y -= buffer[2];
-    if (y >= 25) {
-      y = 24;
-    }
-    if (y < 0) {
-      y = 0;
-    }
-
-    video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
-                               (video_memory[80 * y + x] & 0xF000) >> 4 |
-                               (video_memory[80 * y + x] & 0x00FF);
+    handler->on_mousemove(buffer[1], -buffer[2]);
   }
+
+  for (u8 i = 0; i < 3; i++) {
+    if ((buffer[0] & (0x1 << i)) != (buttons & (0x1 << i))) {
+      if (buttons & (0x1 << i)) {
+        handler->on_mouseup(i + 1);
+      } else {
+        handler->on_mousedown(i + 1);
+      }
+    }
+  }
+
+  buttons = buffer[0];
 
   return esp;
 }

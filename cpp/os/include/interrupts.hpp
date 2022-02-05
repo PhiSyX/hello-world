@@ -5,6 +5,12 @@
 #include "port.hpp"
 #include "types.hpp"
 
+void
+printf(char* str);
+
+void
+printh(u8 key);
+
 class InterruptManager;
 
 class InterruptHandler
