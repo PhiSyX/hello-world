@@ -2,7 +2,7 @@
 #define __INTERRUPTS_HPP__
 
 #include "gdt.hpp"
-#include "port.hpp"
+#include "hardware/port.hpp"
 #include "types.hpp"
 
 void

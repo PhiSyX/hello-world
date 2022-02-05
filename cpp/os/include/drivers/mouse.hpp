@@ -1,9 +1,9 @@
 #ifndef __MOUSE_HPP__
 #define __MOUSE_HPP__
 
-#include "driver.hpp"
-#include "interrupts.hpp"
-#include "port.hpp"
+#include "drivers/driver.hpp"
+#include "hardware/interrupts.hpp"
+#include "hardware/port.hpp"
 #include "types.hpp"
 
 class MouseEventHandler

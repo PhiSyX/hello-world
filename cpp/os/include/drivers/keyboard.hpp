@@ -2,8 +2,8 @@
 #define __KEYBOARD_HPP__
 
 #include "driver.hpp"
-#include "interrupts.hpp"
-#include "port.hpp"
+#include "hardware/interrupts.hpp"
+#include "hardware/port.hpp"
 #include "types.hpp"
 
 void

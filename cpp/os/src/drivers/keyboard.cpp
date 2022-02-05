@@ -1,6 +1,4 @@
-#include "keyboard.hpp"
-
-#include "keyboard.hpp"
+#include "drivers/keyboard.hpp"
 
 KeyboardEventHandler::KeyboardEventHandler() {}
 

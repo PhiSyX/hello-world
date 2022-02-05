@@ -8,11 +8,11 @@ LDPARAMS = -melf_i386
 objects = \
 	obj/loader.o \
     obj/gdt.o \
-    obj/driver.o \
-    obj/port.o \
-    obj/interrupts_stub.o obj/interrupts.o \
-    obj/keyboard.o \
-    obj/mouse.o \
+    obj/drivers/driver.o \
+    obj/hardware/port.o \
+    obj/hardware/interrupts_stub.o obj/hardware/interrupts.o \
+    obj/drivers/keyboard.o \
+    obj/drivers/mouse.o \
 	obj/kernel.o
 
 obj/%.o: src/%.cpp

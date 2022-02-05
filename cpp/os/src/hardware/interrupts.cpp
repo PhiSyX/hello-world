@@ -1,4 +1,4 @@
-#include "interrupts.hpp"
+#include "hardware/interrupts.hpp"
 
 InterruptHandler::InterruptHandler(InterruptManager* im, u8 in)
 {

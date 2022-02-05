@@ -1,8 +1,8 @@
-#include "driver.hpp"
+#include "drivers/driver.hpp"
+#include "drivers/keyboard.hpp"
+#include "drivers/mouse.hpp"
 #include "gdt.hpp"
-#include "interrupts.hpp"
-#include "keyboard.hpp"
-#include "mouse.hpp"
+#include "hardware/interrupts.hpp"
 #include "types.hpp"
 
 /// Affiche des informations en console
