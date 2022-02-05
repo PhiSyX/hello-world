@@ -11,3 +11,7 @@
 ## Matériel - Communication / Ports
 
 ![docs/screenshot-03.png](docs/screenshot-03.png)
+
+## Interconnexion des composants périphériques (PCI)
+
+![docs/screenshot-04.png](docs/screenshot-04.png)

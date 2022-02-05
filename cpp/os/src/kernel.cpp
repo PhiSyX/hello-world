@@ -3,6 +3,7 @@
 #include "drivers/mouse.hpp"
 #include "gdt.hpp"
 #include "hardware/interrupts.hpp"
+#include "hardware/pci.hpp"
 #include "types.hpp"
 
 /// Affiche des informations en console
@@ -169,6 +170,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   MouseToConsole mouse_handler;
   MouseDriver mouse(&interrupts, &mouse_handler);
   driver_manager.add(&mouse);
+
+  PeripheralComponentInterconnectController PCIController;
+  PCIController.select_drivers(&driver_manager);
 
   driver_manager.enable_all();
 

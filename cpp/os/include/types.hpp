@@ -13,4 +13,6 @@ typedef unsigned int u32;
 typedef long long int i64;
 typedef unsigned long long int u64;
 
+typedef const char* str;
+
 #endif
