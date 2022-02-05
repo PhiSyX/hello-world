@@ -11,6 +11,7 @@ objects = \
     obj/port.o \
     obj/interrupts_stub.o obj/interrupts.o \
     obj/keyboard.o \
+    obj/mouse.o \
 	obj/kernel.o
 
 obj/%.o: src/%.cpp
