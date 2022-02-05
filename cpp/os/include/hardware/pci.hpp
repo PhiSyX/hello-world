@@ -10,6 +10,21 @@ void
 printf(char* str);
 void printh(u8);
 
+enum BaseAddressRegisterType
+{
+  MemoryMapping = 0,
+  InputOutput = 1
+};
+
+class BaseAddressRegister
+{
+public:
+  bool prefetchable;
+  u8* address;
+  u32 size;
+  BaseAddressRegisterType type;
+};
+
 class PeripheralComponentInterconnectDeviceDescriptor
 {
 public:
@@ -47,9 +62,18 @@ public:
   u32 read(u16 bus, u16 device, u16 fn, u32 register_offset);
   void write(u16 bus, u16 device, u16 fn, u32 register_offset, u32 value);
   bool device_has_functions(u16 bus, u16 device);
-  void select_drivers(DriverManager* driver_manager);
+  void select_drivers(DriverManager* driver_manager,
+                      InterruptManager* interrupt_manager);
   PeripheralComponentInterconnectDeviceDescriptor
   get_device_descriptor(u16 bus, u16 device, u16 fn);
+
+  Driver* get_driver(PeripheralComponentInterconnectDeviceDescriptor dev,
+                     InterruptManager* interrupt_manager);
+
+  BaseAddressRegister get_base_address_register(u16 bus,
+                                                u16 device,
+                                                u16 fn,
+                                                u16 bar);
 };
 
 #endif

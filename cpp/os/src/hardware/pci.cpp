@@ -53,7 +53,8 @@ PeripheralComponentInterconnectController::device_has_functions(u16 bus,
 
 void
 PeripheralComponentInterconnectController::select_drivers(
-  DriverManager* driver_manager)
+  DriverManager* driver_manager,
+  InterruptManager* interrupt_manager)
 {
   for (int bus = 0; bus < 8; bus++) {
     for (int device = 0; device < 32; device++) {
@@ -63,7 +64,20 @@ PeripheralComponentInterconnectController::select_drivers(
           get_device_descriptor(bus, device, fn);
 
         if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) {
-          break;
+          continue;
+        }
+
+        for (int total_bar = 0; total_bar < 6; total_bar++) {
+          auto bar = get_base_address_register(bus, device, fn, total_bar);
+          if (bar.address &&
+              (bar.type == BaseAddressRegisterType::InputOutput)) {
+            dev.portBase = (u32)bar.address;
+          }
+
+          Driver* driver = get_driver(dev, interrupt_manager);
+          if (driver != 0) {
+            driver_manager->add(driver);
+          }
         }
 
         printf("PCI BUS ");
@@ -111,4 +125,70 @@ PeripheralComponentInterconnectController::get_device_descriptor(u16 bus,
   result.interrupt = read(bus, device, fn, 0x3c);
 
   return result;
+}
+
+BaseAddressRegister
+PeripheralComponentInterconnectController::get_base_address_register(u16 bus,
+                                                                     u16 device,
+                                                                     u16 fn,
+                                                                     u16 bar)
+{
+  BaseAddressRegister result;
+
+  u32 headertype = read(bus, device, fn, 0x0E) & 0x7F;
+  int max_BARs = 6 - (4 * headertype);
+  if (bar >= max_BARs) {
+    return result;
+  }
+
+  u32 bar_value = read(bus, device, fn, 0x10 + 4 * bar);
+  result.type = (bar_value & 0x1) ? BaseAddressRegisterType::InputOutput
+                                  : BaseAddressRegisterType::MemoryMapping;
+
+  u32 temp;
+
+  if (result.type == BaseAddressRegisterType::MemoryMapping) {
+    switch ((bar_value >> 1) & 0x3) {
+      case 0: // 32 Bit
+      case 1: // 20 Bit
+      case 2: // 64 Bit
+        break;
+    }
+  } else {
+    result.address = (u8*)(bar_value & ~0x3);
+    result.prefetchable = false;
+  }
+
+  return result;
+}
+
+Driver*
+PeripheralComponentInterconnectController::get_driver(
+  PeripheralComponentInterconnectDeviceDescriptor dev,
+  InterruptManager* interrupts)
+{
+  switch (dev.vendor_id) {
+    case 0x1022: // AMD
+      switch (dev.device_id) {
+        case 0x2000:
+          printf("AMD am79c973 ");
+          break;
+      }
+      break;
+
+    case 0x8086: // Intel
+      break;
+  }
+
+  switch (dev.class_id) {
+    case 0x03: // graphics
+      switch (dev.subclass_id) {
+        case 0x00: // VGA
+          printf("VGA ");
+          break;
+      }
+      break;
+  }
+
+  return 0;
 }
