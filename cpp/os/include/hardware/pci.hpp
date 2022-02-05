@@ -25,7 +25,7 @@ public:
   BaseAddressRegisterType type;
 };
 
-class PeripheralComponentInterconnectDeviceDescriptor
+class PCIDeviceDescriptor
 {
 public:
   u32 portBase;
@@ -45,18 +45,18 @@ public:
   u8 revision;
 
 public:
-  PeripheralComponentInterconnectDeviceDescriptor();
-  ~PeripheralComponentInterconnectDeviceDescriptor();
+  PCIDeviceDescriptor();
+  ~PCIDeviceDescriptor();
 };
 
-class PeripheralComponentInterconnectController
+class PCIController
 {
-  Port32Bit dataPort;
-  Port32Bit commandPort;
+  Port32Bit data_port;
+  Port32Bit command_port;
 
 public:
-  PeripheralComponentInterconnectController();
-  ~PeripheralComponentInterconnectController();
+  PCIController();
+  ~PCIController();
 
 public:
   u32 read(u16 bus, u16 device, u16 fn, u32 register_offset);
@@ -64,10 +64,9 @@ public:
   bool device_has_functions(u16 bus, u16 device);
   void select_drivers(DriverManager* driver_manager,
                       InterruptManager* interrupt_manager);
-  PeripheralComponentInterconnectDeviceDescriptor
-  get_device_descriptor(u16 bus, u16 device, u16 fn);
+  PCIDeviceDescriptor get_device_descriptor(u16 bus, u16 device, u16 fn);
 
-  Driver* get_driver(PeripheralComponentInterconnectDeviceDescriptor dev,
+  Driver* get_driver(PCIDeviceDescriptor dev,
                      InterruptManager* interrupt_manager);
 
   BaseAddressRegister get_base_address_register(u16 bus,

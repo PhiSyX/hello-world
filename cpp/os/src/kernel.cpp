@@ -171,7 +171,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   MouseDriver mouse(&interrupts, &mouse_handler);
   driver_manager.add(&mouse);
 
-  PeripheralComponentInterconnectController PCIController;
+  PCIController PCIController;
   PCIController.select_drivers(&driver_manager, &interrupts);
 
   driver_manager.enable_all();

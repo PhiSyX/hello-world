@@ -12,6 +12,6 @@
 
 ![docs/screenshot-03.png](docs/screenshot-03.png)
 
-## Interconnexion des composants périphériques (PCI)
+## Interconnexion des composants périphériques (PCI & BAR)
 
 ![docs/screenshot-04.png](docs/screenshot-04.png)

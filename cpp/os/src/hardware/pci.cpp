@@ -1,67 +1,54 @@
 #include "hardware/pci.hpp"
 
-PeripheralComponentInterconnectDeviceDescriptor::
-  PeripheralComponentInterconnectDeviceDescriptor()
+PCIDeviceDescriptor::PCIDeviceDescriptor() {}
+
+PCIDeviceDescriptor::~PCIDeviceDescriptor() {}
+
+PCIController::PCIController()
+  : data_port(0xCFC)
+  , command_port(0xCF8)
 {}
 
-PeripheralComponentInterconnectDeviceDescriptor::
-  ~PeripheralComponentInterconnectDeviceDescriptor()
-{}
-
-PeripheralComponentInterconnectController::
-  PeripheralComponentInterconnectController()
-  : dataPort(0xCFC)
-  , commandPort(0xCF8)
-{}
-
-PeripheralComponentInterconnectController::
-  ~PeripheralComponentInterconnectController()
-{}
+PCIController::~PCIController() {}
 
 u32
-PeripheralComponentInterconnectController::read(u16 bus,
-                                                u16 device,
-                                                u16 fn,
-                                                u32 register_offset)
+PCIController::read(u16 bus, u16 device, u16 fn, u32 register_offset)
 {
   u32 id = 0x1 << 31 | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11) |
            ((fn & 0x07) << 8) | (register_offset & 0xFC);
-  commandPort.write(id);
-  u32 result = dataPort.read();
+  command_port.write(id);
+  u32 result = data_port.read();
   return result >> (8 * (register_offset % 4));
 }
 
 void
-PeripheralComponentInterconnectController::write(u16 bus,
-                                                 u16 device,
-                                                 u16 fn,
-                                                 u32 register_offset,
-                                                 u32 value)
+PCIController::write(u16 bus,
+                     u16 device,
+                     u16 fn,
+                     u32 register_offset,
+                     u32 value)
 {
   u32 id = 0x1 << 31 | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11) |
            ((fn & 0x07) << 8) | (register_offset & 0xFC);
-  commandPort.write(id);
-  dataPort.write(value);
+  command_port.write(id);
+  data_port.write(value);
 }
 
 bool
-PeripheralComponentInterconnectController::device_has_functions(u16 bus,
-                                                                u16 device)
+PCIController::device_has_functions(u16 bus, u16 device)
 {
   return read(bus, device, 0, 0x0E) & (1 << 7);
 }
 
 void
-PeripheralComponentInterconnectController::select_drivers(
-  DriverManager* driver_manager,
-  InterruptManager* interrupt_manager)
+PCIController::select_drivers(DriverManager* driver_manager,
+                              InterruptManager* interrupt_manager)
 {
   for (int bus = 0; bus < 8; bus++) {
     for (int device = 0; device < 32; device++) {
       int total_fn = device_has_functions(bus, device) ? 8 : 1;
       for (int fn = 0; fn < total_fn; fn++) {
-        PeripheralComponentInterconnectDeviceDescriptor dev =
-          get_device_descriptor(bus, device, fn);
+        PCIDeviceDescriptor dev = get_device_descriptor(bus, device, fn);
 
         if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) {
           continue;
@@ -103,12 +90,10 @@ PeripheralComponentInterconnectController::select_drivers(
   }
 }
 
-PeripheralComponentInterconnectDeviceDescriptor
-PeripheralComponentInterconnectController::get_device_descriptor(u16 bus,
-                                                                 u16 device,
-                                                                 u16 fn)
+PCIDeviceDescriptor
+PCIController::get_device_descriptor(u16 bus, u16 device, u16 fn)
 {
-  PeripheralComponentInterconnectDeviceDescriptor result;
+  PCIDeviceDescriptor result;
 
   result.bus = bus;
   result.device = device;
@@ -128,10 +113,7 @@ PeripheralComponentInterconnectController::get_device_descriptor(u16 bus,
 }
 
 BaseAddressRegister
-PeripheralComponentInterconnectController::get_base_address_register(u16 bus,
-                                                                     u16 device,
-                                                                     u16 fn,
-                                                                     u16 bar)
+PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
 {
   BaseAddressRegister result;
 
@@ -163,9 +145,7 @@ PeripheralComponentInterconnectController::get_base_address_register(u16 bus,
 }
 
 Driver*
-PeripheralComponentInterconnectController::get_driver(
-  PeripheralComponentInterconnectDeviceDescriptor dev,
-  InterruptManager* interrupts)
+PCIController::get_driver(PCIDeviceDescriptor dev, InterruptManager* interrupts)
 {
   switch (dev.vendor_id) {
     case 0x1022: // AMD
