@@ -34,6 +34,7 @@ void
 DriverManager::enable_all()
 {
   for (int i = 0; i < total_drivers; i++) {
-    drivers[i]->activate();
+    auto driver = drivers[i];
+    driver->activate();
   }
 }

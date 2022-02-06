@@ -3,9 +3,13 @@
 #include "drivers/mouse.hpp"
 #include "drivers/vga.hpp"
 #include "gdt.hpp"
+#include "gui/desktop.hpp"
+#include "gui/window.hpp"
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
 #include "types.hpp"
+
+#define GRAPHICS_MODE
 
 /// Affiche des informations en console
 ///
@@ -162,14 +166,29 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   InterruptManager interrupts(0x20, &gdt);
   printf("Initialisation du materiel\n");
 
+#ifdef GRAPHICS_MODE
+  printf("Mode: Graphique\n");
+  Desktop desktop(320, 200, 0x00, 0x00, 0xA8);
+#else
+  printf("Mode: Normal\n");
+#endif
+
   DriverManager driver_manager;
 
+#ifdef GRAPHICS_MODE
+  KeyboardDriver keyboard(&interrupts, &desktop);
+#else
   PrintfKeyboardEventHandler keyboard_handler;
   KeyboardDriver keyboard(&interrupts, &keyboard_handler);
+#endif
   driver_manager.add(&keyboard);
 
+#ifdef GRAPHICS_MODE
+  MouseDriver mouse(&interrupts, &desktop);
+#else
   MouseToConsole mouse_handler;
   MouseDriver mouse(&interrupts, &mouse_handler);
+#endif
   driver_manager.add(&mouse);
 
   PCIController PCIController;
@@ -179,15 +198,19 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 
   driver_manager.enable_all();
 
+#ifdef GRAPHICS_MODE
+  vga.set_mode(320, 200, 8);
+  Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
+  desktop.add_child(&win1);
+  Window win2(&desktop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
+  desktop.add_child(&win2);
+#endif
+
   interrupts.activate();
 
-  vga.set_mode(320, 200, 8);
-  for (i32 y = 0; y < 200; y++) {
-    for (i32 x = 0; x < 320; x++) {
-      vga.put_pixel(x, y, 0x00, 0x00, 0xA8);
-    }
+  while (1) {
+#ifdef GRAPHICS_MODE
+    desktop.draw(&vga);
+#endif
   }
-
-  while (1)
-    ;
 }

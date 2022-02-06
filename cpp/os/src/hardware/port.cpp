@@ -1,8 +1,8 @@
 #include "hardware/port.hpp"
 
-Port::Port(u16 portnumber)
+Port::Port(u16 $portnumber)
 {
-  this->portnumber = portnumber;
+  portnumber = $portnumber;
 }
 
 Port::~Port() {}

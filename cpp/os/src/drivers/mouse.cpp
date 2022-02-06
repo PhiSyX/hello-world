@@ -22,12 +22,12 @@ MouseEventHandler::on_mousemove(i32 x, i32 y)
 {}
 
 MouseDriver::MouseDriver(InterruptManager* input_manager,
-                         MouseEventHandler* handler)
+                         MouseEventHandler* $handler)
   : InterruptHandler(input_manager, 0x2C)
   , dataport(0x60)
   , commandport(0x64)
 {
-  this->handler = handler;
+  handler = $handler;
 }
 
 MouseDriver::~MouseDriver() {}
@@ -74,7 +74,7 @@ MouseDriver::handle_interrupt(u32 esp)
   }
 
   if (buffer[1] != 0 || buffer[2] != 0) {
-    handler->on_mousemove(buffer[1], -buffer[2]);
+    handler->on_mousemove((i8)buffer[1], -((i8)buffer[2]));
   }
 
   for (u8 i = 0; i < 3; i++) {

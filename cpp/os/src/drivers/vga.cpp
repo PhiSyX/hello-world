@@ -158,8 +158,12 @@ VGA::get_frame_buffer_segment()
 }
 
 void
-VGA::put_pixel(u32 x, u32 y, u8 color_index)
+VGA::put_pixel(i32 x, i32 y, u8 color_index)
 {
+  if (x < 0 || 320 <= x || y < 0 || 200 <= y) {
+    return;
+  }
+
   u8* pixel_address = get_frame_buffer_segment() + 320 * y + x;
   *pixel_address = color_index;
 }
@@ -167,14 +171,36 @@ VGA::put_pixel(u32 x, u32 y, u8 color_index)
 u8
 VGA::get_color_index(u8 r, u8 g, u8 b)
 {
-  if (r == 0x00, g == 0x00, b == 0xA8) {
+  if (r == 0x00 && g == 0x00 && b == 0x00) { // black
+    return 0x00;
+  }
+  if (r == 0x00 && g == 0x00 && b == 0xA8) { // blue
     return 0x01;
+  }
+  if (r == 0x00 && g == 0xA8 && b == 0x00) { // green
+    return 0x02;
+  }
+  if (r == 0xA8 && g == 0x00 && b == 0x00) { // red
+    return 0x04;
+  }
+  if (r == 0xFF && g == 0xFF && b == 0xFF) { // white
+    return 0x3F;
   }
   return 0x00;
 }
 
 void
-VGA::put_pixel(u32 x, u32 y, u8 r, u8 g, u8 b)
+VGA::put_pixel(i32 x, i32 y, u8 r, u8 g, u8 b)
 {
   put_pixel(x, y, get_color_index(r, g, b));
+}
+
+void
+VGA::fill_rect(u32 $x, u32 $y, u32 width, u32 height, u8 r, u8 g, u8 b)
+{
+  for (i32 y = $y; y < $y + height; y++) {
+    for (i32 x = $x; x < $x + width; x++) {
+      put_pixel(x, y, r, g, b);
+    }
+  }
 }
