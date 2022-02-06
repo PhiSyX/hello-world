@@ -1,6 +1,7 @@
 #include "drivers/driver.hpp"
 #include "drivers/keyboard.hpp"
 #include "drivers/mouse.hpp"
+#include "drivers/vga.hpp"
 #include "gdt.hpp"
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
@@ -174,9 +175,18 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   PCIController PCIController;
   PCIController.select_drivers(&driver_manager, &interrupts);
 
+  VGA vga;
+
   driver_manager.enable_all();
 
   interrupts.activate();
+
+  vga.set_mode(320, 200, 8);
+  for (i32 y = 0; y < 200; y++) {
+    for (i32 x = 0; x < 320; x++) {
+      vga.put_pixel(x, y, 0x00, 0x00, 0xA8);
+    }
+  }
 
   while (1)
     ;
