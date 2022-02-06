@@ -21,7 +21,7 @@ GlobalDescriptorTable::DataSegmentSelector() const
 }
 
 u16
-GlobalDescriptorTable::CodeSegmentSelector() const
+GlobalDescriptorTable::get_code_segment_selector() const
 {
   return (u8*)&code_segment_selector - (u8*)this;
 }

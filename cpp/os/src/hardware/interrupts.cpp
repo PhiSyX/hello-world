@@ -48,7 +48,7 @@ InterruptManager::InterruptManager(u16 hw_interrupt_offset,
   , pic_slave_data_port(0xA1)
 {
   hardware_interrupt_offset = hw_interrupt_offset;
-  u32 code_segment = gdt->CodeSegmentSelector();
+  u32 code_segment = gdt->get_code_segment_selector();
 
   const u8 IDT_INTERRUPT_GATE = 0xE;
 
@@ -250,8 +250,9 @@ InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
   if (hardware_interrupt_offset <= interrupt_number &&
       interrupt_number < hardware_interrupt_offset + 16) {
     pic_master_command_port.write(0x20);
-    if (hardware_interrupt_offset + 8 <= interrupt_number)
+    if (hardware_interrupt_offset + 8 <= interrupt_number) {
       pic_slave_command_port.write(0x20);
+    }
   }
 
   return esp;

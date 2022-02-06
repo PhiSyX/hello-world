@@ -37,7 +37,7 @@ public:
   GlobalDescriptorTable();
   ~GlobalDescriptorTable();
 
-  u16 CodeSegmentSelector() const;
+  u16 get_code_segment_selector() const;
   u16 DataSegmentSelector() const;
 };
 

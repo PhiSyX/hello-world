@@ -28,13 +28,13 @@ KeyboardDriver::activate()
     dataport.read();
   }
 
-  commandport.write(0xae);
+  commandport.write(0xAE);
   commandport.write(0x20);
 
   u8 status = (dataport.read() | 1) & ~0x10;
   commandport.write(0x60);
   dataport.write(status);
-  dataport.write(0xf4);
+  dataport.write(0xF4);
 }
 
 u32
@@ -183,5 +183,6 @@ KeyboardDriver::handle_interrupt(u32 esp)
       }
     }
   }
+
   return esp;
 }
