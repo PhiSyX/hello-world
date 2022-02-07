@@ -11,6 +11,7 @@ objects = \
     obj/drivers/driver.o \
     obj/hardware/port.o \
     obj/hardware/interrupts_stub.o obj/hardware/interrupts.o \
+    obj/multitasking.o \
     obj/hardware/pci.o \
     obj/drivers/keyboard.o \
     obj/drivers/mouse.o \

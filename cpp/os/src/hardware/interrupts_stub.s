@@ -15,7 +15,8 @@ _ZN16InterruptManager20handle_exception\number\()Ev:
 .macro handle_interrupt_request number
 .global _ZN16InterruptManager28handle_interrupt_request\number\()Ev
 _ZN16InterruptManager28handle_interrupt_request\number\()Ev:
-    movb $\number, (interrupt_number)
+    movb $\number + IRQ_BASE, (interrupt_number)
+    pushl $0
     jmp int_bottom
 .endm
 
@@ -59,23 +60,43 @@ handle_interrupt_request 0x0F
 handle_interrupt_request 0x31
 
 int_bottom:
-    pusha
-    pushl %ds
-    pushl %es
-    pushl %fs
-    pushl %gs
+    # pusha
+    # pushl %ds
+    # pushl %es
+    # pushl %fs
+    # pushl %gs
+
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+
+    pushl %edx
+    pushl %ecx
+    pushl %ebx
+    pushl %eax
+
 
     pushl %esp
     push (interrupt_number)
     call _ZN16InterruptManager16handle_interruptEhj
-    add %esp, 6
+    # add %esp, 6
     mov %eax, %esp
 
-    popl %gs
-    popl %fs
-    popl %es
-    popl %ds
-    popa
+    popl %eax
+    popl %ebx
+    popl %ecx
+    popl %edx
+
+    popl %esi
+    popl %edi
+    popl %ebp
+    # pop %gs
+    # pop %fs
+    # pop %es
+    # pop %ds
+    # popa
+
+    add $4, %esp
 
 .global _ZN16InterruptManager16interrupt_ignoreEv
 _ZN16InterruptManager16interrupt_ignoreEv:

@@ -151,6 +151,21 @@ call_ctors()
   }
 }
 
+void
+taskA()
+{
+  while (1) {
+    printf("A");
+  }
+}
+void
+taskB()
+{
+  while (1) {
+    printf("B");
+  }
+}
+
 /// Fonction de démarrage
 ///
 /// multiboot_struct et multiboot_magic sont transmis par le bootloader.
@@ -163,7 +178,14 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("Demarrage du kernel!\n");
 
   GlobalDescriptorTable gdt;
-  InterruptManager interrupts(0x20, &gdt);
+  TaskManager task_manager;
+
+  Task task1(&gdt, taskA);
+  Task task2(&gdt, taskB);
+  task_manager.add(&task1);
+  task_manager.add(&task2);
+
+  InterruptManager interrupts(0x20, &gdt, &task_manager);
   printf("Initialisation du materiel\n");
 
 #ifdef GRAPHICS_MODE

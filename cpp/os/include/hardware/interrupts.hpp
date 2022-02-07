@@ -3,6 +3,7 @@
 
 #include "gdt.hpp"
 #include "hardware/port.hpp"
+#include "multitasking.hpp"
 #include "types.hpp"
 
 void
@@ -33,6 +34,7 @@ class InterruptManager
 protected:
   static InterruptManager* active_interrupt_manager;
   InterruptHandler* handlers[256];
+  TaskManager* task_manager;
 
   struct GateDescriptor
   {
@@ -110,7 +112,9 @@ protected:
   Port8BitSlow pic_slave_data_port;
 
 public:
-  InterruptManager(u16 hw_interrupt_offset, GlobalDescriptorTable* gdt);
+  InterruptManager(u16 hw_interrupt_offset,
+                   GlobalDescriptorTable* gdt,
+                   TaskManager* task_manager);
   ~InterruptManager();
 
 public:

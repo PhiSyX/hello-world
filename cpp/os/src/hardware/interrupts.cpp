@@ -41,12 +41,14 @@ InterruptManager::set_interrupt_descriptor_table_entry(u8 in,
 }
 
 InterruptManager::InterruptManager(u16 hw_interrupt_offset,
-                                   GlobalDescriptorTable* gdt)
+                                   GlobalDescriptorTable* gdt,
+                                   TaskManager* tm)
   : pic_master_command_port(0x20)
   , pic_master_data_port(0x21)
   , pic_slave_command_port(0xA0)
   , pic_slave_data_port(0xA1)
 {
+  task_manager = tm;
   hardware_interrupt_offset = hw_interrupt_offset;
   u32 code_segment = gdt->get_code_segment_selector();
 
@@ -245,6 +247,10 @@ InterruptManager::do_handle_interrupt(u8 interrupt_number, u32 esp)
   } else if (interrupt_number != hardware_interrupt_offset) {
     printf("UNHANDLED INTERRUPT 0x");
     printh(interrupt_number);
+  }
+
+  if (interrupt_number == hardware_interrupt_offset) {
+    esp = (u32)task_manager->schedule((CPUState*)esp);
   }
 
   if (hardware_interrupt_offset <= interrupt_number &&
