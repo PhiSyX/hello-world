@@ -28,7 +28,7 @@ public:
 class PCIDeviceDescriptor
 {
 public:
-  u32 portBase;
+  u32 port_base;
   u32 interrupt;
 
   u16 bus;
@@ -66,7 +66,7 @@ public:
                       InterruptManager* interrupt_manager);
   PCIDeviceDescriptor get_device_descriptor(u16 bus, u16 device, u16 fn);
 
-  Driver* get_driver(PCIDeviceDescriptor dev,
+  Driver* get_driver(PCIDeviceDescriptor* device,
                      InterruptManager* interrupt_manager);
 
   BaseAddressRegister get_base_address_register(u16 bus,

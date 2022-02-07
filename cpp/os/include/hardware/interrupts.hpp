@@ -53,8 +53,6 @@ protected:
     u32 base;
   } __attribute__((packed));
 
-  u16 hardware_interrupt_offset;
-
   static void set_interrupt_descriptor_table_entry(
     u8 interrupt_number,
     u16 code_segment_selector_offset,
@@ -110,6 +108,9 @@ protected:
   Port8BitSlow pic_master_data_port;
   Port8BitSlow pic_slave_command_port;
   Port8BitSlow pic_slave_data_port;
+
+public:
+  u16 hardware_interrupt_offset;
 
 public:
   InterruptManager(u16 hw_interrupt_offset,

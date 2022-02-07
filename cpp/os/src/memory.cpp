@@ -20,8 +20,9 @@ MemoryManager::MemoryManager(usize start, usize size)
 
 MemoryManager::~MemoryManager()
 {
-  if (active_memory_manager == this)
+  if (active_memory_manager == this) {
     active_memory_manager = 0;
+  }
 }
 
 void*

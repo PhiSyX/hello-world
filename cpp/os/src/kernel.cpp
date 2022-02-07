@@ -1,3 +1,4 @@
+#include "drivers/AMD/am79c973.hpp"
 #include "drivers/driver.hpp"
 #include "drivers/keyboard.hpp"
 #include "drivers/mouse.hpp"
@@ -75,13 +76,29 @@ printh(u8 key)
   printf(foo);
 }
 
+void
+printh16(u16 key)
+{
+  printh((key >> 8) & 0xFF);
+  printh(key & 0xFF);
+}
+
+void
+printh32(u32 key)
+{
+  printh((key >> 24) & 0xFF);
+  printh((key >> 16) & 0xFF);
+  printh((key >> 8) & 0xFF);
+  printh(key & 0xFF);
+}
+
 class PrintfKeyboardEventHandler : public KeyboardEventHandler
 {
 public:
-  void on_keydown(char c)
+  void on_keydown(char ch)
   {
     char* foo = " ";
-    foo[0] = c;
+    foo[0] = ch;
     printf(foo);
   }
 };
@@ -103,14 +120,14 @@ public:
                                (video_memory[80 * y + x] & 0x00FF);
   }
 
-  virtual void on_mousemove(int xoffset, int yoffset)
+  virtual void on_mousemove(i32 offset_x, i32 offset_y)
   {
     static u16* video_memory = (u16*)0xb8000;
     video_memory[80 * y + x] = (video_memory[80 * y + x] & 0x0F00) << 4 |
                                (video_memory[80 * y + x] & 0xF000) >> 4 |
                                (video_memory[80 * y + x] & 0x00FF);
 
-    x += xoffset;
+    x += offset_x;
     if (x >= 80) {
       x = 79;
     }
@@ -118,7 +135,7 @@ public:
       x = 0;
     }
 
-    y += yoffset;
+    y += offset_y;
     if (y >= 25) {
       y = 24;
     }
@@ -148,7 +165,7 @@ call_ctors()
   /// (start_ctors) dans le tableau de pointeurs vers les fonctions
   /// (.init_array).
   for (constructor* i = &start_ctors; i != &end_ctors; i++) {
-    (*i)(); // déférencée, la fonction est appelée
+    (*i)(); // déréférencée, la fonction est appelée
   }
 }
 
@@ -249,6 +266,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   Window win2(&desktop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
   desktop.add_child(&win2);
 #endif
+
+  amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
+  eth0->send((u8*)"Hello Network", 13);
 
   interrupts.activate();
 

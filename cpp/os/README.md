@@ -1,6 +1,6 @@
 # OS
 
-## Comment fonctionne un OS, expliqué à un débutant.
+## Comment fonctionne un OS, expliqué, pas à pas, vulgairement, à un débutant.
 
 ![docs/screenshot-01.png](docs/screenshot-01.png)
 

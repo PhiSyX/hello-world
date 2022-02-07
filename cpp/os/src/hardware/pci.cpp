@@ -1,4 +1,6 @@
 #include "hardware/pci.hpp"
+#include "drivers/AMD/am79c973.hpp"
+#include "memory.hpp"
 
 PCIDeviceDescriptor::PCIDeviceDescriptor() {}
 
@@ -58,13 +60,13 @@ PCIController::select_drivers(DriverManager* driver_manager,
           auto bar = get_base_address_register(bus, device, fn, total_bar);
           if (bar.address &&
               (bar.type == BaseAddressRegisterType::InputOutput)) {
-            dev.portBase = (u32)bar.address;
+            dev.port_base = (u32)bar.address;
           }
+        }
 
-          Driver* driver = get_driver(dev, interrupt_manager);
-          if (driver != 0) {
-            driver_manager->add(driver);
-          }
+        Driver* driver = get_driver(&dev, interrupt_manager);
+        if (driver != 0) {
+          driver_manager->add(driver);
         }
 
         printf("PCI BUS ");
@@ -145,15 +147,21 @@ PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
 }
 
 Driver*
-PCIController::get_driver(PCIDeviceDescriptor dev, InterruptManager* interrupts)
+PCIController::get_driver(PCIDeviceDescriptor* device,
+                          InterruptManager* interrupt_manager)
 {
   Driver* driver = 0;
-  switch (dev.vendor_id) {
+  switch (device->vendor_id) {
     case 0x1022: // AMD
-      switch (dev.device_id) {
+      switch (device->device_id) {
         case 0x2000:
+          driver = (amd_am79c973*)MemoryManager::active_memory_manager->malloc(
+            sizeof(amd_am79c973));
+          if (driver != 0) {
+            driver = new amd_am79c973(device, interrupt_manager);
+          }
           printf("AMD am79c973 ");
-          break;
+          return driver;
       }
       break;
 
@@ -161,9 +169,9 @@ PCIController::get_driver(PCIDeviceDescriptor dev, InterruptManager* interrupts)
       break;
   }
 
-  switch (dev.class_id) {
+  switch (device->class_id) {
     case 0x03: // graphics
-      switch (dev.subclass_id) {
+      switch (device->subclass_id) {
         case 0x00: // VGA
           printf("VGA ");
           break;

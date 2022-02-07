@@ -17,7 +17,7 @@ public:
 
 class DriverManager
 {
-private:
+public:
   Driver* drivers[265];
   i32 total_drivers;
 
