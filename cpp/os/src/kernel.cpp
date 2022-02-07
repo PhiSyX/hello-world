@@ -7,6 +7,7 @@
 #include "gui/window.hpp"
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
+#include "memory.hpp"
 #include "types.hpp"
 
 #define GRAPHICS_MODE
@@ -178,12 +179,33 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("Demarrage du kernel!\n");
 
   GlobalDescriptorTable gdt;
-  TaskManager task_manager;
 
+  u32* memupper = (u32*)(((usize)multiboot_struct) + 8);
+  usize heap = 10 * 1024 * 1024;
+
+  MemoryManager memory_manager(heap, (*memupper) * 1024 - heap - 10 * 1024);
+
+  printf("heap: 0x");
+  printh((heap >> 24) & 0xFF);
+  printh((heap >> 16) & 0xFF);
+  printh((heap >> 8) & 0xFF);
+  printh((heap)&0xFF);
+
+  void* allocated = memory_manager.malloc(1024);
+  printf("\nallocated: 0x");
+  printh(((usize)allocated >> 24) & 0xFF);
+  printh(((usize)allocated >> 16) & 0xFF);
+  printh(((usize)allocated >> 8) & 0xFF);
+  printh(((usize)allocated) & 0xFF);
+  printf("\n");
+
+  TaskManager task_manager;
+  /*
   Task task1(&gdt, taskA);
   Task task2(&gdt, taskB);
   task_manager.add(&task1);
   task_manager.add(&task2);
+  */
 
   InterruptManager interrupts(0x20, &gdt, &task_manager);
   printf("Initialisation du materiel\n");

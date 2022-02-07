@@ -147,6 +147,7 @@ PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
 Driver*
 PCIController::get_driver(PCIDeviceDescriptor dev, InterruptManager* interrupts)
 {
+  Driver* driver = 0;
   switch (dev.vendor_id) {
     case 0x1022: // AMD
       switch (dev.device_id) {
@@ -170,5 +171,5 @@ PCIController::get_driver(PCIDeviceDescriptor dev, InterruptManager* interrupts)
       break;
   }
 
-  return 0;
+  return driver;
 }
