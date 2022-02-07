@@ -115,7 +115,7 @@ void
 CompositeWidget::draw(VGA* gc)
 {
   Widget::draw(gc);
-  for (i32 i = total_children - 1; i >= 0; --i) {
+  for (usize i = total_children - 1; i >= 0; --i) {
     children[i]->draw(gc);
   }
 }
@@ -123,7 +123,7 @@ CompositeWidget::draw(VGA* gc)
 void
 CompositeWidget::on_mousedown(i32 $x, i32 $y, u8 button)
 {
-  for (i32 i = 0; i < total_children; ++i)
+  for (usize i = 0; i < total_children; ++i)
     if (children[i]->contains_coord($x - x, $y - y)) {
       children[i]->on_mousedown($x - x, $y - y, button);
       break;
@@ -133,7 +133,7 @@ CompositeWidget::on_mousedown(i32 $x, i32 $y, u8 button)
 void
 CompositeWidget::on_mouseup(i32 $x, i32 $y, u8 button)
 {
-  for (i32 i = 0; i < total_children; ++i)
+  for (usize i = 0; i < total_children; ++i)
     if (children[i]->contains_coord($x - x, $y - y)) {
       children[i]->on_mouseup($x - x, $y - y, button);
       break;
@@ -145,7 +145,7 @@ CompositeWidget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
 {
   i32 first_child = -1;
 
-  for (i32 i = 0; i < total_children; ++i) {
+  for (usize i = 0; i < total_children; ++i) {
     auto child = children[i];
 
     if (child->contains_coord(old_x - x, old_y - y)) {
@@ -155,7 +155,7 @@ CompositeWidget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
     }
   }
 
-  for (i32 i = 0; i < total_children; ++i) {
+  for (usize i = 0; i < total_children; ++i) {
     auto child = children[i];
 
     if (child->contains_coord(new_x - x, new_y - y)) {

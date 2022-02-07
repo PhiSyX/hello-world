@@ -40,7 +40,7 @@ public:
 class CompositeWidget : public Widget
 {
 private:
-  int total_children;
+  isize total_children;
   Widget* children[100];
   Widget* focussed_child;
 

@@ -198,8 +198,8 @@ VGA::put_pixel(i32 x, i32 y, u8 r, u8 g, u8 b)
 void
 VGA::fill_rect(u32 $x, u32 $y, u32 width, u32 height, u8 r, u8 g, u8 b)
 {
-  for (i32 y = $y; y < $y + height; y++) {
-    for (i32 x = $x; x < $x + width; x++) {
+  for (usize y = $y; y < $y + height; y++) {
+    for (usize x = $x; x < $x + width; x++) {
       put_pixel(x, y, r, g, b);
     }
   }

@@ -41,7 +41,7 @@ class TaskManager
 {
 private:
   Task* tasks[256];
-  i32 total_task;
+  usize total_task;
   i32 current_task;
 
 public:

@@ -46,17 +46,17 @@ void
 PCIController::select_drivers(DriverManager* driver_manager,
                               InterruptManager* interrupt_manager)
 {
-  for (int bus = 0; bus < 8; bus++) {
-    for (int device = 0; device < 32; device++) {
-      int total_fn = device_has_functions(bus, device) ? 8 : 1;
-      for (int fn = 0; fn < total_fn; fn++) {
+  for (u8 bus = 0; bus < 8; bus++) {
+    for (u8 device = 0; device < 32; device++) {
+      usize total_fn = device_has_functions(bus, device) ? 8 : 1;
+      for (u8 fn = 0; fn < total_fn; fn++) {
         PCIDeviceDescriptor dev = get_device_descriptor(bus, device, fn);
 
         if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) {
           continue;
         }
 
-        for (int total_bar = 0; total_bar < 6; total_bar++) {
+        for (u8 total_bar = 0; total_bar < 6; total_bar++) {
           auto bar = get_base_address_register(bus, device, fn, total_bar);
           if (bar.address &&
               (bar.type == BaseAddressRegisterType::InputOutput)) {
@@ -120,7 +120,7 @@ PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
   BaseAddressRegister result;
 
   u32 headertype = read(bus, device, fn, 0x0E) & 0x7F;
-  int max_BARs = 6 - (4 * headertype);
+  usize max_BARs = 6 - (4 * headertype);
   if (bar >= max_BARs) {
     return result;
   }

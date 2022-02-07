@@ -16,7 +16,7 @@ Desktop::draw(VGA* gc)
 {
   CompositeWidget::draw(gc);
 
-  for (i32 i = 0; i < 4; i++) {
+  for (u8 i = 0; i < 4; i++) {
     gc->put_pixel(mousex - i, mousey, 0xFF, 0xFF, 0xFF);
     gc->put_pixel(mousex + i, mousey, 0xFF, 0xFF, 0xFF);
     gc->put_pixel(mousex, mousey - i, 0xFF, 0xFF, 0xFF);

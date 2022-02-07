@@ -35,7 +35,7 @@ printf(char* str)
   static u8 x = 0;
   static u8 y = 0;
 
-  for (int i = 0; str[i] != '\0'; ++i) {
+  for (usize i = 0; str[i] != '\0'; ++i) {
     switch (str[i]) {
       case '\n':
         x = 0;
@@ -268,7 +268,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 #endif
 
   amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
-  eth0->send((u8*)"Hello Network", 13);
+  eth0->send((u8*)"Hello Network", (usize)13);
 
   interrupts.activate();
 

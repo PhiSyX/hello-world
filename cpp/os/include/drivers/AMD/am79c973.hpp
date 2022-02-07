@@ -64,10 +64,10 @@ public:
 
 public:
   void activate();
-  int reset();
+  i32 reset();
 
   u32 handle_interrupt(u32 esp);
-  void send(u8* buffer, i32 count);
+  void send(u8* buffer, usize count);
   void recv();
 };
 

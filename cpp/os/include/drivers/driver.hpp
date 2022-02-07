@@ -19,7 +19,7 @@ class DriverManager
 {
 public:
   Driver* drivers[265];
-  i32 total_drivers;
+  usize total_drivers;
 
 public:
   DriverManager();
