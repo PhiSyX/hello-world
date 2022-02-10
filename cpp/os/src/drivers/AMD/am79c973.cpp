@@ -169,6 +169,12 @@ amd_am79c973::send(u8* buffer, usize size)
     *dst = *src;
   }
 
+  printf("Sending: ");
+  for (i32 i = 0; i < size; i++) {
+    printh(buffer[i]);
+    printf(" ");
+  }
+
   send_buffer_descriptor[send_descriptor].avail = 0;
   send_buffer_descriptor[send_descriptor].flags2 = 0;
   send_buffer_descriptor[send_descriptor].flags =
@@ -200,13 +206,11 @@ amd_am79c973::recv()
         }
       }
 
-      /*
-      for(int i = 0; i < size; i++)
-      {
-          printh(buffer[i]);
-          printf(" ");
+      size = 64;
+      for (i32 i = 0; i < size; i++) {
+        printh(buffer[i]);
+        printf(" ");
       }
-      */
     }
 
     recv_buffer_descriptor[current_recv_buffer].flags2 = 0;
@@ -224,4 +228,16 @@ u64
 amd_am79c973::get_MAC_address()
 {
   return init_block.physical_address;
+}
+
+void
+amd_am79c973::set_IP_address(u32 ip)
+{
+  init_block.logical_address = ip;
+}
+
+u32
+amd_am79c973::get_IP_address()
+{
+  return init_block.logical_address;
 }

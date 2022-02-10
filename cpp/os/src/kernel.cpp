@@ -10,11 +10,10 @@
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
 #include "memory.hpp"
+#include "net/arp.hpp"
 #include "net/etherframe.hpp"
 #include "syscalls.hpp"
 #include "types.hpp"
-
-#define GRAPHICS_MODE
 
 /// Affiche des informations en console
 ///
@@ -302,12 +301,25 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
     ata1s.identify();
   */
 
-  amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
+  // IP 10.0.2.15
+  u8 ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
+  u32 ip_be = ((u32)ip4 << 24) | ((u32)ip3 << 16) | ((u32)ip2 << 8) | (u32)ip1;
 
+  // IP 10.0.2.2
+  u8 gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2;
+  u32 gip_be =
+    ((u32)gip4 << 24) | ((u32)gip3 << 16) | ((u32)gip2 << 8) | (u32)gip1;
+
+  amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
+  eth0->set_IP_address(ip_be);
   EtherFrameProvider etherframe(eth0);
-  etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
+  ARP arp(&etherframe);
+  // etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
 
   interrupts.activate();
+
+  printf("\n\n\n\n\n\n\n\n");
+  arp.resolve(gip_be);
 
   while (1) {
 #ifdef GRAPHICS_MODE

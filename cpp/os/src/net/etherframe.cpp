@@ -80,3 +80,15 @@ EtherFrameProvider::send(u64 dst_MAC_BE,
 
   backend->send(buffer2, size + sizeof(EtherFrameHeader));
 }
+
+u32
+EtherFrameProvider::get_IP_address()
+{
+  return backend->get_IP_address();
+}
+
+u64
+EtherFrameProvider::get_MAC_address()
+{
+  return backend->get_MAC_address();
+}

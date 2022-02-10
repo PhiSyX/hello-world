@@ -90,6 +90,8 @@ public:
 
   void set_handler(RawDataHandler* handler);
   u64 get_MAC_address();
+  void set_IP_address(u32);
+  u32 get_IP_address();
 };
 
 #endif
