@@ -89,9 +89,9 @@ public:
   void recv();
 
   void set_handler(RawDataHandler* handler);
-  u64 get_MAC_address();
+  const u64 get_MAC_address() const;
   void set_IP_address(u32);
-  u32 get_IP_address();
+  const u32 get_IP_address() const;
 };
 
 #endif

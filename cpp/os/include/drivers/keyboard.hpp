@@ -16,8 +16,8 @@ public:
   KeyboardEventHandler();
 
 public:
-  virtual void on_keydown(char);
-  virtual void on_keyup(char);
+  virtual void on_keydown(char) const;
+  virtual void on_keyup(char) const;
 };
 
 class KeyboardDriver

@@ -128,25 +128,31 @@ amd_am79c973::handle_interrupt(u32 esp)
   register_address_port.write(0);
   u32 temp = register_data_port.read();
 
-  if ((temp & 0x8000) == 0x8000)
+  if ((temp & 0x8000) == 0x8000) {
     printf("AMD am79c973 ERROR\n");
-  if ((temp & 0x2000) == 0x2000)
+  }
+  if ((temp & 0x2000) == 0x2000) {
     printf("AMD am79c973 COLLISION ERROR\n");
-  if ((temp & 0x1000) == 0x1000)
+  }
+  if ((temp & 0x1000) == 0x1000) {
     printf("AMD am79c973 MISSED FRAME\n");
-  if ((temp & 0x0800) == 0x0800)
+  }
+  if ((temp & 0x0800) == 0x0800) {
     printf("AMD am79c973 MEMORY ERROR\n");
-  if ((temp & 0x0400) == 0x0400)
+  }
+  if ((temp & 0x0400) == 0x0400) {
     recv();
-  if ((temp & 0x0200) == 0x0200)
+  }
+  if ((temp & 0x0200) == 0x0200) {
     printf("AMD am79c973 DATA SENT\n");
+  }
 
-  // acknoledge
   register_address_port.write(0);
   register_data_port.write(temp);
 
-  if ((temp & 0x0100) == 0x0100)
+  if ((temp & 0x0100) == 0x0100) {
     printf("AMD am79c973 INIT DONE\n");
+  }
 
   return esp;
 }
@@ -224,8 +230,8 @@ amd_am79c973::set_handler(RawDataHandler* $handler)
   handler = $handler;
 }
 
-u64
-amd_am79c973::get_MAC_address()
+const u64
+amd_am79c973::get_MAC_address() const
 {
   return init_block.physical_address;
 }
@@ -236,8 +242,8 @@ amd_am79c973::set_IP_address(u32 ip)
   init_block.logical_address = ip;
 }
 
-u32
-amd_am79c973::get_IP_address()
+const u32
+amd_am79c973::get_IP_address() const
 {
   return init_block.logical_address;
 }

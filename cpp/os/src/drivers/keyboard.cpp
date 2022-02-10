@@ -3,11 +3,11 @@
 KeyboardEventHandler::KeyboardEventHandler() {}
 
 void
-KeyboardEventHandler::on_keydown(char)
+KeyboardEventHandler::on_keydown(char) const
 {}
 
 void
-KeyboardEventHandler::on_keyup(char)
+KeyboardEventHandler::on_keyup(char) const
 {}
 
 KeyboardDriver::KeyboardDriver(InterruptManager* input_manager,

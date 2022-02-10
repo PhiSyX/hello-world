@@ -10,24 +10,24 @@ public:
   ~Driver();
 
 public:
-  virtual void activate();
-  virtual i32 reset();
-  virtual void deactivate();
+  virtual void activate() const;
+  virtual i32 reset() const;
+  virtual void deactivate() const;
 };
 
 class DriverManager
 {
 public:
-  Driver* drivers[265];
+  const Driver* drivers[265];
   usize total_drivers;
 
 public:
   DriverManager();
 
 public:
-  void add(Driver*);
+  void add(const Driver*);
 
-  void enable_all();
+  void enable_all() const;
 };
 
 #endif

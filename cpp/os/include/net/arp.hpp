@@ -35,7 +35,7 @@ public:
   bool on_etherframe_recv(u8* etherframe_payload, u32 size);
 
   void request_MAC_address(u32 IP_BE);
-  u64 get_MAC_from_cache(u32 IP_BE);
+  const u64 get_MAC_from_cache(u32 IP_BE) const;
   u64 resolve(u32 IP_BE);
 };
 

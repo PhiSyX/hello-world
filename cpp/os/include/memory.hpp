@@ -13,7 +13,6 @@ struct MemoryChunk
 
 class MemoryManager
 {
-
 protected:
   MemoryChunk* first;
 
@@ -24,8 +23,8 @@ public:
   ~MemoryManager();
 
 public:
-  void* malloc(usize size);
-  void free(void* ptr);
+  void* malloc(usize size) const;
+  void free(void* ptr) const;
 };
 
 void*

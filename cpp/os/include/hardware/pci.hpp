@@ -66,8 +66,8 @@ public:
                       InterruptManager* interrupt_manager);
   PCIDeviceDescriptor get_device_descriptor(u16 bus, u16 device, u16 fn);
 
-  Driver* get_driver(PCIDeviceDescriptor* device,
-                     InterruptManager* interrupt_manager);
+  const Driver* get_driver(PCIDeviceDescriptor* device,
+                           InterruptManager* interrupt_manager) const;
 
   BaseAddressRegister get_base_address_register(u16 bus,
                                                 u16 device,

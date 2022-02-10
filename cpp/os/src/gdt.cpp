@@ -15,7 +15,7 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 GlobalDescriptorTable::~GlobalDescriptorTable() {}
 
 u16
-GlobalDescriptorTable::DataSegmentSelector() const
+GlobalDescriptorTable::get_data_segment_selector() const
 {
   return (u8*)&data_segment_selector - (u8*)this;
 }

@@ -24,7 +24,7 @@ Widget::Widget(Widget* $parent,
 Widget::~Widget() {}
 
 void
-Widget::get_focus(Widget* widget)
+Widget::get_focus(Widget* widget) const
 {
   if (parent != 0) {
     parent->get_focus(widget);
@@ -32,7 +32,7 @@ Widget::get_focus(Widget* widget)
 }
 
 void
-Widget::model_to_screen(i32& $x, i32& $y)
+Widget::model_to_screen(i32& $x, i32& $y) const
 {
   if (parent != 0) {
     parent->model_to_screen($x, $y);
@@ -68,8 +68,8 @@ void
 Widget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
 {}
 
-bool
-Widget::contains_coord(i32 $x, i32 $y)
+const bool
+Widget::contains_coord(i32 $x, i32 $y) const
 {
   return x <= $x && $x < x + width && y <= $y && $y < y + height;
 }

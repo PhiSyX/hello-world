@@ -12,10 +12,10 @@ public:
   MouseEventHandler();
 
 public:
-  virtual void on_activate();
-  virtual void on_mousedown(u8 button);
-  virtual void on_mouseup(u8 button);
-  virtual void on_mousemove(i32 x, i32 y);
+  virtual void on_activate() const;
+  virtual void on_mousedown(u8 button) const;
+  virtual void on_mouseup(u8 button) const;
+  virtual void on_mousemove(i32 x, i32 y) const;
 };
 
 class MouseDriver

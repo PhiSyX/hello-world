@@ -29,7 +29,7 @@ public:
   VGA();
   ~VGA();
 
-  virtual bool supports_mode(u32 width, u32 height, u32 colordepth);
+  virtual const bool supports_mode(u32 width, u32 height, u32 colordepth) const;
   virtual bool set_mode(u32 width, u32 height, u32 colordepth);
   virtual void put_pixel(i32 x, i32 y, u8 r, u8 g, u8 b);
   virtual void put_pixel(i32 x, i32 y, u8 color_index);

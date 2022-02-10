@@ -6,19 +6,19 @@ printf(char*);
 MouseEventHandler::MouseEventHandler() {}
 
 void
-MouseEventHandler::on_activate()
+MouseEventHandler::on_activate() const
 {}
 
 void
-MouseEventHandler::on_mousedown(u8 button)
+MouseEventHandler::on_mousedown(u8 button) const
 {}
 
 void
-MouseEventHandler::on_mouseup(u8 button)
+MouseEventHandler::on_mouseup(u8 button) const
 {}
 
 void
-MouseEventHandler::on_mousemove(i32 x, i32 y)
+MouseEventHandler::on_mousemove(i32 x, i32 y) const
 {}
 
 MouseDriver::MouseDriver(InterruptManager* input_manager,

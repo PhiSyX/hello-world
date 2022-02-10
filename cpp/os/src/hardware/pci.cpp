@@ -64,7 +64,7 @@ PCIController::select_drivers(DriverManager* driver_manager,
           }
         }
 
-        Driver* driver = get_driver(&dev, interrupt_manager);
+        const Driver* driver = get_driver(&dev, interrupt_manager);
         if (driver != 0) {
           driver_manager->add(driver);
         }
@@ -146,9 +146,9 @@ PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
   return result;
 }
 
-Driver*
+const Driver*
 PCIController::get_driver(PCIDeviceDescriptor* device,
-                          InterruptManager* interrupt_manager)
+                          InterruptManager* interrupt_manager) const
 {
   Driver* driver = 0;
   switch (device->vendor_id) {

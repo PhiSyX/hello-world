@@ -14,8 +14,8 @@ EtherFrameHandler::~EtherFrameHandler()
   backend->handlers[ether_type_BE] = 0;
 }
 
-bool
-EtherFrameHandler::on_etherframe_recv(u8* etherframe_payload, u32 size)
+const bool
+EtherFrameHandler::on_etherframe_recv(u8* etherframe_payload, u32 size) const
 {
   return false;
 }
@@ -36,8 +36,8 @@ EtherFrameProvider::EtherFrameProvider(amd_am79c973* backend)
 
 EtherFrameProvider::~EtherFrameProvider() {}
 
-bool
-EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size)
+const bool
+EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size) const
 {
   EtherFrameHeader* frame = (EtherFrameHeader*)buffer;
   bool sendBack = false;
@@ -81,14 +81,14 @@ EtherFrameProvider::send(u64 dst_MAC_BE,
   backend->send(buffer2, size + sizeof(EtherFrameHeader));
 }
 
-u32
-EtherFrameProvider::get_IP_address()
+const u32
+EtherFrameProvider::get_IP_address() const
 {
   return backend->get_IP_address();
 }
 
-u64
-EtherFrameProvider::get_MAC_address()
+const u64
+EtherFrameProvider::get_MAC_address() const
 {
   return backend->get_MAC_address();
 }

@@ -6,8 +6,8 @@ SyscallHandler::SyscallHandler(InterruptManager* im, u8 in)
 
 SyscallHandler::~SyscallHandler() {}
 
-u32
-SyscallHandler::handle_interrupt(u32 esp)
+const u32
+SyscallHandler::handle_interrupt(u32 esp) const
 {
   CPUState* cpu = (CPUState*)esp;
 

@@ -26,7 +26,7 @@ public:
   ~EtherFrameHandler();
 
 public:
-  bool on_etherframe_recv(u8* etherframe_payload, u32 size);
+  const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
   void send(u64 dst_MAC_BE, u8* etherframe_payload, u32 size);
 };
 
@@ -42,11 +42,11 @@ public:
   ~EtherFrameProvider();
 
 public:
-  bool on_rawdata_recv(u8* buffer, u32 size);
+  const bool on_rawdata_recv(u8* buffer, u32 size) const;
   void send(u64 dst_MAC_BE, u16 ether_type_BE, u8* buffer, u32 size);
 
-  u64 get_MAC_address();
-  u32 get_IP_address();
+  const u64 get_MAC_address() const;
+  const u32 get_IP_address() const;
 };
 
 #endif

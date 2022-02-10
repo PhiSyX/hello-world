@@ -64,8 +64,8 @@ ARP::request_MAC_address(u32 IP_BE)
   send(arp.dst_MAC, (u8*)&arp, sizeof(ARPMessage));
 }
 
-u64
-ARP::get_MAC_from_cache(u32 IP_BE)
+const u64
+ARP::get_MAC_from_cache(u32 IP_BE) const
 {
   for (int i = 0; i < total_cache_entries; i++) {
     if (IP_cache[i] == IP_BE) {

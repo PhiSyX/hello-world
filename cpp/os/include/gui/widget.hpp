@@ -26,9 +26,9 @@ public:
   ~Widget();
 
 public:
-  virtual void get_focus(Widget* widget);
-  virtual void model_to_screen(i32& x, i32& y);
-  virtual bool contains_coord(i32 x, i32 y);
+  virtual void get_focus(Widget* widget) const;
+  virtual void model_to_screen(i32& x, i32& y) const;
+  virtual const bool contains_coord(i32 x, i32 y) const;
 
   virtual void draw(VGA* gc);
 

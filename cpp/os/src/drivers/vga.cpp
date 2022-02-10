@@ -54,8 +54,8 @@ VGA::write_registers(u8* registers)
   attribute_controller_index_port.write(0x20);
 }
 
-bool
-VGA::supports_mode(u32 width, u32 height, u32 colordepth)
+const bool
+VGA::supports_mode(u32 width, u32 height, u32 colordepth) const
 {
   return width == 320 && height == 200 && colordepth == 8;
 }

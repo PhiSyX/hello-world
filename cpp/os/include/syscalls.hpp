@@ -4,6 +4,9 @@
 #include "hardware/interrupts.hpp"
 #include "types.hpp"
 
+void
+printf(char*);
+
 class SyscallHandler : public InterruptHandler
 {
 public:
@@ -11,10 +14,7 @@ public:
   ~SyscallHandler();
 
 public:
-  virtual u32 handle_interrupt(u32 esp);
+  virtual const u32 handle_interrupt(u32 esp) const;
 };
-
-void
-printf(char*);
 
 #endif

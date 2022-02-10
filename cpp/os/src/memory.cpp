@@ -26,7 +26,7 @@ MemoryManager::~MemoryManager()
 }
 
 void*
-MemoryManager::malloc(usize size)
+MemoryManager::malloc(usize size) const
 {
   MemoryChunk* result = 0;
 
@@ -61,7 +61,7 @@ MemoryManager::malloc(usize size)
 }
 
 void
-MemoryManager::free(void* ptr)
+MemoryManager::free(void* ptr) const
 {
   MemoryChunk* chunk = (MemoryChunk*)((usize)ptr - sizeof(MemoryChunk));
 

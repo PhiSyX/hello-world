@@ -5,17 +5,17 @@ Driver::Driver() {}
 Driver::~Driver() {}
 
 void
-Driver::activate()
+Driver::activate() const
 {}
 
 int
-Driver::reset()
+Driver::reset() const
 {
   return 0;
 }
 
 void
-Driver::deactivate()
+Driver::deactivate() const
 {}
 
 DriverManager::DriverManager()
@@ -24,14 +24,14 @@ DriverManager::DriverManager()
 }
 
 void
-DriverManager::add(Driver* driver)
+DriverManager::add(const Driver* driver)
 {
   drivers[total_drivers] = driver;
   total_drivers++;
 }
 
 void
-DriverManager::enable_all()
+DriverManager::enable_all() const
 {
   for (usize i = 0; i < total_drivers; i++) {
     auto driver = drivers[i];
