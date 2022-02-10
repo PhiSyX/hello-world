@@ -10,6 +10,7 @@
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
 #include "memory.hpp"
+#include "net/etherframe.hpp"
 #include "syscalls.hpp"
 #include "types.hpp"
 
@@ -225,10 +226,13 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("\n");
 
   TaskManager task_manager;
+
+  /*
   Task task1(&gdt, taskA);
   Task task2(&gdt, taskB);
   task_manager.add(&task1);
   task_manager.add(&task2);
+  */
 
   InterruptManager interrupts(0x20, &gdt, &task_manager);
   SyscallHandler syscalls(&interrupts, 0x80);
@@ -299,7 +303,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   */
 
   amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
-  eth0->send((u8*)"Hello Network", (usize)13);
+
+  EtherFrameProvider etherframe(eth0);
+  etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
 
   interrupts.activate();
 

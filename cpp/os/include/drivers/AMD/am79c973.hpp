@@ -11,6 +11,22 @@ void
 printf(char*);
 void printh(u8);
 
+class amd_am79c973;
+
+class RawDataHandler
+{
+protected:
+  amd_am79c973* backend;
+
+public:
+  RawDataHandler(amd_am79c973* backend);
+  ~RawDataHandler();
+
+public:
+  bool on_rawdata_recv(u8* buffer, u32 size);
+  void send(u8* buffer, u32 size);
+};
+
 class amd_am79c973
   : public Driver
   , public InterruptHandler
@@ -57,6 +73,8 @@ class amd_am79c973
   u8 recv_buffers[2 * 1024 + 15][8];
   u8 current_recv_buffer;
 
+  RawDataHandler* handler;
+
 public:
   amd_am79c973(PCIDeviceDescriptor* device,
                InterruptManager* interrupt_manager);
@@ -69,6 +87,9 @@ public:
   u32 handle_interrupt(u32 esp);
   void send(u8* buffer, usize count);
   void recv();
+
+  void set_handler(RawDataHandler* handler);
+  u64 get_MAC_address();
 };
 
 #endif

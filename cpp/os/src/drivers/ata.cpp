@@ -1,6 +1,6 @@
 #include "drivers/ata.hpp"
 
-ATA::ATA(bool master, u16 port_base)
+ATA::ATA(bool $master, u16 port_base)
   : data_port(port_base)
   , error_port(port_base + 0x1)
   , sector_count_port(port_base + 0x2)
@@ -11,7 +11,7 @@ ATA::ATA(bool master, u16 port_base)
   , command_port(port_base + 0x7)
   , control_port(port_base + 0x206)
 {
-  this->master = master;
+  master = $master;
 }
 
 ATA::~ATA() {}

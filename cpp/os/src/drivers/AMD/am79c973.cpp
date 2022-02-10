@@ -1,5 +1,28 @@
 #include "drivers/AMD/am79c973.hpp"
 
+RawDataHandler::RawDataHandler(amd_am79c973* $backend)
+{
+  backend = $backend;
+  $backend->set_handler(this);
+}
+
+RawDataHandler::~RawDataHandler()
+{
+  backend->set_handler(0);
+}
+
+bool
+RawDataHandler::on_rawdata_recv(u8* buffer, u32 size)
+{
+  return false;
+}
+
+void
+RawDataHandler::send(u8* buffer, u32 size)
+{
+  backend->send(buffer, size);
+}
+
 amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
                            InterruptManager* interrupt_manager)
   : Driver()
@@ -14,6 +37,7 @@ amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
   , reset_port(device->port_base + 0x14)
   , bus_control_register_data_port(device->port_base + 0x16)
 {
+  handler = 0;
   current_send_buffer = 0;
   current_recv_buffer = 0;
 
@@ -88,7 +112,7 @@ amd_am79c973::activate()
   register_data_port.write(0x42);
 }
 
-i32
+int
 amd_am79c973::reset()
 {
   reset_port.read();
@@ -104,31 +128,25 @@ amd_am79c973::handle_interrupt(u32 esp)
   register_address_port.write(0);
   u32 temp = register_data_port.read();
 
-  if ((temp & 0x8000) == 0x8000) {
+  if ((temp & 0x8000) == 0x8000)
     printf("AMD am79c973 ERROR\n");
-  }
-  if ((temp & 0x2000) == 0x2000) {
+  if ((temp & 0x2000) == 0x2000)
     printf("AMD am79c973 COLLISION ERROR\n");
-  }
-  if ((temp & 0x1000) == 0x1000) {
+  if ((temp & 0x1000) == 0x1000)
     printf("AMD am79c973 MISSED FRAME\n");
-  }
-  if ((temp & 0x0800) == 0x0800) {
+  if ((temp & 0x0800) == 0x0800)
     printf("AMD am79c973 MEMORY ERROR\n");
-  }
-  if ((temp & 0x0400) == 0x0400) {
+  if ((temp & 0x0400) == 0x0400)
     recv();
-  }
-  if ((temp & 0x0200) == 0x0200) {
+  if ((temp & 0x0200) == 0x0200)
     printf("AMD am79c973 DATA SENT\n");
-  }
 
+  // acknoledge
   register_address_port.write(0);
   register_data_port.write(temp);
 
-  if ((temp & 0x0100) == 0x0100) {
+  if ((temp & 0x0100) == 0x0100)
     printf("AMD am79c973 INIT DONE\n");
-  }
 
   return esp;
 }
@@ -147,8 +165,9 @@ amd_am79c973::send(u8* buffer, usize size)
           *dst =
             (u8*)(send_buffer_descriptor[send_descriptor].address + size - 1);
        src >= buffer;
-       src--, dst--)
+       src--, dst--) {
     *dst = *src;
+  }
 
   send_buffer_descriptor[send_descriptor].avail = 0;
   send_buffer_descriptor[send_descriptor].flags2 = 0;
@@ -175,13 +194,34 @@ amd_am79c973::recv()
 
       u8* buffer = (u8*)(recv_buffer_descriptor[current_recv_buffer].address);
 
-      for (usize i = 0; i < size; i++) {
-        printh(buffer[i]);
-        printf(" ");
+      if (handler != 0) {
+        if (handler->on_rawdata_recv(buffer, size)) {
+          send(buffer, size);
+        }
       }
+
+      /*
+      for(int i = 0; i < size; i++)
+      {
+          printh(buffer[i]);
+          printf(" ");
+      }
+      */
     }
 
     recv_buffer_descriptor[current_recv_buffer].flags2 = 0;
     recv_buffer_descriptor[current_recv_buffer].flags = 0x8000F7FF;
   }
+}
+
+void
+amd_am79c973::set_handler(RawDataHandler* $handler)
+{
+  handler = $handler;
+}
+
+u64
+amd_am79c973::get_MAC_address()
+{
+  return init_block.physical_address;
 }

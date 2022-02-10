@@ -155,12 +155,14 @@ PCIController::get_driver(PCIDeviceDescriptor* device,
     case 0x1022: // AMD
       switch (device->device_id) {
         case 0x2000:
+          printf("AMD am79c973 ");
           driver = (amd_am79c973*)MemoryManager::active_memory_manager->malloc(
             sizeof(amd_am79c973));
           if (driver != 0) {
             driver = new amd_am79c973(device, interrupt_manager);
+          } else {
+            printf("instantiation échouée\n");
           }
-          printf("AMD am79c973 ");
           return driver;
       }
       break;
