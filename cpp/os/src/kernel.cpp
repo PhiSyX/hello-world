@@ -10,6 +10,7 @@
 #include "hardware/interrupts.hpp"
 #include "hardware/pci.hpp"
 #include "memory.hpp"
+#include "syscalls.hpp"
 #include "types.hpp"
 
 #define GRAPHICS_MODE
@@ -171,17 +172,23 @@ call_ctors()
 }
 
 void
+sysprintf(char* str)
+{
+  asm("int $0x80" : : "a"(4), "b"(str));
+}
+
+void
 taskA()
 {
   while (1) {
-    printf("A");
+    sysprintf("A");
   }
 }
 void
 taskB()
 {
   while (1) {
-    printf("B");
+    sysprintf("B");
   }
 }
 
@@ -218,14 +225,14 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("\n");
 
   TaskManager task_manager;
-  /*
   Task task1(&gdt, taskA);
   Task task2(&gdt, taskB);
   task_manager.add(&task1);
   task_manager.add(&task2);
-  */
 
   InterruptManager interrupts(0x20, &gdt, &task_manager);
+  SyscallHandler syscalls(&interrupts, 0x80);
+
   printf("Initialisation du materiel\n");
 
 #ifdef GRAPHICS_MODE
@@ -256,7 +263,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   PCIController PCIController;
   PCIController.select_drivers(&driver_manager, &interrupts);
 
+#ifdef GRAPHICS_MODE
   VGA vga;
+#endif
 
   driver_manager.enable_all();
 
@@ -268,24 +277,26 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   desktop.add_child(&win2);
 #endif
 
-  printf("\nS-ATA primary master: ");
-  ATA ata0m(true, 0x1F0);
-  ata0m.identify();
+  /*
+    printf("\nS-ATA primary master: ");
+    ATA ata0m(true, 0x1F0);
+    ata0m.identify();
 
-  printf("\nS-ATA primary slave: ");
-  ATA ata0s(false, 0x1F0);
-  ata0s.identify();
-  ata0s.write28(0, (u8*)"S-ATA Primary Slave", 19);
-  ata0s.flush();
-  ata0s.read28(0);
+    printf("\nS-ATA primary slave: ");
+    ATA ata0s(false, 0x1F0);
+    ata0s.identify();
+    ata0s.write28(0, (u8*)"S-ATA Primary Slave", 19);
+    ata0s.flush();
+    ata0s.read28(0, 25);
 
-  printf("\nS-ATA secondary master: ");
-  ATA ata1m(true, 0x170);
-  ata1m.identify();
+    printf("\nS-ATA secondary master: ");
+    ATA ata1m(true, 0x170);
+    ata1m.identify();
 
-  printf("\nS-ATA secondary slave: ");
-  ATA ata1s(false, 0x170);
-  ata1s.identify();
+    printf("\nS-ATA secondary slave: ");
+    ATA ata1s(false, 0x170);
+    ata1s.identify();
+  */
 
   amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
   eth0->send((u8*)"Hello Network", (usize)13);

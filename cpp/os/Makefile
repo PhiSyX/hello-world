@@ -12,6 +12,7 @@ objects = \
     obj/drivers/driver.o \
     obj/hardware/port.o \
     obj/hardware/interrupts_stub.o obj/hardware/interrupts.o \
+    obj/syscalls.o \
     obj/multitasking.o \
     obj/drivers/AMD/am79c973.o \
     obj/hardware/pci.o \

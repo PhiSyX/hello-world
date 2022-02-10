@@ -58,6 +58,7 @@ handle_interrupt_request 0x0D
 handle_interrupt_request 0x0E
 handle_interrupt_request 0x0F
 handle_interrupt_request 0x31
+handle_interrupt_request 0x80
 
 int_bottom:
     # pusha

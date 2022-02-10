@@ -79,6 +79,7 @@ protected:
   static void handle_interrupt_request0x0E();
   static void handle_interrupt_request0x0F();
   static void handle_interrupt_request0x31();
+  static void handle_interrupt_request0x80();
 
   static void handle_exception0x00();
   static void handle_exception0x01();

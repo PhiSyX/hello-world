@@ -184,6 +184,8 @@ InterruptManager::InterruptManager(u16 hw_interrupt_offset,
                                        &handle_interrupt_request0x0F,
                                        0,
                                        IDT_INTERRUPT_GATE);
+  set_interrupt_descriptor_table_entry(
+    0x80, code_segment, &handle_interrupt_request0x80, 0, IDT_INTERRUPT_GATE);
 
   pic_master_command_port.write(0x11);
   pic_slave_command_port.write(0x11);
