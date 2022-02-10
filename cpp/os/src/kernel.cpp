@@ -1,4 +1,5 @@
 #include "drivers/AMD/am79c973.hpp"
+#include "drivers/ata.hpp"
 #include "drivers/driver.hpp"
 #include "drivers/keyboard.hpp"
 #include "drivers/mouse.hpp"
@@ -266,6 +267,25 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   Window win2(&desktop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
   desktop.add_child(&win2);
 #endif
+
+  printf("\nS-ATA primary master: ");
+  ATA ata0m(true, 0x1F0);
+  ata0m.identify();
+
+  printf("\nS-ATA primary slave: ");
+  ATA ata0s(false, 0x1F0);
+  ata0s.identify();
+  ata0s.write28(0, (u8*)"S-ATA Primary Slave", 19);
+  ata0s.flush();
+  ata0s.read28(0);
+
+  printf("\nS-ATA secondary master: ");
+  ATA ata1m(true, 0x170);
+  ata1m.identify();
+
+  printf("\nS-ATA secondary slave: ");
+  ATA ata1s(false, 0x170);
+  ata1s.identify();
 
   amd_am79c973* eth0 = (amd_am79c973*)(driver_manager.drivers[2]);
   eth0->send((u8*)"Hello Network", (usize)13);

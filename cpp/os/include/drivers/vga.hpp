@@ -5,6 +5,7 @@
 #include "hardware/port.hpp"
 #include "types.hpp"
 
+// Video Graphics Array
 class VGA
 {
 protected:
