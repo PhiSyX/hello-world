@@ -1,5 +1,5 @@
-#ifndef __GDT_H__
-#define __GDT_H__
+#ifndef __GDT_HPP__
+#define __GDT_HPP__
 
 #include "types.hpp"
 
