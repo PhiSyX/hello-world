@@ -11,7 +11,9 @@ EtherFrameHandler::EtherFrameHandler(EtherFrameProvider* $backend,
 
 EtherFrameHandler::~EtherFrameHandler()
 {
-  backend->handlers[ether_type_BE] = 0;
+  if (backend->handlers[ether_type_BE] == this) {
+    backend->handlers[ether_type_BE] = 0;
+  }
 }
 
 const bool
@@ -39,23 +41,27 @@ EtherFrameProvider::~EtherFrameProvider() {}
 const bool
 EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size) const
 {
+  if (size < sizeof(EtherFrameHeader)) {
+    return false;
+  }
+
   EtherFrameHeader* frame = (EtherFrameHeader*)buffer;
-  bool sendBack = false;
+  bool send_back = false;
 
   if (frame->dst_MAC_BE == 0xFFFFFFFFFFFF ||
       frame->dst_MAC_BE == backend->get_MAC_address()) {
     if (handlers[frame->ether_type_BE] != 0) {
-      sendBack = handlers[frame->ether_type_BE]->on_etherframe_recv(
+      send_back = handlers[frame->ether_type_BE]->on_etherframe_recv(
         buffer + sizeof(EtherFrameHeader), size - sizeof(EtherFrameHeader));
     }
   }
 
-  if (sendBack) {
+  if (send_back) {
     frame->dst_MAC_BE = frame->src_MAC_BE;
     frame->src_MAC_BE = backend->get_MAC_address();
   }
 
-  return sendBack;
+  return send_back;
 }
 
 void
@@ -79,6 +85,8 @@ EtherFrameProvider::send(u64 dst_MAC_BE,
   }
 
   backend->send(buffer2, size + sizeof(EtherFrameHeader));
+
+  MemoryManager::active_memory_manager->free(buffer2);
 }
 
 const u32

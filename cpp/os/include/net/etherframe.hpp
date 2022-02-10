@@ -26,7 +26,7 @@ public:
   ~EtherFrameHandler();
 
 public:
-  const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
+  virtual const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
   void send(u64 dst_MAC_BE, u8* etherframe_payload, u32 size);
 };
 

@@ -23,7 +23,7 @@ public:
   ~RawDataHandler();
 
 public:
-  bool on_rawdata_recv(u8* buffer, u32 size);
+  virtual bool on_rawdata_recv(u8* buffer, u32 size);
   void send(u8* buffer, u32 size);
 };
 
