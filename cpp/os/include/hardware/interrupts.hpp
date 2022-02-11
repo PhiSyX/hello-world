@@ -20,11 +20,12 @@ protected:
   u8 interrupt_number;
   InterruptManager* interrupt_manager;
 
-  InterruptHandler(InterruptManager* interrupt_manager, u8 interrupt_number);
+  InterruptHandler(InterruptManager* interrupt_manager,
+                   const u8 interrupt_number);
   ~InterruptHandler();
 
 public:
-  virtual u32 handle_interrupt(u32 esp);
+  virtual const u32 handle_interrupt(const u32 esp);
 };
 
 class InterruptManager

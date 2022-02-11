@@ -55,13 +55,15 @@ VGA::write_registers(u8* registers)
 }
 
 const bool
-VGA::supports_mode(u32 width, u32 height, u32 colordepth) const
+VGA::supports_mode(const u32 width,
+                   const u32 height,
+                   const u32 colordepth) const
 {
   return width == 320 && height == 200 && colordepth == 8;
 }
 
 bool
-VGA::set_mode(u32 width, u32 height, u32 colordepth)
+VGA::set_mode(const u32 width, const u32 height, const u32 colordepth)
 {
   if (!supports_mode(width, height, colordepth)) {
     return false;
@@ -158,7 +160,7 @@ VGA::get_frame_buffer_segment()
 }
 
 void
-VGA::put_pixel(i32 x, i32 y, u8 color_index)
+VGA::put_pixel(const i32 x, const i32 y, const u8 color_index)
 {
   if (x < 0 || 320 <= x || y < 0 || 200 <= y) {
     return;
@@ -168,8 +170,8 @@ VGA::put_pixel(i32 x, i32 y, u8 color_index)
   *pixel_address = color_index;
 }
 
-u8
-VGA::get_color_index(u8 r, u8 g, u8 b)
+const u8
+VGA::get_color_index(const u8 r, const u8 g, const u8 b) const
 {
   if (r == 0x00 && g == 0x00 && b == 0x00) { // black
     return 0x00;
@@ -190,13 +192,19 @@ VGA::get_color_index(u8 r, u8 g, u8 b)
 }
 
 void
-VGA::put_pixel(i32 x, i32 y, u8 r, u8 g, u8 b)
+VGA::put_pixel(const i32 x, const i32 y, const u8 r, const u8 g, const u8 b)
 {
   put_pixel(x, y, get_color_index(r, g, b));
 }
 
 void
-VGA::fill_rect(u32 $x, u32 $y, u32 width, u32 height, u8 r, u8 g, u8 b)
+VGA::fill_rect(const u32 $x,
+               const u32 $y,
+               const u32 width,
+               const u32 height,
+               const u8 r,
+               const u8 g,
+               const u8 b)
 {
   for (usize y = $y; y < $y + height; y++) {
     for (usize x = $x; x < $x + width; x++) {

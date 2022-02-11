@@ -26,14 +26,17 @@ protected:
   Port8Bit control_port;
 
 public:
-  ATA(bool master, u16 port_base);
+  ATA(const bool master, const u16 port_base);
   ~ATA();
 
 public:
-  void identify();
-  void read28(u32 sector_num, i32 count = 512);
-  void write28(u32 sector_num, u8* data, u32 count);
-  void flush();
+  /* contains static */ void identify();
+  /* contains static */ void read_28(const u32 sector_num,
+                                     const i32 count = 512);
+  /* contains static */ void write_28(const u32 sector_num,
+                                      const u8* data,
+                                      const u32 count);
+  /* contains static */ void flush();
 };
 
 #endif

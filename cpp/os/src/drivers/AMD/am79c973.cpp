@@ -23,7 +23,7 @@ RawDataHandler::send(u8* buffer, u32 size)
   backend->send(buffer, size);
 }
 
-amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
+amd_am79c973::amd_am79c973(const PCIDeviceDescriptor* device,
                            InterruptManager* interrupt_manager)
   : Driver()
   , InterruptHandler(interrupt_manager,
@@ -112,7 +112,7 @@ amd_am79c973::activate()
   register_data_port.write(0x42);
 }
 
-int
+const int
 amd_am79c973::reset()
 {
   reset_port.read();
@@ -120,8 +120,8 @@ amd_am79c973::reset()
   return 10;
 }
 
-u32
-amd_am79c973::handle_interrupt(u32 esp)
+const u32
+amd_am79c973::handle_interrupt(const u32 esp)
 {
   register_address_port.write(0);
   u32 temp = register_data_port.read();
@@ -234,7 +234,7 @@ amd_am79c973::get_mac_address() const
 }
 
 void
-amd_am79c973::set_ip_address(u32 ip)
+amd_am79c973::set_ip_address(const u32 ip)
 {
   init_block.logical_address = ip;
 }

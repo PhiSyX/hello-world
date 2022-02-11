@@ -10,7 +10,7 @@ ARP::ARP(EtherFrameProvider* backend)
 ARP::~ARP() {}
 
 bool
-ARP::on_etherframe_recv(u8* etherframe_payload, u32 size)
+ARP::on_etherframe_recv(const u8* etherframe_payload, const u32 size)
 {
   if (size < sizeof(ARPMessage)) {
     return false;
@@ -47,7 +47,7 @@ ARP::on_etherframe_recv(u8* etherframe_payload, u32 size)
 }
 
 void
-ARP::request_mac_address(u32 IP_BE)
+ARP::request_mac_address(const u32 ip_be)
 {
   ARPMessage arp;
   arp.hardware_type = 0x0100;    // ethernet
@@ -59,16 +59,16 @@ ARP::request_mac_address(u32 IP_BE)
   arp.src_mac = backend->get_mac_address();
   arp.src_ip = backend->get_ip_address();
   arp.dst_mac = 0xFFFFFFFFFFFF;
-  arp.dst_ip = IP_BE;
+  arp.dst_ip = ip_be;
 
   send(arp.dst_mac, (u8*)&arp, sizeof(ARPMessage));
 }
 
 const u64
-ARP::get_mac_from_cache(u32 IP_BE) const
+ARP::get_mac_from_cache(const u32 ip_be) const
 {
   for (int i = 0; i < total_cache_entries; i++) {
-    if (ip_cache[i] == IP_BE) {
+    if (ip_cache[i] == ip_be) {
       return mac_cache[i];
     }
   }
@@ -76,22 +76,22 @@ ARP::get_mac_from_cache(u32 IP_BE) const
 }
 
 u64
-ARP::resolve(u32 IP_BE)
+ARP::resolve(const u32 ip_be)
 {
-  u64 result = get_mac_from_cache(IP_BE);
+  u64 result = get_mac_from_cache(ip_be);
   if (result == 0xFFFFFFFFFFFF) {
-    request_mac_address(IP_BE);
+    request_mac_address(ip_be);
   }
 
   while (result == 0xFFFFFFFFFFFF) {
-    result = get_mac_from_cache(IP_BE);
+    result = get_mac_from_cache(ip_be);
   }
 
   return result;
 }
 
 void
-ARP::broadcast_mac_address(u32 IP_BE)
+ARP::broadcast_mac_address(const u32 ip_be)
 {
   ARPMessage arp;
 
@@ -103,8 +103,8 @@ ARP::broadcast_mac_address(u32 IP_BE)
 
   arp.src_mac = backend->get_mac_address();
   arp.src_ip = backend->get_ip_address();
-  arp.dst_mac = resolve(IP_BE);
-  arp.dst_ip = IP_BE;
+  arp.dst_mac = resolve(ip_be);
+  arp.dst_ip = ip_be;
 
   send(arp.dst_mac, (u8*)&arp, sizeof(ARPMessage));
 }

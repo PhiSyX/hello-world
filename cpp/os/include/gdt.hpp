@@ -20,10 +20,10 @@ public:
     u8 base_vhi;
 
   public:
-    SegmentDescriptor(u32 base, u32 limit, u8 type);
+    SegmentDescriptor(const u32 base, u32 limit, const u8 type);
 
-    u32 base() const;
-    u32 limit() const;
+    const u32 base() const;
+    const u32 limit() const;
   } __attribute__((packed)); // L'attribut 'packed' indique à GCC de ne pas
                              // modifier l'alignement de la structure et de ne
                              // pas effectuer d'optimisations.
@@ -37,8 +37,9 @@ public:
   GlobalDescriptorTable();
   ~GlobalDescriptorTable();
 
-  u16 get_code_segment_selector() const;
-  u16 get_data_segment_selector() const;
+public:
+  const u16 get_code_segment_selector() const;
+  const u16 get_data_segment_selector() const;
 };
 
 #endif

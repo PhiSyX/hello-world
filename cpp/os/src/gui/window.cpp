@@ -1,6 +1,13 @@
 #include "gui/window.hpp"
 
-Window::Window(Widget* parent, i32 x, i32 y, i32 w, i32 h, u8 r, u8 g, u8 b)
+Window::Window(const Widget* parent,
+               const i32 x,
+               const i32 y,
+               const i32 w,
+               const i32 h,
+               const u8 r,
+               const u8 g,
+               const u8 b)
   : CompositeWidget(parent, x, y, w, h, r, g, b)
 {
   dragging = false;

@@ -6,7 +6,9 @@ UDPHandler::UDPHandler() {}
 UDPHandler::~UDPHandler() {}
 
 void
-UDPHandler::handle_udp_message(UDPSocket* socket, u8* data, u16 size)
+UDPHandler::handle_udp_message(UDPSocket* socket,
+                               const u8* data,
+                               const u16 size)
 {}
 
 UDPSocket::UDPSocket(UDPProvider* $backend)
@@ -19,7 +21,7 @@ UDPSocket::UDPSocket(UDPProvider* $backend)
 UDPSocket::~UDPSocket() {}
 
 void
-UDPSocket::handle_udp_message(u8* data, u16 size)
+UDPSocket::handle_udp_message(const u8* data, const u16 size)
 {
   if (handler != 0) {
     handler->handle_udp_message(this, data, size);
@@ -27,7 +29,7 @@ UDPSocket::handle_udp_message(u8* data, u16 size)
 }
 
 void
-UDPSocket::send(u8* data, u16 size)
+UDPSocket::send(const u8* data, const u16 size)
 {
   backend->send(this, data, size);
 }
@@ -51,10 +53,10 @@ UDPProvider::UDPProvider(IPProvider* backend)
 UDPProvider::~UDPProvider() {}
 
 const bool
-UDPProvider::on_ip_recv(u32 src_ip_be,
-                        u32 dst_ip_be,
-                        u8* ip_payload,
-                        u32 size) const
+UDPProvider::on_ip_recv(const u32 src_ip_be,
+                        const u32 dst_ip_be,
+                        const u8* ip_payload,
+                        const u32 size) const
 {
   if (size < sizeof(UDPHeader)) {
     return false;
@@ -89,7 +91,7 @@ UDPProvider::on_ip_recv(u32 src_ip_be,
 }
 
 UDPSocket*
-UDPProvider::connect(u32 ip, u16 port)
+UDPProvider::connect(const u32 ip, const u16 port)
 {
   UDPSocket* socket =
     (UDPSocket*)MemoryManager::active_memory_manager->malloc(sizeof(UDPSocket));
@@ -114,7 +116,7 @@ UDPProvider::connect(u32 ip, u16 port)
 }
 
 UDPSocket*
-UDPProvider::listen(u16 port)
+UDPProvider::listen(const u16 port)
 {
   UDPSocket* socket =
     (UDPSocket*)MemoryManager::active_memory_manager->malloc(sizeof(UDPSocket));
@@ -148,7 +150,7 @@ UDPProvider::disconnect(UDPSocket* socket)
 }
 
 void
-UDPProvider::send(UDPSocket* socket, u8* data, u16 size)
+UDPProvider::send(const UDPSocket* socket, const u8* data, const u16 size)
 {
   u16 total_length = size + sizeof(UDPHeader);
   u8* buffer = (u8*)MemoryManager::active_memory_manager->malloc(total_length);

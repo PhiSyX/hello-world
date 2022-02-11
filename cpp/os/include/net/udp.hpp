@@ -24,7 +24,9 @@ public:
   ~UDPHandler();
 
 public:
-  virtual void handle_udp_message(UDPSocket* socket, u8* data, u16 size);
+  virtual void handle_udp_message(UDPSocket* socket,
+                                  const u8* data,
+                                  const u16 size);
 };
 
 class UDPSocket
@@ -45,8 +47,8 @@ public:
   ~UDPSocket();
 
 public:
-  virtual void handle_udp_message(u8* data, u16 size);
-  virtual void send(u8* data, u16 size);
+  virtual void handle_udp_message(const u8* data, const u16 size);
+  virtual void send(const u8* data, const u16 size);
   virtual void disconnect();
 };
 
@@ -61,15 +63,15 @@ public:
   UDPProvider(IPProvider* backend);
   ~UDPProvider();
 
-  virtual const bool on_ip_recv(u32 src_ip_be,
-                                u32 dst_ip_be,
-                                u8* ip_payload,
-                                u32 size) const;
+  virtual const bool on_ip_recv(const u32 src_ip_be,
+                                const u32 dst_ip_be,
+                                const u8* ip_payload,
+                                const u32 size) const;
 
-  virtual UDPSocket* connect(u32 ip, u16 port);
-  virtual UDPSocket* listen(u16 port);
+  virtual UDPSocket* connect(const u32 ip, const u16 port);
+  virtual UDPSocket* listen(const u16 port);
   virtual void disconnect(UDPSocket* socket);
-  virtual void send(UDPSocket* socket, u8* data, u16 size);
+  virtual void send(const UDPSocket* socket, const u8* data, const u16 size);
 
   virtual void bind(UDPSocket* socket, UDPHandler* handler);
 };

@@ -54,8 +54,8 @@ MouseDriver::activate()
   data_port.read();
 }
 
-u32
-MouseDriver::handle_interrupt(u32 esp)
+const u32
+MouseDriver::handle_interrupt(const u32 esp)
 {
   u8 status = command_port.read();
   if (!(status & 0x20)) {

@@ -1,7 +1,6 @@
-
 #include "gui/desktop.hpp"
 
-Desktop::Desktop(i32 w, i32 h, u8 r, u8 g, u8 b)
+Desktop::Desktop(const i32 w, const i32 h, const u8 r, const u8 g, const u8 b)
   : CompositeWidget(0, 0, 0, w, h, r, g, b)
   , MouseEventHandler()
 {
@@ -25,19 +24,19 @@ Desktop::draw(VGA* gc)
 }
 
 void
-Desktop::on_mousedown(u8 button)
+Desktop::on_mousedown(const u8 button)
 {
   CompositeWidget::on_mousedown(mousex, mousey, button);
 }
 
 void
-Desktop::on_mouseup(u8 button)
+Desktop::on_mouseup(const u8 button)
 {
   CompositeWidget::on_mouseup(mousex, mousey, button);
 }
 
 void
-Desktop::on_mousemove(i32 x, i32 y)
+Desktop::on_mousemove( i32 x, i32 y)
 {
   x /= 4;
   y /= 4;

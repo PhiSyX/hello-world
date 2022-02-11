@@ -37,10 +37,10 @@ KeyboardDriver::activate()
   data_port.write(0xF4);
 }
 
-u32
-KeyboardDriver::handle_interrupt(u32 esp)
+const u32
+KeyboardDriver::handle_interrupt(const u32 esp)
 {
-  u8 key = data_port.read();
+  /* static */ u8 key = data_port.read();
 
   if (handler == 0) {
     return esp;

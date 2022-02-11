@@ -7,7 +7,10 @@ ICMP::ICMP(IPProvider* backend)
 ICMP::~ICMP() {}
 
 const bool
-ICMP::on_ip_recv(u32 src_IP_BE, u32 dst_IP_BE, u8* ip_payload, u32 size) const
+ICMP::on_ip_recv(const u32 src_ip_be,
+                 const u32 dst_ip_be,
+                 const u8* ip_payload,
+                 const u32 size) const
 {
   if (size < sizeof(ICMPMessage)) {
     return false;
@@ -18,13 +21,13 @@ ICMP::on_ip_recv(u32 src_IP_BE, u32 dst_IP_BE, u8* ip_payload, u32 size) const
   switch (msg->type) {
     case 0:
       printf("ping response from ");
-      printh(src_IP_BE & 0xFF);
+      printh(src_ip_be & 0xFF);
       printf(".");
-      printh((src_IP_BE >> 8) & 0xFF);
+      printh((src_ip_be >> 8) & 0xFF);
       printf(".");
-      printh((src_IP_BE >> 16) & 0xFF);
+      printh((src_ip_be >> 16) & 0xFF);
       printf(".");
-      printh((src_IP_BE >> 24) & 0xFF);
+      printh((src_ip_be >> 24) & 0xFF);
       printf("\n");
       break;
 
@@ -39,7 +42,7 @@ ICMP::on_ip_recv(u32 src_IP_BE, u32 dst_IP_BE, u8* ip_payload, u32 size) const
 }
 
 void
-ICMP::request_echo_reply(u32 ip_be)
+ICMP::request_echo_reply(const u32 ip_be)
 {
   ICMPMessage icmp;
   icmp.type = 8;

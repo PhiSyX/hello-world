@@ -1,15 +1,15 @@
 #include "syscalls.hpp"
 
-SyscallHandler::SyscallHandler(InterruptManager* im, u8 in)
+SyscallHandler::SyscallHandler(InterruptManager* im, const u8 in)
   : InterruptHandler(im, in + im->hardware_interrupt_offset)
 {}
 
 SyscallHandler::~SyscallHandler() {}
 
 const u32
-SyscallHandler::handle_interrupt(u32 esp) const
+SyscallHandler::handle_interrupt(const u32 esp) const
 {
-  CPUState* cpu = (CPUState*)esp;
+  const CPUState* cpu = (CPUState*)esp;
 
   switch (cpu->eax) {
     case 4:

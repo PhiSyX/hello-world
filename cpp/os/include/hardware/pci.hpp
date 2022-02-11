@@ -59,19 +59,25 @@ public:
   ~PCIController();
 
 public:
-  u32 read(u16 bus, u16 dev, u16 fn, u32 ro);
-  void write(u16 bus, u16 dev, u16 fn, u32 ro, u32 value);
-  bool device_has_functions(u16 bus, u16 dev);
-  void select_drivers(DriverManager* dm, InterruptManager* im);
-  PCIDeviceDescriptor get_device_descriptor(u16 bus, u16 dev, u16 fn);
+  u32 read(const u16 bus, const u16 dev, const u16 fn, const u32 ro);
+  void write(const u16 bus,
+             const u16 dev,
+             const u16 fn,
+             const u32 ro,
+             const u32 value);
+  bool device_has_functions(const u16 bus, const u16 dev);
+  void select_drivers(const DriverManager* dm, InterruptManager* im);
+  const PCIDeviceDescriptor get_device_descriptor(const u16 bus,
+                                                  const u16 dev,
+                                                  const u16 fn);
 
-  const Driver* get_driver(PCIDeviceDescriptor* dev,
+  const Driver* get_driver(const PCIDeviceDescriptor* dev,
                            InterruptManager* im) const;
 
-  BaseAddressRegister get_base_address_register(u16 bus,
-                                                u16 dev,
-                                                u16 fn,
-                                                u16 bar);
+  BaseAddressRegister get_base_address_register(const u16 bus,
+                                                const u16 dev,
+                                                const u16 fn,
+                                                const u16 bar);
 };
 
 #endif

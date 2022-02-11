@@ -10,11 +10,11 @@ printf(char*);
 class SyscallHandler : public InterruptHandler
 {
 public:
-  SyscallHandler(InterruptManager* im, u8 in);
+  SyscallHandler(InterruptManager* im, const u8 in);
   ~SyscallHandler();
 
 public:
-  virtual const u32 handle_interrupt(u32 esp) const;
+  virtual const u32 handle_interrupt(const u32 esp) const;
 };
 
 #endif

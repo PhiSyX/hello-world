@@ -14,7 +14,10 @@ PCIController::PCIController()
 PCIController::~PCIController() {}
 
 u32
-PCIController::read(u16 bus, u16 device, u16 fn, u32 register_offset)
+PCIController::read(const u16 bus,
+                    const u16 device,
+                    const u16 fn,
+                    const u32 register_offset)
 {
   u32 id = 0x1 << 31 | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11) |
            ((fn & 0x07) << 8) | (register_offset & 0xFC);
@@ -24,26 +27,26 @@ PCIController::read(u16 bus, u16 device, u16 fn, u32 register_offset)
 }
 
 void
-PCIController::write(u16 bus,
-                     u16 device,
-                     u16 fn,
-                     u32 register_offset,
-                     u32 value)
+PCIController::write(const u16 bus,
+                     const u16 device,
+                     const u16 fn,
+                     const u32 register_offset,
+                     const u32 value)
 {
-  u32 id = 0x1 << 31 | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11) |
-           ((fn & 0x07) << 8) | (register_offset & 0xFC);
+  const u32 id = 0x1 << 31 | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11) |
+                 ((fn & 0x07) << 8) | (register_offset & 0xFC);
   command_port.write(id);
   data_port.write(value);
 }
 
 bool
-PCIController::device_has_functions(u16 bus, u16 device)
+PCIController::device_has_functions(const u16 bus, const u16 device)
 {
   return read(bus, device, 0, 0x0E) & (1 << 7);
 }
 
 void
-PCIController::select_drivers(DriverManager* driver_manager,
+PCIController::select_drivers(const DriverManager* driver_manager,
                               InterruptManager* interrupt_manager)
 {
   for (u8 bus = 0; bus < 8; bus++) {
@@ -92,8 +95,10 @@ PCIController::select_drivers(DriverManager* driver_manager,
   }
 }
 
-PCIDeviceDescriptor
-PCIController::get_device_descriptor(u16 bus, u16 device, u16 fn)
+const PCIDeviceDescriptor
+PCIController::get_device_descriptor(const u16 bus,
+                                     const u16 device,
+                                     const u16 fn)
 {
   PCIDeviceDescriptor result;
 
@@ -115,7 +120,10 @@ PCIController::get_device_descriptor(u16 bus, u16 device, u16 fn)
 }
 
 BaseAddressRegister
-PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
+PCIController::get_base_address_register(const u16 bus,
+                                         const u16 device,
+                                         const u16 fn,
+                                         const u16 bar)
 {
   BaseAddressRegister result;
 
@@ -147,7 +155,7 @@ PCIController::get_base_address_register(u16 bus, u16 device, u16 fn, u16 bar)
 }
 
 const Driver*
-PCIController::get_driver(PCIDeviceDescriptor* device,
+PCIController::get_driver(const PCIDeviceDescriptor* device,
                           InterruptManager* interrupt_manager) const
 {
   Driver* driver = 0;

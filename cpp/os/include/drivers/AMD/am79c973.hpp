@@ -76,20 +76,20 @@ class amd_am79c973
   RawDataHandler* handler;
 
 public:
-  amd_am79c973(PCIDeviceDescriptor* device, InterruptManager* im);
+  amd_am79c973(const PCIDeviceDescriptor* device, InterruptManager* im);
   ~amd_am79c973();
 
 public:
-  void activate();
-  i32 reset();
+  /* contains static */ void activate();
+  /* contains static */ const i32 reset();
 
-  u32 handle_interrupt(u32 esp);
-  void send(u8* buffer, usize count);
-  void recv();
+  /* contains static */ const u32 handle_interrupt(const u32 esp);
+  /* mut */ void send(u8* buffer, usize count);
+  /* mut */ void recv();
 
-  void set_handler(RawDataHandler* handler);
+  /* mut */ void set_handler(RawDataHandler* handler);
   const u64 get_mac_address() const;
-  void set_ip_address(u32);
+  /* mut */ void set_ip_address(const u32);
   const u32 get_ip_address() const;
 };
 

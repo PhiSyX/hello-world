@@ -1,6 +1,6 @@
 #include "hardware/interrupts.hpp"
 
-InterruptHandler::InterruptHandler(InterruptManager* im, u8 in)
+InterruptHandler::InterruptHandler(InterruptManager* im, const u8 in)
 {
   interrupt_number = in;
   interrupt_manager = im;
@@ -15,8 +15,8 @@ InterruptHandler::~InterruptHandler()
   }
 }
 
-u32
-InterruptHandler::handle_interrupt(u32 esp)
+const u32
+InterruptHandler::handle_interrupt(const u32 esp)
 {
   return esp;
 }

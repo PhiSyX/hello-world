@@ -19,11 +19,11 @@ protected:
 public:
   static MemoryManager* active_memory_manager;
 
-  MemoryManager(usize first, usize size);
+  MemoryManager(const usize first, const usize size);
   ~MemoryManager();
 
 public:
-  void* malloc(usize size) const;
+  void* malloc(const usize size) const;
   void free(void* ptr) const;
 };
 

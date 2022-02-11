@@ -1,7 +1,7 @@
 #include "net/ipv4.hpp"
 #include "memory.hpp"
 
-IPHandler::IPHandler(IPProvider* $backend, u8 $protocol)
+IPHandler::IPHandler(IPProvider* $backend, const u8 $protocol)
 {
   backend = $backend;
   ip_protocol = $protocol;
@@ -16,16 +16,16 @@ IPHandler::~IPHandler()
 }
 
 const bool
-IPHandler::on_ip_recv(u32 src_ip_be,
-                      u32 dst_ip_be,
-                      u8* ip_payload,
-                      u32 size) const
+IPHandler::on_ip_recv(const u32 src_ip_be,
+                      const u32 dst_ip_be,
+                      const u8* ip_payload,
+                      const u32 size) const
 {
   return false;
 }
 
 void
-IPHandler::send(u32 dst_ip_be, u8* ip_payload, u32 size)
+IPHandler::send(const u32 dst_ip_be, const u8* ip_payload, const u32 size)
 {
   backend->send(dst_ip_be, ip_protocol, ip_payload, size);
 }
@@ -47,7 +47,8 @@ IPProvider::IPProvider(EtherFrameProvider* backend,
 IPProvider::~IPProvider() {}
 
 const bool
-IPProvider::on_etherframe_recv(u8* etherframe_payload, u32 size) const
+IPProvider::on_etherframe_recv(const u8* etherframe_payload,
+                               const u32 size) const
 {
   if (size < sizeof(IPV4Message)) {
     return false;
@@ -86,7 +87,10 @@ IPProvider::on_etherframe_recv(u8* etherframe_payload, u32 size) const
 }
 
 void
-IPProvider::send(u32 dst_ip_be, u8 protocol, u8* data, u32 size)
+IPProvider::send(const u32 dst_ip_be,
+                 const u8 protocol,
+                 const u8* data,
+                 const u32 size)
 {
   u8* buffer = (u8*)MemoryManager::active_memory_manager->malloc(
     sizeof(IPV4Message) + size);
@@ -128,7 +132,7 @@ IPProvider::send(u32 dst_ip_be, u8 protocol, u8* data, u32 size)
 }
 
 /*static*/ u16
-IPProvider::checksum(u16* data, u32 length_in_bytes)
+IPProvider::checksum(const u16* data, const u32 length_in_bytes)
 {
   u32 temp = 0;
 

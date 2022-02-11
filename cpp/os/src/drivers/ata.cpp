@@ -1,6 +1,6 @@
 #include "drivers/ata.hpp"
 
-ATA::ATA(bool $master, u16 port_base)
+ATA::ATA(const bool $master, const u16 port_base)
   : data_port(port_base)
   , error_port(port_base + 0x1)
   , sector_count_port(port_base + 0x2)
@@ -61,7 +61,7 @@ ATA::identify()
 }
 
 void
-ATA::read28(u32 sector_number, i32 count)
+ATA::read_28(const u32 sector_number, const i32 count)
 {
   if (sector_number > 0x0FFFFFFF) {
     return;
@@ -109,7 +109,7 @@ ATA::read28(u32 sector_number, i32 count)
 }
 
 void
-ATA::write28(u32 sector_number, u8* data, u32 count)
+ATA::write_28(const u32 sector_number, const u8* data, const u32 count)
 {
   if (sector_number > 0x0FFFFFFF) {
     return;

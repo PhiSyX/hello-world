@@ -32,14 +32,14 @@ protected:
   u8 ip_protocol;
 
 public:
-  IPHandler(IPProvider* backend, u8 protocol);
+  IPHandler(IPProvider* backend, const u8 protocol);
   ~IPHandler();
 
-  virtual const bool on_ip_recv(u32 src_ip_be,
-                                u32 dst_ip_be,
-                                u8* ip_payload,
-                                u32 size) const;
-  void send(u32 dst_ip_be, u8* ip_payload, u32 size);
+  virtual const bool on_ip_recv(const u32 src_ip_be,
+                                const u32 dst_ip_be,
+                                const u8* ip_payload,
+                                const u32 size) const;
+  void send(const u32 dst_ip_be, const u8* ip_payload, const u32 size);
 };
 
 class IPProvider : public EtherFrameHandler
@@ -55,14 +55,18 @@ protected:
 public:
   IPProvider(EtherFrameProvider* backend,
              ARP* arp,
-             u32 gateway_ip,
-             u32 subnet_mask);
+             const u32 gateway_ip,
+             const u32 subnet_mask);
   ~IPProvider();
 
 public:
-  const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
-  void send(u32 dst_ip_be, u8 protocol, u8* buffer, u32 size);
-  static u16 checksum(u16* data, u32 length_in_bytes);
+  const bool on_etherframe_recv(const u8* etherframe_payload,
+                                const u32 size) const;
+  void send(const u32 dst_ip_be,
+            const u8 protocol,
+            const u8* buffer,
+            const u32 size);
+  static u16 checksum(const u16* data, const u32 length_in_bytes);
 };
 
 #endif

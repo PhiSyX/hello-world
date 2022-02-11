@@ -1,13 +1,13 @@
 #include "gui/widget.hpp"
 
-Widget::Widget(Widget* $parent,
-               i32 $x,
-               i32 $y,
-               i32 w,
-               i32 h,
-               u8 $r,
-               u8 $g,
-               u8 $b)
+Widget::Widget(const Widget* $parent,
+               const i32 $x,
+               const i32 $y,
+               const i32 w,
+               const i32 h,
+               const u8 $r,
+               const u8 $g,
+               const u8 $b)
   : KeyboardEventHandler()
 {
   parent = $parent;
@@ -24,7 +24,7 @@ Widget::Widget(Widget* $parent,
 Widget::~Widget() {}
 
 void
-Widget::get_focus(Widget* widget) const
+Widget::get_focus(const Widget* widget) const
 {
   if (parent != 0) {
     parent->get_focus(widget);
@@ -53,7 +53,7 @@ Widget::draw(VGA* gc)
 }
 
 void
-Widget::on_mousedown(i32 x, i32 y, u8 button)
+Widget::on_mousedown(const i32 x, const i32 y, const u8 button)
 {
   if (focussable) {
     get_focus(this);
@@ -61,27 +61,30 @@ Widget::on_mousedown(i32 x, i32 y, u8 button)
 }
 
 void
-Widget::on_mouseup(i32 x, i32 y, u8 button)
+Widget::on_mouseup(const i32 x, const i32 y, const u8 button)
 {}
 
 void
-Widget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
+Widget::on_mousemove(const i32 old_x,
+                     const i32 old_y,
+                     const i32 new_x,
+                     const i32 new_y)
 {}
 
 const bool
-Widget::contains_coord(i32 $x, i32 $y) const
+Widget::contains_coord(const i32 $x, const i32 $y) const
 {
   return x <= $x && $x < x + width && y <= $y && $y < y + height;
 }
 
-CompositeWidget::CompositeWidget(Widget* parent,
-                                 i32 x,
-                                 i32 y,
-                                 i32 w,
-                                 i32 h,
-                                 u8 r,
-                                 u8 g,
-                                 u8 b)
+CompositeWidget::CompositeWidget(const Widget* parent,
+                                 const i32 x,
+                                 const i32 y,
+                                 const i32 w,
+                                 const i32 h,
+                                 const u8 r,
+                                 const u8 g,
+                                 const u8 b)
   : Widget(parent, x, y, w, h, r, g, b)
 {
   focussed_child = 0;
@@ -91,7 +94,7 @@ CompositeWidget::CompositeWidget(Widget* parent,
 CompositeWidget::~CompositeWidget() {}
 
 void
-CompositeWidget::get_focus(Widget* widget)
+CompositeWidget::get_focus(const Widget* widget)
 {
   focussed_child = widget;
 
@@ -121,7 +124,7 @@ CompositeWidget::draw(VGA* gc)
 }
 
 void
-CompositeWidget::on_mousedown(i32 $x, i32 $y, u8 button)
+CompositeWidget::on_mousedown(const i32 $x, const i32 $y, const u8 button)
 {
   for (usize i = 0; i < total_children; ++i) {
     if (children[i]->contains_coord($x - x, $y - y)) {
@@ -132,7 +135,7 @@ CompositeWidget::on_mousedown(i32 $x, i32 $y, u8 button)
 }
 
 void
-CompositeWidget::on_mouseup(i32 $x, i32 $y, u8 button)
+CompositeWidget::on_mouseup(const i32 $x, const i32 $y, const u8 button)
 {
   for (usize i = 0; i < total_children; ++i) {
     if (children[i]->contains_coord($x - x, $y - y)) {
@@ -143,7 +146,10 @@ CompositeWidget::on_mouseup(i32 $x, i32 $y, u8 button)
 }
 
 void
-CompositeWidget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
+CompositeWidget::on_mousemove(const i32 old_x,
+                              const i32 old_y,
+                              const i32 new_x,
+                              const i32 new_y)
 {
   i32 first_child = -1;
 
@@ -170,7 +176,7 @@ CompositeWidget::on_mousemove(i32 old_x, i32 old_y, i32 new_x, i32 new_y)
 }
 
 void
-CompositeWidget::on_keydown(char key)
+CompositeWidget::on_keydown(const char key)
 {
   if (focussed_child != 0) {
     focussed_child->on_keydown(key);
@@ -178,7 +184,7 @@ CompositeWidget::on_keydown(char key)
 }
 
 void
-CompositeWidget::on_keyup(char key)
+CompositeWidget::on_keyup(const char key)
 {
   if (focussed_child != 0) {
     focussed_child->on_keyup(key);

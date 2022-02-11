@@ -11,23 +11,23 @@ public:
 
 public:
   virtual void activate() const;
-  virtual i32 reset() const;
+  virtual const i32 reset() const;
   virtual void deactivate() const;
 };
 
 class DriverManager
 {
 public:
-  const Driver* drivers[265];
-  usize total_drivers;
+  mutable const Driver* drivers[265];
+  mutable usize total_drivers;
 
 public:
   DriverManager();
 
 public:
-  void add(const Driver*);
+  const void add(const Driver*) const;
 
-  void enable_all() const;
+  const void enable_all() const;
 };
 
 #endif

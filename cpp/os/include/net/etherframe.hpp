@@ -22,12 +22,13 @@ protected:
   u16 ether_type_be;
 
 public:
-  EtherFrameHandler(EtherFrameProvider* backend, u16 ether_type);
+  EtherFrameHandler(EtherFrameProvider* backend, const u16 ether_type);
   ~EtherFrameHandler();
 
 public:
-  virtual const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
-  void send(u64 dst_mac_be, u8* etherframe_payload, u32 size);
+  virtual const bool on_etherframe_recv(const u8* etherframe_payload,
+                                        const u32 size) const;
+  void send(const u64 dst_mac_be, const u8* etherframe_payload, const u32 size);
   const u32 get_ip_address() const;
 };
 
@@ -43,8 +44,11 @@ public:
   ~EtherFrameProvider();
 
 public:
-  const bool on_rawdata_recv(u8* buffer, u32 size) const;
-  void send(u64 dst_mac_be, u16 ether_type_be, u8* buffer, u32 size);
+  const bool on_rawdata_recv(const u8* buffer, const u32 size) const;
+  void send(const u64 dst_mac_be,
+            const u16 ether_type_be,
+            const u8* buffer,
+            const u32 size);
 
   const u64 get_mac_address() const;
   const u32 get_ip_address() const;

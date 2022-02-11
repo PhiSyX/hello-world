@@ -33,16 +33,16 @@ private:
   CPUState* cpustate;
 
 public:
-  Task(GlobalDescriptorTable* gdt, void entrypoint());
+  Task(const GlobalDescriptorTable* gdt, const void entrypoint());
   ~Task();
 };
 
 class TaskManager
 {
 private:
-  Task* tasks[256];
+  mutable Task* tasks[256];
   usize total_task;
-  i32 current_task;
+  mutable i32 current_task;
 
 public:
   TaskManager();
@@ -51,7 +51,7 @@ public:
 public:
   bool add(Task* task);
 
-  CPUState* schedule(CPUState* cpustate);
+  const CPUState* schedule(CPUState* cpustate) const;
 };
 
 #endif

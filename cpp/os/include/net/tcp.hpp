@@ -74,8 +74,8 @@ public:
 
 public:
   virtual const bool handle_tcp_message(const TCPSocket* socket,
-                                        u8* data,
-                                        u16 size) const;
+                                        const u8* data,
+                                        const u16 size) const;
 };
 
 class TCPSocket
@@ -98,8 +98,8 @@ public:
   ~TCPSocket();
 
 public:
-  virtual const bool handle_tcp_message(u8* data, u16 size) const;
-  virtual void send(u8* data, u16 size);
+  virtual const bool handle_tcp_message(const u8* data, const u16 size) const;
+  virtual void send(const u8* data, const u16 size);
   virtual void disconnect();
 };
 
@@ -115,16 +115,19 @@ public:
   ~TCPProvider();
 
 public:
-  virtual bool on_ip_recv(u32 src_ip_be,
-                          u32 dst_ip_be,
-                          u8* ip_payload,
-                          u32 size);
+  virtual bool on_ip_recv(const u32 src_ip_be,
+                          const u32 dst_ip_be,
+                          const u8* ip_payload,
+                          const u32 size);
 
-  virtual TCPSocket* connect(u32 ip, u16 port);
+  virtual TCPSocket* connect(const u32 ip, const u16 port);
   virtual void disconnect(TCPSocket* socket);
-  virtual void send(TCPSocket* socket, u8* data, u16 size, u16 flags = 0);
+  virtual void send(TCPSocket* socket,
+                    const u8* data,
+                    const u16 size,
+                    const u16 flags = 0);
 
-  virtual TCPSocket* listen(u16 port);
+  virtual TCPSocket* listen(const u16 port);
   virtual void bind(TCPSocket* socket, TCPHandler* handler);
 };
 

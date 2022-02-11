@@ -7,15 +7,15 @@ TCPHandler::~TCPHandler() {}
 
 const bool
 TCPHandler::handle_tcp_message(const TCPSocket* socket,
-                               u8* data,
-                               u16 size) const
+                               const u8* data,
+                               const u16 size) const
 {
   return true;
 }
 
-TCPSocket::TCPSocket(TCPProvider* backend)
+TCPSocket::TCPSocket(TCPProvider* $backend)
 {
-  this->backend = backend;
+  backend = $backend;
   handler = 0;
   state = TCPSocketState::CLOSED;
 }
@@ -23,7 +23,7 @@ TCPSocket::TCPSocket(TCPProvider* backend)
 TCPSocket::~TCPSocket() {}
 
 const bool
-TCPSocket::handle_tcp_message(u8* data, u16 size) const
+TCPSocket::handle_tcp_message(const u8* data, const u16 size) const
 {
   if (handler != 0) {
     return handler->handle_tcp_message(this, data, size);
@@ -32,7 +32,7 @@ TCPSocket::handle_tcp_message(u8* data, u16 size) const
 }
 
 void
-TCPSocket::send(u8* data, u16 size)
+TCPSocket::send(const u8* data, const u16 size)
 {
   backend->send(this, data, size);
 }
@@ -63,7 +63,10 @@ big_endian_32(u32 x)
 }
 
 bool
-TCPProvider::on_ip_recv(u32 src_ip_be, u32 dst_ip_be, u8* ip_payload, u32 size)
+TCPProvider::on_ip_recv(const u32 src_ip_be,
+                        const u32 dst_ip_be,
+                        const u8* ip_payload,
+                        const u32 size)
 {
 
   if (size < 20) {
@@ -200,7 +203,10 @@ TCPProvider::on_ip_recv(u32 src_ip_be, u32 dst_ip_be, u8* ip_payload, u32 size)
 }
 
 void
-TCPProvider::send(TCPSocket* socket, u8* data, u16 size, u16 flags)
+TCPProvider::send(TCPSocket* socket,
+                  const u8* data,
+                  const u16 size,
+                  const u16 flags)
 {
   u16 total_length = size + sizeof(TCPHeader);
   u16 length_phdr = total_length + sizeof(TCPPseudoHeader);
@@ -244,7 +250,7 @@ TCPProvider::send(TCPSocket* socket, u8* data, u16 size, u16 flags)
 }
 
 TCPSocket*
-TCPProvider::connect(u32 ip, u16 port)
+TCPProvider::connect(const u32 ip, const u16 port)
 {
   TCPSocket* socket =
     (TCPSocket*)MemoryManager::active_memory_manager->malloc(sizeof(TCPSocket));
@@ -282,7 +288,7 @@ TCPProvider::disconnect(TCPSocket* socket)
 }
 
 TCPSocket*
-TCPProvider::listen(u16 port)
+TCPProvider::listen(const u16 port)
 {
   TCPSocket* socket =
     (TCPSocket*)MemoryManager::active_memory_manager->malloc(sizeof(TCPSocket));

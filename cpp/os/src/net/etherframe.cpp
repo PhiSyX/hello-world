@@ -2,7 +2,7 @@
 #include "memory.hpp"
 
 EtherFrameHandler::EtherFrameHandler(EtherFrameProvider* $backend,
-                                     u16 ether_type)
+                                     const u16 ether_type)
 {
   ether_type_be = ((ether_type & 0x00FF) << 8) | ((ether_type & 0xFF00) >> 8);
   backend = $backend;
@@ -17,13 +17,14 @@ EtherFrameHandler::~EtherFrameHandler()
 }
 
 const bool
-EtherFrameHandler::on_etherframe_recv(u8* etherframe_payload, u32 size) const
+EtherFrameHandler::on_etherframe_recv(const u8* etherframe_payload,
+                                      const u32 size) const
 {
   return false;
 }
 
 void
-EtherFrameHandler::send(u64 dst_mac_be, u8* data, u32 size)
+EtherFrameHandler::send(const u64 dst_mac_be, const u8* data, const u32 size)
 {
   backend->send(dst_mac_be, ether_type_be, data, size);
 }
@@ -39,7 +40,7 @@ EtherFrameProvider::EtherFrameProvider(amd_am79c973* backend)
 EtherFrameProvider::~EtherFrameProvider() {}
 
 const bool
-EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size) const
+EtherFrameProvider::on_rawdata_recv(const u8* buffer, const u32 size) const
 {
   if (size < sizeof(EtherFrameHeader)) {
     return false;
@@ -65,10 +66,10 @@ EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size) const
 }
 
 void
-EtherFrameProvider::send(u64 dst_mac_be,
-                         u16 ether_type_be,
-                         u8* buffer,
-                         u32 size)
+EtherFrameProvider::send(const u64 dst_mac_be,
+                         const u16 ether_type_be,
+                         const u8* buffer,
+                         const u32 size)
 {
   u8* buffer2 = (u8*)MemoryManager::active_memory_manager->malloc(
     sizeof(EtherFrameHeader) + size);
@@ -78,7 +79,7 @@ EtherFrameProvider::send(u64 dst_mac_be,
   frame->src_mac_be = backend->get_mac_address();
   frame->ether_type_be = ether_type_be;
 
-  u8* src = buffer;
+  const u8* src = buffer;
   u8* dst = buffer2 + sizeof(EtherFrameHeader);
   for (u32 i = 0; i < size; i++) {
     dst[i] = src[i];

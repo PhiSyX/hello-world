@@ -204,20 +204,21 @@ call_ctors()
   }
 }
 
-void
+const void
 sysprintf(char* str)
 {
   asm("int $0x80" : : "a"(4), "b"(str));
 }
 
-void
+const void
 taskA()
 {
   while (1) {
     sysprintf("A");
   }
 }
-void
+
+const void
 taskB()
 {
   while (1) {
@@ -259,12 +260,10 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 
   TaskManager task_manager;
 
-  /*
   Task task1(&gdt, taskA);
   Task task2(&gdt, taskB);
   task_manager.add(&task1);
   task_manager.add(&task2);
-  */
 
   InterruptManager interrupts(0x20, &gdt, &task_manager);
   SyscallHandler syscalls(&interrupts, 0x80);
@@ -278,7 +277,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("Mode: Normal\n");
 #endif
 
-  DriverManager driver_manager;
+  const DriverManager driver_manager;
 
 #ifdef GRAPHICS_MODE
   KeyboardDriver keyboard(&interrupts, &desktop);
@@ -321,9 +320,9 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
     printf("\nS-ATA primary slave: ");
     ATA ata0s(false, 0x1F0);
     ata0s.identify();
-    ata0s.write28(0, (u8*)"S-ATA Primary Slave", 19);
+    ata0s.write_28(0, (u8*)"S-ATA Primary Slave", 19);
     ata0s.flush();
-    ata0s.read28(0, 25);
+    ata0s.read_28(0, 25);
 
     printf("\nS-ATA secondary master: ");
     ATA ata1m(true, 0x170);

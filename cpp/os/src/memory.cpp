@@ -2,7 +2,7 @@
 
 MemoryManager* MemoryManager::active_memory_manager = 0;
 
-MemoryManager::MemoryManager(usize start, usize size)
+MemoryManager::MemoryManager(const usize start, const usize size)
 {
   active_memory_manager = this;
 
@@ -26,7 +26,7 @@ MemoryManager::~MemoryManager()
 }
 
 void*
-MemoryManager::malloc(usize size) const
+MemoryManager::malloc(const usize size) const
 {
   MemoryChunk* result = 0;
 

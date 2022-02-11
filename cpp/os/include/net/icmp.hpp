@@ -24,11 +24,11 @@ public:
   ~ICMP();
 
 public:
-  const bool on_ip_recv(u32 src_IP_BE,
-                        u32 dst_IP_BE,
-                        u8* ip_payload,
-                        u32 size) const;
-  void request_echo_reply(u32 IP_BE);
+  const bool on_ip_recv(const u32 src_ip_be,
+                        const u32 dst_ip_be,
+                        const u8* ip_payload,
+                        const u32 size) const;
+  void request_echo_reply(const u32 ip_be);
 };
 
 #endif

@@ -36,8 +36,8 @@ public:
   ~MouseDriver();
 
 public:
-  virtual u32 handle_interrupt(u32 esp);
-  virtual void activate();
+  virtual /* contains static */ const u32 handle_interrupt(const u32 esp);
+  virtual /* contains static */ void activate();
 };
 
 #endif

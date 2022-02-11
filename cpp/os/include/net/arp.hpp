@@ -31,12 +31,12 @@ public:
   ~ARP();
 
 public:
-  bool on_etherframe_recv(u8* etherframe_payload, u32 size);
+  bool on_etherframe_recv(const u8* etherframe_payload, const u32 size);
 
-  void request_mac_address(u32 IP_BE);
-  const u64 get_mac_from_cache(u32 IP_BE) const;
-  u64 resolve(u32 IP_BE);
-  void broadcast_mac_address(u32 IP_BE);
+  void request_mac_address(const u32 ip_be);
+  const u64 get_mac_from_cache(const u32 ip_be) const;
+  u64 resolve(const u32 ip_be);
+  void broadcast_mac_address(const u32 ip_be);
 };
 
 #endif

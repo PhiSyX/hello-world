@@ -14,21 +14,21 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 
 GlobalDescriptorTable::~GlobalDescriptorTable() {}
 
-u16
+const u16
 GlobalDescriptorTable::get_data_segment_selector() const
 {
   return (u8*)&data_segment_selector - (u8*)this;
 }
 
-u16
+const u16
 GlobalDescriptorTable::get_code_segment_selector() const
 {
   return (u8*)&code_segment_selector - (u8*)this;
 }
 
-GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(u32 base,
+GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(const u32 base,
                                                             u32 limit,
-                                                            u8 flags)
+                                                            const u8 flags)
 {
   u8* target = (u8*)this;
 
@@ -66,7 +66,7 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(u32 base,
   target[5] = flags;
 }
 
-u32
+const u32
 GlobalDescriptorTable::SegmentDescriptor::base() const
 {
   u8* target = (u8*)this;
@@ -77,7 +77,7 @@ GlobalDescriptorTable::SegmentDescriptor::base() const
   return result;
 }
 
-u32
+const u32
 GlobalDescriptorTable::SegmentDescriptor::limit() const
 {
   u8* target = (u8*)this;

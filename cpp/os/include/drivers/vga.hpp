@@ -22,18 +22,35 @@ protected:
   Port8Bit attribute_controller_reset_port;
 
   u8* get_frame_buffer_segment();
-  virtual u8 get_color_index(u8 r, u8 g, u8 b);
+  virtual const u8 get_color_index(const u8 r, const u8 g, const u8 b) const;
   void write_registers(u8* registers);
 
 public:
   VGA();
   ~VGA();
 
-  virtual const bool supports_mode(u32 width, u32 height, u32 colordepth) const;
-  virtual bool set_mode(u32 width, u32 height, u32 colordepth);
-  virtual void put_pixel(i32 x, i32 y, u8 r, u8 g, u8 b);
-  virtual void put_pixel(i32 x, i32 y, u8 color_index);
-  virtual void fill_rect(u32 x, u32 y, u32 width, u32 height, u8 r, u8 g, u8 b);
+public:
+  virtual const bool supports_mode(const u32 width,
+                                   const u32 height,
+                                   const u32 colordepth) const;
+  virtual /* contains static */ bool set_mode(const u32 width,
+                                              const u32 height,
+                                              const u32 colordepth);
+  virtual /* contains static */ void put_pixel(const i32 x,
+                                               const i32 y,
+                                               const u8 r,
+                                               const u8 g,
+                                               const u8 b);
+  virtual /* contains static */ void put_pixel(const i32 x,
+                                               const i32 y,
+                                               const u8 color_index);
+  virtual /* contains static */ void fill_rect(const u32 x,
+                                               const u32 y,
+                                               const u32 width,
+                                               const u32 height,
+                                               const u8 r,
+                                               const u8 g,
+                                               const u8 b);
 };
 
 #endif

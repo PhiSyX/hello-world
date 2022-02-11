@@ -1,6 +1,6 @@
 #include "multitasking.hpp"
 
-Task::Task(GlobalDescriptorTable* gdt, void entrypoint())
+Task::Task(const GlobalDescriptorTable* gdt, const void entrypoint())
 {
   cpustate = (CPUState*)(stack + 4096 - sizeof(CPUState));
 
@@ -40,8 +40,8 @@ TaskManager::add(Task* task)
   return true;
 }
 
-CPUState*
-TaskManager::schedule(CPUState* cpustate)
+const CPUState*
+TaskManager::schedule(CPUState* cpustate) const
 {
   if (total_task <= 0) {
     return cpustate;
