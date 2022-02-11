@@ -90,13 +90,19 @@ EtherFrameProvider::send(u64 dst_MAC_BE,
 }
 
 const u32
-EtherFrameProvider::get_IP_address() const
+EtherFrameProvider::get_ip_address() const
 {
-  return backend->get_IP_address();
+  return backend->get_ip_address();
 }
 
 const u64
 EtherFrameProvider::get_MAC_address() const
 {
   return backend->get_MAC_address();
+}
+
+const u32
+EtherFrameHandler::get_ip_address() const
+{
+  return backend->get_ip_address();
 }

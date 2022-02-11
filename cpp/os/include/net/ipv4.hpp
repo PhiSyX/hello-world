@@ -42,7 +42,7 @@ public:
   void send(u32 dst_IP_BE, u8* ip_payload, u32 size);
 };
 
-class IPProvider : EtherFrameHandler
+class IPProvider : public EtherFrameHandler
 {
   friend class IPHandler;
 

@@ -56,7 +56,7 @@ IPProvider::on_etherframe_recv(u8* etherframe_payload, u32 size) const
   IPV4Message* ip_message = (IPV4Message*)etherframe_payload;
   bool send_back = false;
 
-  if (ip_message->dst_IP == backend->get_IP_address()) {
+  if (ip_message->dst_IP == backend->get_ip_address()) {
     i32 length = ip_message->total_length;
     if (length > size) {
       length = size;
@@ -105,7 +105,7 @@ IPProvider::send(u32 dstIP_BE, u8 protocol, u8* data, u32 size)
   message->protocol = protocol;
 
   message->dst_IP = dstIP_BE;
-  message->src_IP = backend->get_IP_address();
+  message->src_IP = backend->get_ip_address();
 
   message->checksum = 0;
   message->checksum = checksum((u16*)message, sizeof(IPV4Message));

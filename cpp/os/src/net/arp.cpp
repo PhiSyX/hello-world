@@ -20,14 +20,14 @@ ARP::on_etherframe_recv(u8* etherframe_payload, u32 size)
   if (arp->hardware_type == 0x0100) {
     if (arp->protocol == 0x0008 && arp->hardware_address_size == 6 &&
         arp->protocol_address_size == 4 &&
-        arp->dst_IP == backend->get_IP_address()) {
+        arp->dst_IP == backend->get_ip_address()) {
 
       switch (arp->command) {
         case 0x0100: // request
           arp->command = 0x0200;
           arp->dst_IP = arp->src_IP;
           arp->dst_MAC = arp->src_MAC;
-          arp->src_IP = backend->get_IP_address();
+          arp->src_IP = backend->get_ip_address();
           arp->src_MAC = backend->get_MAC_address();
           return true;
           break;
@@ -57,7 +57,7 @@ ARP::request_MAC_address(u32 IP_BE)
   arp.command = 0x0100;          // request
 
   arp.src_MAC = backend->get_MAC_address();
-  arp.src_IP = backend->get_IP_address();
+  arp.src_IP = backend->get_ip_address();
   arp.dst_MAC = 0xFFFFFFFFFFFF;
   arp.dst_IP = IP_BE;
 
@@ -102,7 +102,7 @@ ARP::broadcast_MAC_address(u32 IP_BE)
   arp.command = 0x0200;          // "response"
 
   arp.src_MAC = backend->get_MAC_address();
-  arp.src_IP = backend->get_IP_address();
+  arp.src_IP = backend->get_ip_address();
   arp.dst_MAC = resolve(IP_BE);
   arp.dst_IP = IP_BE;
 

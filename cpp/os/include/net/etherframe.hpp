@@ -28,6 +28,7 @@ public:
 public:
   virtual const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
   void send(u64 dst_MAC_BE, u8* etherframe_payload, u32 size);
+  const u32 get_ip_address() const;
 };
 
 class EtherFrameProvider : public RawDataHandler
@@ -46,7 +47,7 @@ public:
   void send(u64 dst_MAC_BE, u16 ether_type_BE, u8* buffer, u32 size);
 
   const u64 get_MAC_address() const;
-  const u32 get_IP_address() const;
+  const u32 get_ip_address() const;
 };
 
 #endif

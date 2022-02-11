@@ -240,7 +240,7 @@ amd_am79c973::set_IP_address(u32 ip)
 }
 
 const u32
-amd_am79c973::get_IP_address() const
+amd_am79c973::get_ip_address() const
 {
   return init_block.logical_address;
 }

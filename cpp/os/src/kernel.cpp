@@ -14,6 +14,7 @@
 #include "net/etherframe.hpp"
 #include "net/icmp.hpp"
 #include "net/ipv4.hpp"
+#include "net/udp.hpp"
 #include "syscalls.hpp"
 #include "types.hpp"
 
@@ -104,6 +105,19 @@ public:
     char* foo = " ";
     foo[0] = ch;
     printf(foo);
+  }
+};
+
+class PrintfUDPHandler : public UDPHandler
+{
+public:
+  void handle_udp_message(UDPSocket* socket, u8* data, u16 size)
+  {
+    char* foo = " ";
+    for (int i = 0; i < size; i++) {
+      foo[0] = data[i];
+      printf(foo);
+    }
   }
 };
 
@@ -323,6 +337,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
                   ((u32)subnet2 << 8) | (u32)subnet1;
   IPProvider ipv4(&etherframe, &arp, gip_be, subnet_be);
   ICMP icmp(&ipv4);
+  UDPProvider udp(&ipv4);
 
   // etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
 
@@ -332,6 +347,11 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 
   arp.broadcast_MAC_address(gip_be);
   icmp.request_echo_reply(gip_be);
+
+  PrintfUDPHandler udp_handler;
+
+  UDPSocket* udp_socket = udp.listen(1234);
+  udp.bind(udp_socket, &udp_handler);
 
   while (1) {
 #ifdef GRAPHICS_MODE

@@ -91,7 +91,7 @@ public:
   void set_handler(RawDataHandler* handler);
   const u64 get_MAC_address() const;
   void set_IP_address(u32);
-  const u32 get_IP_address() const;
+  const u32 get_ip_address() const;
 };
 
 #endif
