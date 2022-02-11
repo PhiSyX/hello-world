@@ -37,6 +37,7 @@ public:
   void request_MAC_address(u32 IP_BE);
   const u64 get_MAC_from_cache(u32 IP_BE) const;
   u64 resolve(u32 IP_BE);
+  void broadcast_MAC_address(u32 IP_BE);
 };
 
 #endif

@@ -77,6 +77,7 @@ IPProvider::on_etherframe_recv(u8* etherframe_payload, u32 size) const
     ip_message->src_IP = temp;
 
     ip_message->time_to_live = 0x40;
+    ip_message->checksum = 0;
     ip_message->checksum =
       checksum((u16*)ip_message, 4 * ip_message->header_length);
   }
@@ -144,5 +145,5 @@ IPProvider::checksum(u16* data, u32 lengthInBytes)
     temp = (temp & 0xFFFF) + (temp >> 16);
   }
 
-  return ((temp & 0xFF00) >> 8) | ((temp & 0x00FF) << 8);
+  return ((~temp & 0xFF00) >> 8) | ((~temp & 0x00FF) << 8);
 }

@@ -12,6 +12,7 @@
 #include "memory.hpp"
 #include "net/arp.hpp"
 #include "net/etherframe.hpp"
+#include "net/icmp.hpp"
 #include "net/ipv4.hpp"
 #include "syscalls.hpp"
 #include "types.hpp"
@@ -321,14 +322,16 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   u32 subnet_be = ((u32)subnet4 << 24) | ((u32)subnet3 << 16) |
                   ((u32)subnet2 << 8) | (u32)subnet1;
   IPProvider ipv4(&etherframe, &arp, gip_be, subnet_be);
+  ICMP icmp(&ipv4);
 
   // etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
 
   interrupts.activate();
 
   printf("\n\n\n\n\n\n\n\n");
-  // arp.resolve(gip_be);
-  ipv4.send(gip_be, 0x0008, (u8*)"Hello World", 13);
+
+  arp.broadcast_MAC_address(gip_be);
+  icmp.request_echo_reply(gip_be);
 
   while (1) {
 #ifdef GRAPHICS_MODE

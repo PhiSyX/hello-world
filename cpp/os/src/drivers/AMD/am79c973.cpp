@@ -123,8 +123,6 @@ amd_am79c973::reset()
 u32
 amd_am79c973::handle_interrupt(u32 esp)
 {
-  printf("INTERRUPT FROM AMD am79c973\n");
-
   register_address_port.write(0);
   u32 temp = register_data_port.read();
 
@@ -144,7 +142,7 @@ amd_am79c973::handle_interrupt(u32 esp)
     recv();
   }
   if ((temp & 0x0200) == 0x0200) {
-    printf("AMD am79c973 DATA SENT\n");
+    printf(" SENT");
   }
 
   register_address_port.write(0);
@@ -175,8 +173,8 @@ amd_am79c973::send(u8* buffer, usize size)
     *dst = *src;
   }
 
-  printf("Sending: ");
-  for (i32 i = 0; i < size; i++) {
+  printf("\nSENDING: ");
+  for (i32 i = 0; i < (size > 64 ? 64 : size); i++) {
     printh(buffer[i]);
     printf(" ");
   }
@@ -192,7 +190,7 @@ amd_am79c973::send(u8* buffer, usize size)
 void
 amd_am79c973::recv()
 {
-  printf("AMD am79c973 DATA RECEIVED\n");
+  printf("\nRECEIVED: ");
 
   for (; (recv_buffer_descriptor[current_recv_buffer].flags & 0x80000000) == 0;
        current_recv_buffer = (current_recv_buffer + 1) % 8) {
@@ -206,16 +204,15 @@ amd_am79c973::recv()
 
       u8* buffer = (u8*)(recv_buffer_descriptor[current_recv_buffer].address);
 
+      for (i32 i = 0; i < (size > 64 ? 64 : size); i++) {
+        printh(buffer[i]);
+        printf(" ");
+      }
+
       if (handler != 0) {
         if (handler->on_rawdata_recv(buffer, size)) {
           send(buffer, size);
         }
-      }
-
-      size = 64;
-      for (i32 i = 0; i < size; i++) {
-        printh(buffer[i]);
-        printf(" ");
       }
     }
 

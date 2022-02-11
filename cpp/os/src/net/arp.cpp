@@ -89,3 +89,22 @@ ARP::resolve(u32 IP_BE)
 
   return result;
 }
+
+void
+ARP::broadcast_MAC_address(u32 IP_BE)
+{
+  ARPMessage arp;
+
+  arp.hardware_type = 0x0100;    // ethernet
+  arp.protocol = 0x0008;         // ipv4
+  arp.hardware_address_size = 6; // mac
+  arp.protocol_address_size = 4; // ipv4
+  arp.command = 0x0200;          // "response"
+
+  arp.src_MAC = backend->get_MAC_address();
+  arp.src_IP = backend->get_IP_address();
+  arp.dst_MAC = resolve(IP_BE);
+  arp.dst_IP = IP_BE;
+
+  send(arp.dst_MAC, (u8*)&arp, sizeof(ARPMessage));
+}
