@@ -22,8 +22,8 @@ class MouseDriver
   : public InterruptHandler
   , public Driver
 {
-  Port8Bit dataport;
-  Port8Bit commandport;
+  Port8Bit data_port;
+  Port8Bit command_port;
 
   u8 buffer[3];
   u8 offset;

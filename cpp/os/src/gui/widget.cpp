@@ -123,21 +123,23 @@ CompositeWidget::draw(VGA* gc)
 void
 CompositeWidget::on_mousedown(i32 $x, i32 $y, u8 button)
 {
-  for (usize i = 0; i < total_children; ++i)
+  for (usize i = 0; i < total_children; ++i) {
     if (children[i]->contains_coord($x - x, $y - y)) {
       children[i]->on_mousedown($x - x, $y - y, button);
       break;
     }
+  }
 }
 
 void
 CompositeWidget::on_mouseup(i32 $x, i32 $y, u8 button)
 {
-  for (usize i = 0; i < total_children; ++i)
+  for (usize i = 0; i < total_children; ++i) {
     if (children[i]->contains_coord($x - x, $y - y)) {
       children[i]->on_mouseup($x - x, $y - y, button);
       break;
     }
+  }
 }
 
 void

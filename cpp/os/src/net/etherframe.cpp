@@ -4,15 +4,15 @@
 EtherFrameHandler::EtherFrameHandler(EtherFrameProvider* $backend,
                                      u16 ether_type)
 {
-  ether_type_BE = ((ether_type & 0x00FF) << 8) | ((ether_type & 0xFF00) >> 8);
+  ether_type_be = ((ether_type & 0x00FF) << 8) | ((ether_type & 0xFF00) >> 8);
   backend = $backend;
-  $backend->handlers[ether_type_BE] = this;
+  $backend->handlers[ether_type_be] = this;
 }
 
 EtherFrameHandler::~EtherFrameHandler()
 {
-  if (backend->handlers[ether_type_BE] == this) {
-    backend->handlers[ether_type_BE] = 0;
+  if (backend->handlers[ether_type_be] == this) {
+    backend->handlers[ether_type_be] = 0;
   }
 }
 
@@ -23,9 +23,9 @@ EtherFrameHandler::on_etherframe_recv(u8* etherframe_payload, u32 size) const
 }
 
 void
-EtherFrameHandler::send(u64 dst_MAC_BE, u8* data, u32 size)
+EtherFrameHandler::send(u64 dst_mac_be, u8* data, u32 size)
 {
-  backend->send(dst_MAC_BE, ether_type_BE, data, size);
+  backend->send(dst_mac_be, ether_type_be, data, size);
 }
 
 EtherFrameProvider::EtherFrameProvider(amd_am79c973* backend)
@@ -48,25 +48,25 @@ EtherFrameProvider::on_rawdata_recv(u8* buffer, u32 size) const
   EtherFrameHeader* frame = (EtherFrameHeader*)buffer;
   bool send_back = false;
 
-  if (frame->dst_MAC_BE == 0xFFFFFFFFFFFF ||
-      frame->dst_MAC_BE == backend->get_MAC_address()) {
-    if (handlers[frame->ether_type_BE] != 0) {
-      send_back = handlers[frame->ether_type_BE]->on_etherframe_recv(
+  if (frame->dst_mac_be == 0xFFFFFFFFFFFF ||
+      frame->dst_mac_be == backend->get_mac_address()) {
+    if (handlers[frame->ether_type_be] != 0) {
+      send_back = handlers[frame->ether_type_be]->on_etherframe_recv(
         buffer + sizeof(EtherFrameHeader), size - sizeof(EtherFrameHeader));
     }
   }
 
   if (send_back) {
-    frame->dst_MAC_BE = frame->src_MAC_BE;
-    frame->src_MAC_BE = backend->get_MAC_address();
+    frame->dst_mac_be = frame->src_mac_be;
+    frame->src_mac_be = backend->get_mac_address();
   }
 
   return send_back;
 }
 
 void
-EtherFrameProvider::send(u64 dst_MAC_BE,
-                         u16 ether_type_BE,
+EtherFrameProvider::send(u64 dst_mac_be,
+                         u16 ether_type_be,
                          u8* buffer,
                          u32 size)
 {
@@ -74,9 +74,9 @@ EtherFrameProvider::send(u64 dst_MAC_BE,
     sizeof(EtherFrameHeader) + size);
   EtherFrameHeader* frame = (EtherFrameHeader*)buffer2;
 
-  frame->dst_MAC_BE = dst_MAC_BE;
-  frame->src_MAC_BE = backend->get_MAC_address();
-  frame->ether_type_BE = ether_type_BE;
+  frame->dst_mac_be = dst_mac_be;
+  frame->src_mac_be = backend->get_mac_address();
+  frame->ether_type_be = ether_type_be;
 
   u8* src = buffer;
   u8* dst = buffer2 + sizeof(EtherFrameHeader);
@@ -96,9 +96,9 @@ EtherFrameProvider::get_ip_address() const
 }
 
 const u64
-EtherFrameProvider::get_MAC_address() const
+EtherFrameProvider::get_mac_address() const
 {
-  return backend->get_MAC_address();
+  return backend->get_mac_address();
 }
 
 const u32

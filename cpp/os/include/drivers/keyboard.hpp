@@ -24,14 +24,13 @@ class KeyboardDriver
   : public InterruptHandler
   , public Driver
 {
-  Port8Bit dataport;
-  Port8Bit commandport;
+  Port8Bit data_port;
+  Port8Bit command_port;
 
   KeyboardEventHandler* handler;
 
 public:
-  KeyboardDriver(InterruptManager* interrupt_manager,
-                 KeyboardEventHandler* handler);
+  KeyboardDriver(InterruptManager* im, KeyboardEventHandler* handler);
   ~KeyboardDriver();
 
 public:

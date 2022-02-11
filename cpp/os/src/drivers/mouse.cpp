@@ -24,8 +24,8 @@ MouseEventHandler::on_mousemove(i32 x, i32 y) const
 MouseDriver::MouseDriver(InterruptManager* input_manager,
                          MouseEventHandler* $handler)
   : InterruptHandler(input_manager, 0x2C)
-  , dataport(0x60)
-  , commandport(0x64)
+  , data_port(0x60)
+  , command_port(0x64)
 {
   handler = $handler;
 }
@@ -42,27 +42,27 @@ MouseDriver::activate()
     handler->on_activate();
   }
 
-  commandport.write(0xA8);
-  commandport.write(0x20);
+  command_port.write(0xA8);
+  command_port.write(0x20);
 
-  u8 status = dataport.read() | 2;
-  commandport.write(0x60);
-  dataport.write(status);
+  u8 status = data_port.read() | 2;
+  command_port.write(0x60);
+  data_port.write(status);
 
-  commandport.write(0xD4);
-  dataport.write(0xF4);
-  dataport.read();
+  command_port.write(0xD4);
+  data_port.write(0xF4);
+  data_port.read();
 }
 
 u32
 MouseDriver::handle_interrupt(u32 esp)
 {
-  u8 status = commandport.read();
+  u8 status = command_port.read();
   if (!(status & 0x20)) {
     return esp;
   }
 
-  buffer[offset] = dataport.read();
+  buffer[offset] = data_port.read();
   if (handler == 0) {
     return esp;
   }

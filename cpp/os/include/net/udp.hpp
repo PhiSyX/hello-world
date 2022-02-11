@@ -61,10 +61,10 @@ public:
   UDPProvider(IPProvider* backend);
   ~UDPProvider();
 
-  virtual bool on_ip_recv(u32 src_IP_BE,
-                          u32 dst_IP_BE,
-                          u8* ip_payload,
-                          u32 size);
+  virtual const bool on_ip_recv(u32 src_ip_be,
+                                u32 dst_ip_be,
+                                u8* ip_payload,
+                                u32 size) const;
 
   virtual UDPSocket* connect(u32 ip, u16 port);
   virtual UDPSocket* listen(u16 port);

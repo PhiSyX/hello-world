@@ -216,8 +216,9 @@ InterruptManager::~InterruptManager()
 void
 InterruptManager::activate()
 {
-  if (active_interrupt_manager != 0)
+  if (active_interrupt_manager != 0) {
     active_interrupt_manager->deactivate();
+  }
 
   active_interrupt_manager = this;
   asm("sti");

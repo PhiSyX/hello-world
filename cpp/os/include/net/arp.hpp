@@ -13,18 +13,17 @@ struct ARPMessage
   u8 protocol_address_size; // 4
   u16 command;
 
-  u64 src_MAC : 48;
-  u32 src_IP;
-  u64 dst_MAC : 48;
-  u32 dst_IP;
-
+  u64 src_mac : 48;
+  u32 src_ip;
+  u64 dst_mac : 48;
+  u32 dst_ip;
 } __attribute__((packed));
 
 // Address Resolution Protocol
 class ARP : public EtherFrameHandler
 {
-  u32 IP_cache[128];
-  u64 MAC_cache[128];
+  u32 ip_cache[128];
+  u64 mac_cache[128];
   int total_cache_entries;
 
 public:
@@ -34,10 +33,10 @@ public:
 public:
   bool on_etherframe_recv(u8* etherframe_payload, u32 size);
 
-  void request_MAC_address(u32 IP_BE);
-  const u64 get_MAC_from_cache(u32 IP_BE) const;
+  void request_mac_address(u32 IP_BE);
+  const u64 get_mac_from_cache(u32 IP_BE) const;
   u64 resolve(u32 IP_BE);
-  void broadcast_MAC_address(u32 IP_BE);
+  void broadcast_mac_address(u32 IP_BE);
 };
 
 #endif

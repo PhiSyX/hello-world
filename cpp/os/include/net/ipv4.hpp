@@ -19,8 +19,8 @@ struct IPV4Message
   u8 protocol;
   u16 checksum;
 
-  u32 src_IP;
-  u32 dst_IP;
+  u32 src_ip;
+  u32 dst_ip;
 } __attribute__((packed));
 
 class IPProvider;
@@ -35,11 +35,11 @@ public:
   IPHandler(IPProvider* backend, u8 protocol);
   ~IPHandler();
 
-  virtual const bool on_ip_recv(u32 src_IP_BE,
-                                u32 dst_IP_BE,
+  virtual const bool on_ip_recv(u32 src_ip_be,
+                                u32 dst_ip_be,
                                 u8* ip_payload,
                                 u32 size) const;
-  void send(u32 dst_IP_BE, u8* ip_payload, u32 size);
+  void send(u32 dst_ip_be, u8* ip_payload, u32 size);
 };
 
 class IPProvider : public EtherFrameHandler
@@ -49,19 +49,19 @@ class IPProvider : public EtherFrameHandler
 protected:
   IPHandler* handlers[255];
   ARP* arp;
-  u32 gateway_IP;
+  u32 gateway_ip;
   u32 subnet_mask;
 
 public:
   IPProvider(EtherFrameProvider* backend,
              ARP* arp,
-             u32 gateway_IP,
+             u32 gateway_ip,
              u32 subnet_mask);
   ~IPProvider();
 
 public:
   const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
-  void send(u32 dst_IP_BE, u8 protocol, u8* buffer, u32 size);
+  void send(u32 dst_ip_be, u8 protocol, u8* buffer, u32 size);
   static u16 checksum(u16* data, u32 length_in_bytes);
 };
 

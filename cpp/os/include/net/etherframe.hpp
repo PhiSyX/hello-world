@@ -6,9 +6,9 @@
 
 struct EtherFrameHeader
 {
-  u64 dst_MAC_BE : 48;
-  u64 src_MAC_BE : 48;
-  u16 ether_type_BE;
+  u64 dst_mac_be : 48;
+  u64 src_mac_be : 48;
+  u16 ether_type_be;
 } __attribute__((packed));
 
 typedef u32 EtherFrameFooter;
@@ -19,7 +19,7 @@ class EtherFrameHandler
 {
 protected:
   EtherFrameProvider* backend;
-  u16 ether_type_BE;
+  u16 ether_type_be;
 
 public:
   EtherFrameHandler(EtherFrameProvider* backend, u16 ether_type);
@@ -27,7 +27,7 @@ public:
 
 public:
   virtual const bool on_etherframe_recv(u8* etherframe_payload, u32 size) const;
-  void send(u64 dst_MAC_BE, u8* etherframe_payload, u32 size);
+  void send(u64 dst_mac_be, u8* etherframe_payload, u32 size);
   const u32 get_ip_address() const;
 };
 
@@ -44,9 +44,9 @@ public:
 
 public:
   const bool on_rawdata_recv(u8* buffer, u32 size) const;
-  void send(u64 dst_MAC_BE, u16 ether_type_BE, u8* buffer, u32 size);
+  void send(u64 dst_mac_be, u16 ether_type_be, u8* buffer, u32 size);
 
-  const u64 get_MAC_address() const;
+  const u64 get_mac_address() const;
   const u32 get_ip_address() const;
 };
 

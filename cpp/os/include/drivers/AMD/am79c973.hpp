@@ -34,12 +34,12 @@ class amd_am79c973
   struct InitializationBlock
   {
     u16 mode;
-    unsigned reserved1 : 4;
+    unsigned reserved_1 : 4;
     unsigned total_send_buffers : 4;
-    unsigned reserved2 : 4;
+    unsigned reserved_2 : 4;
     unsigned total_recv_buffers : 4;
     u64 physical_address : 48;
-    u16 reserved3;
+    u16 reserved_3;
     u64 logical_address;
     u32 recv_buffer_descriptor_address;
     u32 send_buffer_descriptor_address;
@@ -49,13 +49,13 @@ class amd_am79c973
   {
     u32 address;
     u32 flags;
-    u32 flags2;
+    u32 flags_2;
     u32 avail;
   } __attribute__((packed));
 
-  Port16Bit MAC_address0_port;
-  Port16Bit MAC_address2_port;
-  Port16Bit MAC_address4_port;
+  Port16Bit mac_address0_port;
+  Port16Bit mac_address2_port;
+  Port16Bit mac_address4_port;
   Port16Bit register_data_port;
   Port16Bit register_address_port;
   Port16Bit reset_port;
@@ -76,8 +76,7 @@ class amd_am79c973
   RawDataHandler* handler;
 
 public:
-  amd_am79c973(PCIDeviceDescriptor* device,
-               InterruptManager* interrupt_manager);
+  amd_am79c973(PCIDeviceDescriptor* device, InterruptManager* im);
   ~amd_am79c973();
 
 public:
@@ -89,8 +88,8 @@ public:
   void recv();
 
   void set_handler(RawDataHandler* handler);
-  const u64 get_MAC_address() const;
-  void set_IP_address(u32);
+  const u64 get_mac_address() const;
+  void set_ip_address(u32);
   const u32 get_ip_address() const;
 };
 

@@ -322,7 +322,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   // IP 10.0.2.15
   u8 ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
   u32 ip_be = ((u32)ip4 << 24) | ((u32)ip3 << 16) | ((u32)ip2 << 8) | (u32)ip1;
-  eth0->set_IP_address(ip_be);
+  eth0->set_ip_address(ip_be);
   EtherFrameProvider etherframe(eth0);
   ARP arp(&etherframe);
 
@@ -345,7 +345,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
 
   printf("\n\n\n\n\n\n\n\n");
 
-  arp.broadcast_MAC_address(gip_be);
+  arp.broadcast_mac_address(gip_be);
   icmp.request_echo_reply(gip_be);
 
   PrintfUDPHandler udp_handler;

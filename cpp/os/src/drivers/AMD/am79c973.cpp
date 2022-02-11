@@ -29,9 +29,9 @@ amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
   , InterruptHandler(interrupt_manager,
                      device->interrupt +
                        interrupt_manager->hardware_interrupt_offset)
-  , MAC_address0_port(device->port_base)
-  , MAC_address2_port(device->port_base + 0x02)
-  , MAC_address4_port(device->port_base + 0x04)
+  , mac_address0_port(device->port_base)
+  , mac_address2_port(device->port_base + 0x02)
+  , mac_address4_port(device->port_base + 0x04)
   , register_data_port(device->port_base + 0x10)
   , register_address_port(device->port_base + 0x12)
   , reset_port(device->port_base + 0x14)
@@ -41,12 +41,12 @@ amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
   current_send_buffer = 0;
   current_recv_buffer = 0;
 
-  u64 MAC0 = MAC_address0_port.read() % 256;
-  u64 MAC1 = MAC_address0_port.read() / 256;
-  u64 MAC2 = MAC_address2_port.read() % 256;
-  u64 MAC3 = MAC_address2_port.read() / 256;
-  u64 MAC4 = MAC_address4_port.read() % 256;
-  u64 MAC5 = MAC_address4_port.read() / 256;
+  u64 MAC0 = mac_address0_port.read() % 256;
+  u64 MAC1 = mac_address0_port.read() / 256;
+  u64 MAC2 = mac_address2_port.read() % 256;
+  u64 MAC3 = mac_address2_port.read() / 256;
+  u64 MAC4 = mac_address4_port.read() % 256;
+  u64 MAC5 = mac_address4_port.read() / 256;
 
   u64 MAC =
     MAC5 << 40 | MAC4 << 32 | MAC3 << 24 | MAC2 << 16 | MAC1 << 8 | MAC0;
@@ -58,12 +58,12 @@ amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
   register_data_port.write(0x04);
 
   init_block.mode = 0x0000;
-  init_block.reserved1 = 0;
+  init_block.reserved_1 = 0;
   init_block.total_send_buffers = 3;
-  init_block.reserved2 = 0;
+  init_block.reserved_2 = 0;
   init_block.total_recv_buffers = 3;
   init_block.physical_address = MAC;
-  init_block.reserved3 = 0;
+  init_block.reserved_3 = 0;
   init_block.logical_address = 0;
 
   send_buffer_descriptor =
@@ -79,13 +79,13 @@ amd_am79c973::amd_am79c973(PCIDeviceDescriptor* device,
     send_buffer_descriptor[i].address =
       (((u32)&send_buffers[i]) + 15) & ~(u32)0xF;
     send_buffer_descriptor[i].flags = 0x7FF | 0xF000;
-    send_buffer_descriptor[i].flags2 = 0;
+    send_buffer_descriptor[i].flags_2 = 0;
     send_buffer_descriptor[i].avail = 0;
 
     recv_buffer_descriptor[i].address =
       (((u32)&recv_buffers[i]) + 15) & ~(u32)0xF;
     recv_buffer_descriptor[i].flags = 0xF7FF | 0x80000000;
-    recv_buffer_descriptor[i].flags2 = 0;
+    recv_buffer_descriptor[i].flags_2 = 0;
     send_buffer_descriptor[i].avail = 0;
   }
 
@@ -180,7 +180,7 @@ amd_am79c973::send(u8* buffer, usize size)
   }
 
   send_buffer_descriptor[send_descriptor].avail = 0;
-  send_buffer_descriptor[send_descriptor].flags2 = 0;
+  send_buffer_descriptor[send_descriptor].flags_2 = 0;
   send_buffer_descriptor[send_descriptor].flags =
     0x8300F000 | ((u16)((-size) & 0xFFF));
   register_address_port.write(0);
@@ -216,7 +216,7 @@ amd_am79c973::recv()
       }
     }
 
-    recv_buffer_descriptor[current_recv_buffer].flags2 = 0;
+    recv_buffer_descriptor[current_recv_buffer].flags_2 = 0;
     recv_buffer_descriptor[current_recv_buffer].flags = 0x8000F7FF;
   }
 }
@@ -228,13 +228,13 @@ amd_am79c973::set_handler(RawDataHandler* $handler)
 }
 
 const u64
-amd_am79c973::get_MAC_address() const
+amd_am79c973::get_mac_address() const
 {
   return init_block.physical_address;
 }
 
 void
-amd_am79c973::set_IP_address(u32 ip)
+amd_am79c973::set_ip_address(u32 ip)
 {
   init_block.logical_address = ip;
 }

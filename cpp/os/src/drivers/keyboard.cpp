@@ -13,8 +13,8 @@ KeyboardEventHandler::on_keyup(char) const
 KeyboardDriver::KeyboardDriver(InterruptManager* input_manager,
                                KeyboardEventHandler* $handler)
   : InterruptHandler(input_manager, 0x21)
-  , dataport(0x60)
-  , commandport(0x64)
+  , data_port(0x60)
+  , command_port(0x64)
 {
   handler = $handler;
 }
@@ -24,23 +24,23 @@ KeyboardDriver::~KeyboardDriver() {}
 void
 KeyboardDriver::activate()
 {
-  while (commandport.read() & 0x1) {
-    dataport.read();
+  while (command_port.read() & 0x1) {
+    data_port.read();
   }
 
-  commandport.write(0xAE);
-  commandport.write(0x20);
+  command_port.write(0xAE);
+  command_port.write(0x20);
 
-  u8 status = (dataport.read() | 1) & ~0x10;
-  commandport.write(0x60);
-  dataport.write(status);
-  dataport.write(0xF4);
+  u8 status = (data_port.read() | 1) & ~0x10;
+  command_port.write(0x60);
+  data_port.write(status);
+  data_port.write(0xF4);
 }
 
 u32
 KeyboardDriver::handle_interrupt(u32 esp)
 {
-  u8 key = dataport.read();
+  u8 key = data_port.read();
 
   if (handler == 0) {
     return esp;

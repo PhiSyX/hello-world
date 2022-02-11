@@ -10,7 +10,7 @@ printf(char*);
 class SyscallHandler : public InterruptHandler
 {
 public:
-  SyscallHandler(InterruptManager* interrupt_manager, u8 interrupt_number);
+  SyscallHandler(InterruptManager* im, u8 in);
   ~SyscallHandler();
 
 public:

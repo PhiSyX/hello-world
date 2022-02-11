@@ -24,8 +24,9 @@ ATA::identify()
 
   device_port.write(0xA0);
   u8 status = command_port.read();
-  if (status == 0xFF)
+  if (status == 0xFF) {
     return;
+  }
 
   device_port.write(master ? 0xA0 : 0xB0);
   sector_count_port.write(0);
@@ -60,18 +61,19 @@ ATA::identify()
 }
 
 void
-ATA::read28(u32 sectorNum, i32 count)
+ATA::read28(u32 sector_number, i32 count)
 {
-  if (sectorNum > 0x0FFFFFFF) {
+  if (sector_number > 0x0FFFFFFF) {
     return;
   }
 
-  device_port.write((master ? 0xE0 : 0xF0) | ((sectorNum & 0x0F000000) >> 24));
+  device_port.write((master ? 0xE0 : 0xF0) |
+                    ((sector_number & 0x0F000000) >> 24));
   error_port.write(0);
   sector_count_port.write(1);
-  lba_low_port.write(sectorNum & 0x000000FF);
-  lba_mid_port.write((sectorNum & 0x0000FF00) >> 8);
-  lba_low_port.write((sectorNum & 0x00FF0000) >> 16);
+  lba_low_port.write(sector_number & 0x000000FF);
+  lba_mid_port.write((sector_number & 0x0000FF00) >> 8);
+  lba_low_port.write((sector_number & 0x00FF0000) >> 16);
   command_port.write(0x20);
 
   u8 status = command_port.read();
@@ -107,21 +109,22 @@ ATA::read28(u32 sectorNum, i32 count)
 }
 
 void
-ATA::write28(u32 sectorNum, u8* data, u32 count)
+ATA::write28(u32 sector_number, u8* data, u32 count)
 {
-  if (sectorNum > 0x0FFFFFFF) {
+  if (sector_number > 0x0FFFFFFF) {
     return;
   }
   if (count > 512) {
     return;
   }
 
-  device_port.write((master ? 0xE0 : 0xF0) | ((sectorNum & 0x0F000000) >> 24));
+  device_port.write((master ? 0xE0 : 0xF0) |
+                    ((sector_number & 0x0F000000) >> 24));
   error_port.write(0);
   sector_count_port.write(1);
-  lba_low_port.write(sectorNum & 0x000000FF);
-  lba_mid_port.write((sectorNum & 0x0000FF00) >> 8);
-  lba_low_port.write((sectorNum & 0x00FF0000) >> 16);
+  lba_low_port.write(sector_number & 0x000000FF);
+  lba_mid_port.write((sector_number & 0x0000FF00) >> 8);
+  lba_low_port.write((sector_number & 0x00FF0000) >> 16);
   command_port.write(0x30);
 
   printf("Writing to ATA Drive: ");

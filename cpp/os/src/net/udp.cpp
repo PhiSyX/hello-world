@@ -41,7 +41,7 @@ UDPSocket::disconnect()
 UDPProvider::UDPProvider(IPProvider* backend)
   : IPHandler(backend, 0x11)
 {
-  for (int i = 0; i < 65535; i++) {
+  for (u32 i = 0; i < 65535; i++) {
     sockets[i] = 0;
   }
   total_sockets = 0;
@@ -50,8 +50,11 @@ UDPProvider::UDPProvider(IPProvider* backend)
 
 UDPProvider::~UDPProvider() {}
 
-bool
-UDPProvider::on_ip_recv(u32 src_IP_BE, u32 dst_IP_BE, u8* ip_payload, u32 size)
+const bool
+UDPProvider::on_ip_recv(u32 src_ip_be,
+                        u32 dst_ip_be,
+                        u8* ip_payload,
+                        u32 size) const
 {
   if (size < sizeof(UDPHeader)) {
     return false;
@@ -64,15 +67,15 @@ UDPProvider::on_ip_recv(u32 src_IP_BE, u32 dst_IP_BE, u8* ip_payload, u32 size)
   UDPSocket* socket = 0;
   for (u16 i = 0; i < total_sockets && socket == 0; i++) {
     if (sockets[i]->local_port == msg->dst_port &&
-        sockets[i]->local_ip == dst_IP_BE && sockets[i]->listening) {
+        sockets[i]->local_ip == dst_ip_be && sockets[i]->listening) {
       socket = sockets[i];
       socket->listening = false;
       socket->remote_port = msg->src_port;
-      socket->remote_ip = src_IP_BE;
+      socket->remote_ip = src_ip_be;
     } else if (sockets[i]->local_port == msg->dst_port &&
-               sockets[i]->local_ip == dst_IP_BE &&
+               sockets[i]->local_ip == dst_ip_be &&
                sockets[i]->remote_port == msg->src_port &&
-               sockets[i]->remote_ip == src_IP_BE) {
+               sockets[i]->remote_ip == src_ip_be) {
       socket = sockets[i];
     }
   }
@@ -152,7 +155,6 @@ UDPProvider::send(UDPSocket* socket, u8* data, u16 size)
   u8* buffer2 = buffer + sizeof(UDPHeader);
 
   UDPHeader* msg = (UDPHeader*)buffer;
-
   msg->src_port = socket->local_port;
   msg->dst_port = socket->remote_port;
   msg->length = ((total_length & 0x00FF) << 8) | ((total_length & 0xFF00) >> 8);
