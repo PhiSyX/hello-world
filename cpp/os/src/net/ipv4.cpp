@@ -16,7 +16,7 @@ IPHandler::~IPHandler()
 }
 
 const bool
-IPHandler::on_ip_recv(u32 srcIP_BE,
+IPHandler::on_ip_recv(u32 src_ip_be,
                       u32 dst_ip_be,
                       u8* ip_payload,
                       u32 size) const

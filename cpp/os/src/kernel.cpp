@@ -14,6 +14,7 @@
 #include "net/etherframe.hpp"
 #include "net/icmp.hpp"
 #include "net/ipv4.hpp"
+#include "net/tcp.hpp"
 #include "net/udp.hpp"
 #include "syscalls.hpp"
 #include "types.hpp"
@@ -118,6 +119,22 @@ public:
       foo[0] = data[i];
       printf(foo);
     }
+  }
+};
+
+class PrintfTCPHandler : public TCPHandler
+{
+public:
+  const bool handle_tcp_message(TCPSocket* socket, u8* data, u16 size) const
+  {
+    char* foo = " ";
+
+    for (int i = 0; i < size; i++) {
+      foo[0] = data[i];
+      printf(foo);
+    }
+
+    return true;
   }
 };
 
@@ -338,6 +355,7 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   IPProvider ipv4(&etherframe, &arp, gip_be, subnet_be);
   ICMP icmp(&ipv4);
   UDPProvider udp(&ipv4);
+  TCPProvider tcp(&ipv4);
 
   // etherframe.send(0xFFFFFFFFFFFF, 0x0608, (u8*)"Hello World", 13);
 
@@ -346,12 +364,18 @@ kernel_main(void* multiboot_struct, u32 magicnumber)
   printf("\n\n\n\n\n\n\n\n");
 
   arp.broadcast_mac_address(gip_be);
-  icmp.request_echo_reply(gip_be);
+  // icmp.request_echo_reply(gip_be);
 
-  PrintfUDPHandler udp_handler;
+  tcp.connect(gip_be, 1234);
+  PrintfTCPHandler tcp_handler;
+  TCPSocket* tcpsocket = tcp.connect(gip_be, 1234);
+  tcp.bind(tcpsocket, &tcp_handler);
+  tcpsocket->send((u8*)"Hello World! (TCP)", 18);
 
-  UDPSocket* udp_socket = udp.listen(1234);
-  udp.bind(udp_socket, &udp_handler);
+  // PrintfUDPHandler udp_handler;
+  // UDPSocket* udp_socket = udp.listen(1234);
+  // udp.bind(udp_socket, &udp_handler);
+  // udp_socket->send((u8*)"Hello World! (UDP)", 18);
 
   while (1) {
 #ifdef GRAPHICS_MODE
