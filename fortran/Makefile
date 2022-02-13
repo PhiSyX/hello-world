@@ -14,12 +14,19 @@ build:
 		./gcd.f90
 	gfortran $(FORTRAN_PARAMS) -o obj/leap_year.o \
 		./leap_year.f90
+	gfortran $(FORTRAN_PARAMS) -o obj/calc.o \
+		./calc.f90
 
 leap_year:
 	./obj/leap_year.o 2020
 	./obj/leap_year.o 2021
 	./obj/leap_year.o 2024
 	./obj/leap_year.o 1700
+
+calc:
+	./obj/calc.o "0.1 + 0.2"
+	./obj/calc.o "3.8 - 1.2"
+	./obj/calc.o "2.1 * 7.0"
 
 clean:
 	@echo "Cleaning..."
