@@ -1,21 +1,27 @@
-FORTRAN_PARAMS = -Wall -Wextra
+MAKE_PARAMS := --no-print-directory
+
+FORTRAN_PARAMS := -Wall -Wextra
+JULIA_MOD := julia/mod.f90 julia/openmp_mod.f90
+
+obj/julia/%.o: julia/%.f90
+	@mkdir -p $(@D)
+	gfortran $(FORTRAN_PARAMS) -o $@ $(JULIA_MOD) $<
+	@mv *.mod julia/
+
+obj/%.o: %.f90
+	@mkdir -p $(@D)
+	gfortran $(FORTRAN_PARAMS) -o $@ $<
 
 build:
 	@echo "Building..."
-	@mkdir -p obj
-	gfortran $(FORTRAN_PARAMS) -o obj/hello_world.o \
-		./hello_world.f90
-	gfortran $(FORTRAN_PARAMS) -o obj/julia_set.o \
-		./julia/mod.f90 julia/set.f90
-	gfortran $(FORTRAN_PARAMS) -o obj/julia_openmp_set.o \
-		./julia/mod.f90 julia/openmp_mod.f90 julia/openmp_set.f90
-	@mv *.mod julia/
-	gfortran $(FORTRAN_PARAMS) -o obj/gcd.o \
-		./gcd.f90
-	gfortran $(FORTRAN_PARAMS) -o obj/leap_year.o \
-		./leap_year.f90
-	gfortran $(FORTRAN_PARAMS) -o obj/calc.o \
-		./calc.f90
+	@$(MAKE) $(MAKE_PARAMS) obj/hello_world.o
+	@$(MAKE) $(MAKE_PARAMS) obj/julia/set.o
+	@$(MAKE) $(MAKE_PARAMS) obj/julia/openmp_set.o
+	@$(MAKE) $(MAKE_PARAMS) obj/gcd.o
+	@$(MAKE) $(MAKE_PARAMS) obj/leap_year.o
+	@$(MAKE) $(MAKE_PARAMS) obj/calc.o
+	@$(MAKE) $(MAKE_PARAMS) obj/distance.o
+	@echo "Finished."
 
 leap_year:
 	./obj/leap_year.o 2020
@@ -30,4 +36,4 @@ calc:
 
 clean:
 	@echo "Cleaning..."
-	rm -f obj/*.o
+	@rm -rf obj/
