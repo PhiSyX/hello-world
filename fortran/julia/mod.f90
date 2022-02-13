@@ -8,9 +8,7 @@ module mod
     complex(kind = DP), parameter :: C = (-0.622772_DP, 0.42193_DP)
 
     public :: iterate
-
 contains
-
     elemental function iterate(i0) result(n)
         implicit none
 
@@ -26,5 +24,4 @@ contains
             n = n + 1
         end do
     end function iterate
-
 end module mod

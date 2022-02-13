@@ -5,9 +5,9 @@ module openmp_mod
 
     public::compute
 contains
-
     subroutine compute(i, n)
         implicit none
+
         complex(kind = dp), dimension(:, :), intent(in)    :: i
         integer,            dimension(:, :), intent(inout) :: n
         integer :: c, d

@@ -11,15 +11,12 @@ program openmp_set
 
     call initialize_i_values(i, points)
     call initialize_n_values(n, points)
-
     call compute(i, n)
-
     call log_n_values(n)
 
     deallocate(i)
     deallocate(n)
 contains
-
     function get_size() result(n)
         use, intrinsic::iso_fortran_env, only: error_unit
         implicit none
@@ -101,7 +98,6 @@ contains
         end if
 
         n = 0
-
     end subroutine initialize_n_values
 
     subroutine log_n_values(n)
@@ -117,5 +113,4 @@ contains
             print fmt_str, n(i, :)
         end do
     end subroutine log_n_values
-
 end program openmp_set

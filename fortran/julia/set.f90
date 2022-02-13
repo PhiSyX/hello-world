@@ -85,7 +85,8 @@ contains
     subroutine initiliaze_n_values(n, points)
         implicit none
 
-        integer, dimension(:, :), allocatable, intent(inout) :: n
+        integer, dimension(:, :), allocatable, &
+            intent(inout)   :: n
         integer, intent(in) :: points
         integer :: status
 
