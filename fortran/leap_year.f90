@@ -1,4 +1,4 @@
-program leap_year
+program main
    implicit none
 
    integer :: year
@@ -42,4 +42,4 @@ contains
          is_leap_year = .true.
       end if
    end function is_leap_year
-end program leap_year
+end program main

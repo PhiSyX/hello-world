@@ -1,4 +1,4 @@
-program compute_gcd
+program main
    implicit none
 
    integer, parameter :: MAX_VALUE = 10
@@ -23,4 +23,4 @@ contains
       end do
       gcd = i
    end function gcd
-end program compute_gcd
+end program main

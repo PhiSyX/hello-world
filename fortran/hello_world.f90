@@ -1,3 +1,3 @@
-program hello_world
+program main
    print *, 'Hello World!'
-end program hello_world
+end program main

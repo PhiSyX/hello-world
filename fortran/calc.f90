@@ -1,4 +1,4 @@
-program calc
+program main
    use, intrinsic::iso_fortran_env, only: DP => REAL64
    implicit none
 
@@ -57,4 +57,4 @@ contains
          stop 3
       end select
    end function evaluate
-end program calc
+end program main

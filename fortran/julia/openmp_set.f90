@@ -1,4 +1,4 @@
-program openmp_set
+program main
    use, intrinsic::iso_fortran_env, only: DP => REAL64, error_unit
    use openmp_mod, only: compute
    implicit none
@@ -113,4 +113,4 @@ contains
          print fmt_str, n(i, :)
       end do
    end subroutine log_n_values
-end program openmp_set
+end program main

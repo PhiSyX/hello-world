@@ -1,4 +1,4 @@
-program set
+program main
    use, intrinsic::iso_fortran_env, only: DP => REAL64, error_unit
    use mod, only: iterate
    implicit none
@@ -114,4 +114,4 @@ contains
          print fmt_str, n(i, :)
       end do
    end subroutine log_n_values
-end program set
+end program main
