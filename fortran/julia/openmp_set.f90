@@ -1,18 +1,18 @@
-program set
+program openmp_set
     use, intrinsic::iso_fortran_env, only: DP => REAL64, error_unit
-    use mod, only: iterate
+    use openmp_mod, only: compute
     implicit none
 
     complex(kind = DP), dimension(:, :), allocatable :: i
     integer,            dimension(:, :), allocatable :: n
-
     integer :: points
+
     points = get_size()
 
     call initialize_i_values(i, points)
-    call initiliaze_n_values(n, points)
+    call initialize_n_values(n, points)
 
-    n = iterate(i)
+    call compute(i, n)
 
     call log_n_values(n)
 
@@ -26,6 +26,7 @@ contains
 
         integer, parameter    :: DEFAULT_NUMBER = 100
         character(len = 1024) :: buffer, io_msg
+
         integer :: n
         integer :: io_stat
 
@@ -33,16 +34,16 @@ contains
             n = DEFAULT_NUMBER
         else if (command_argument_count() == 1) then
             call get_command_argument(1, buffer)
-            read(buffer, fmt = *, iostat = io_stat, iomsg = io_msg) n
+            read (buffer, fmt = *, iostat = io_stat, iomsg = io_msg) n
             if (io_stat /= 0) then
-                write(unit = error_unit, fmt = '(2A)') &
+                write (unit=error_unit, fmt='(2A)') &
                     "Erreur:", io_msg
                 stop 2
             end if
         else
-            write(unit = error_unit, fmt = '(A)') &
+            write (unit=error_unit, fmt='(A)') &
                 "Erreur:", "Nombre d'arguments incorrect"
-            stop 2
+            stop 1
         end if
     end function get_size
 
@@ -65,7 +66,7 @@ contains
         allocate(i(points, points), stat = status)
 
         if (status /= 0) then
-            write(unit = error_unit, fmt = '(A)') &
+            write (unit=error_unit, fmt='(A)') &
                 "Erreur:", "Allocation de i impossible"
             stop 2
         end if
@@ -75,30 +76,33 @@ contains
 
         do d = 1, size(i, 2)
             do c = 1, size(i, 1)
-                i(c, d) = cmplx(MIN_RE + (c - 1) * delta_re, &
-                                MIN_IM + (d - 1) * delta_im, &
+                i(c, d) = cmplx(MIN_RE + (c - 1)*delta_re, &
+                                MIN_IM + (d - 1)*delta_im, &
                                 kind = DP)
             end do
         end do
     end subroutine initialize_i_values
 
-    subroutine initiliaze_n_values(n, points)
+    subroutine initialize_n_values(n, points)
         implicit none
 
-        integer, dimension(:, :), allocatable, intent(inout) :: n
-        integer, intent(in) :: points
+        integer, dimension(:, :), allocatable, &
+                intent(inout) :: n
+        integer, intent(in)   :: points
+
         integer :: status
 
         allocate(n(points, points), stat = status)
 
         if (status /= 0) then
-            write(unit = error_unit, fmt = '(A)') &
+            write (unit=error_unit, fmt='(A)') &
                 "Erreur:", "Allocation de i impossible"
             stop 2
         end if
 
         n = 0
-    end subroutine initiliaze_n_values
+
+    end subroutine initialize_n_values
 
     subroutine log_n_values(n)
         implicit none
@@ -113,4 +117,5 @@ contains
             print fmt_str, n(i, :)
         end do
     end subroutine log_n_values
-end program set
+
+end program openmp_set
