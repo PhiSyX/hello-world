@@ -12,6 +12,14 @@ build:
 	@mv *.mod julia/
 	gfortran $(FORTRAN_PARAMS) -o obj/gcd.o \
 		./gcd.f90
+	gfortran $(FORTRAN_PARAMS) -o obj/leap_year.o \
+		./leap_year.f90
+
+leap_year:
+	./obj/leap_year.o 2020
+	./obj/leap_year.o 2021
+	./obj/leap_year.o 2024
+	./obj/leap_year.o 1700
 
 clean:
 	@echo "Cleaning..."
