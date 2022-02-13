@@ -22,6 +22,8 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/calc.o
 	@$(MAKE) $(MAKE_PARAMS) obj/distance.o
 	@$(MAKE) $(MAKE_PARAMS) obj/clamp.o
+	@$(MAKE) $(MAKE_PARAMS) obj/factorial/ref.o
+	@$(MAKE) $(MAKE_PARAMS) obj/factorial/inref.o
 	@echo "Finished."
 
 leap_year:
