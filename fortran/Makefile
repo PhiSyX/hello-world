@@ -29,6 +29,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/clamp/optional.o
 	@$(MAKE) $(MAKE_PARAMS) obj/expo.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/do_statement.o
+	@$(MAKE) $(MAKE_PARAMS) obj/iteration/messing_up.o
 	@echo "Finished."
 
 leap_year:
