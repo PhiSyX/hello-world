@@ -27,6 +27,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/factorial/value.o
 	@$(MAKE) $(MAKE_PARAMS) obj/factorial/recursion.o
 	@$(MAKE) $(MAKE_PARAMS) obj/clamp/optional.o
+	@$(MAKE) $(MAKE_PARAMS) obj/expo.o
 	@echo "Finished."
 
 leap_year:
