@@ -32,6 +32,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/messing_up.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/zero_step.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/double.o
+	@$(MAKE) $(MAKE_PARAMS) obj/algo/sierpinski.o
 	@echo "Finished."
 
 leap_year:
