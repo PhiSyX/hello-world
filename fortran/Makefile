@@ -7,6 +7,12 @@ obj/julia/%.o: julia/%.f90
 	gfortran $(FORTRAN_PARAMS) -o $@ $(JULIA_MOD) $<
 	@mv *.mod julia/
 
+1D_MOD := 1D/mod.f90
+obj/1D/%.o: 1D/%.f90
+	@mkdir -p $(@D)
+	gfortran $(FORTRAN_PARAMS) -o $@ $(1D_MOD) $<
+	@mv *.mod 1D/
+
 obj/%.o: %.f90
 	@mkdir -p $(@D)
 	gfortran $(FORTRAN_PARAMS) -o $@ $<
@@ -38,6 +44,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/type/info.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/conv.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/overflow.o
+	@$(MAKE) $(MAKE_PARAMS) obj/1D/cellular_automata.o
 	@echo "Finished."
 
 leap_year:
