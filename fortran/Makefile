@@ -33,6 +33,8 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/double.o
 	@$(MAKE) $(MAKE_PARAMS) obj/algo/sierpinski.o
 	@$(MAKE) $(MAKE_PARAMS) obj/parser.o
+	@$(MAKE) $(MAKE_PARAMS) obj/sum/infinite_loop.o
+	@$(MAKE) $(MAKE_PARAMS) obj/sum/sum.o
 	@echo "Finished."
 
 leap_year:

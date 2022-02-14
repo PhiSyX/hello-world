@@ -113,6 +113,7 @@ contains
 
    subroutine print_config(config)
       implicit none
+
       type(ConfigType), intent(in) :: config
 
       print "('method = ', A)", trim(config%method)
