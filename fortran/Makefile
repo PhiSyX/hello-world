@@ -1,8 +1,7 @@
 MAKE_PARAMS := --no-print-directory
-
 FORTRAN_PARAMS := -Wall -Wextra
-JULIA_MOD := julia/mod.f90 julia/openmp_mod.f90
 
+JULIA_MOD := julia/mod.f90 julia/openmp_mod.f90
 obj/julia/%.o: julia/%.f90
 	@mkdir -p $(@D)
 	gfortran $(FORTRAN_PARAMS) -o $@ $(JULIA_MOD) $<
@@ -33,6 +32,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/zero_step.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/double.o
 	@$(MAKE) $(MAKE_PARAMS) obj/algo/sierpinski.o
+	@$(MAKE) $(MAKE_PARAMS) obj/parser.o
 	@echo "Finished."
 
 leap_year:
@@ -45,6 +45,9 @@ calc:
 	./obj/calc.o "0.1 + 0.2"
 	./obj/calc.o "3.8 - 1.2"
 	./obj/calc.o "2.1 * 7.0"
+
+parser:
+	./obj/parser.o ./input/parser.txt
 
 clean:
 	@echo "Cleaning..."
