@@ -36,6 +36,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/sum/infinite_loop.o
 	@$(MAKE) $(MAKE_PARAMS) obj/sum/sum.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/info.o
+	@$(MAKE) $(MAKE_PARAMS) obj/type/conv.o
 	@echo "Finished."
 
 leap_year:
