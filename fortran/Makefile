@@ -31,6 +31,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/do_statement.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/messing_up.o
 	@$(MAKE) $(MAKE_PARAMS) obj/iteration/zero_step.o
+	@$(MAKE) $(MAKE_PARAMS) obj/iteration/double.o
 	@echo "Finished."
 
 leap_year:
