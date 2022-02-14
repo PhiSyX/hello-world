@@ -37,6 +37,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/sum/sum.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/info.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/conv.o
+	@$(MAKE) $(MAKE_PARAMS) obj/type/overflow.o
 	@echo "Finished."
 
 leap_year:
