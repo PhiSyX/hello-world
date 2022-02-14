@@ -45,6 +45,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/type/conv.o
 	@$(MAKE) $(MAKE_PARAMS) obj/type/overflow.o
 	@$(MAKE) $(MAKE_PARAMS) obj/1D/cellular_automata.o
+	@$(MAKE) $(MAKE_PARAMS) obj/string/assignment.o
 	@echo "Finished."
 
 leap_year:
