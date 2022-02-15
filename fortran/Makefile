@@ -47,6 +47,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/1D/cellular_automata.o
 	@$(MAKE) $(MAKE_PARAMS) obj/string/assignment.o
 	@$(MAKE) $(MAKE_PARAMS) obj/string/palindrome.o
+	@$(MAKE) $(MAKE_PARAMS) obj/string/ascii.o
 	@echo "Finished."
 
 leap_year:
