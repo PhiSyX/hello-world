@@ -48,6 +48,8 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/string/assignment.o
 	@$(MAKE) $(MAKE_PARAMS) obj/string/palindrome.o
 	@$(MAKE) $(MAKE_PARAMS) obj/string/ascii.o
+	@$(MAKE) $(MAKE_PARAMS) obj/pi/pi.o
+	@$(MAKE) $(MAKE_PARAMS) obj/pi/pi_openmp.o
 	@echo "Finished."
 
 leap_year:
