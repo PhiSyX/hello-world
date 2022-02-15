@@ -50,6 +50,7 @@ build:
 	@$(MAKE) $(MAKE_PARAMS) obj/string/ascii.o
 	@$(MAKE) $(MAKE_PARAMS) obj/pi/pi.o
 	@$(MAKE) $(MAKE_PARAMS) obj/pi/pi_openmp.o
+	@$(MAKE) $(MAKE_PARAMS) obj/algo/kaprekar.o
 	@echo "Finished."
 
 leap_year:
