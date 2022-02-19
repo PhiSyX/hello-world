@@ -36,15 +36,13 @@ func (n *discoveryNotifee) HandlePeerFound(addr peer.AddrInfo) {
 // -------- //
 
 func SetupMulticastDNS(ctx *context.Context, host *host.Host, cli_args *cli.CLI, ui *ui.UI) error {
-	service, err := discovery.NewMdnsService(*ctx, *host, cli_args.Options.MDNS.Interval, "ibug-chat-go:rendez-vous")
-
+	service, err := discovery.NewMdnsService(*ctx, *host, cli_args.Options.MDNS.Interval, "ibug-p2p-gochat:rendez-vous")
 	if err != nil {
 		return err
 	}
 
-	notif := &discoveryNotifee{Host: host, ui: ui}
-
-	service.RegisterNotifee(notif)
+	notifee := &discoveryNotifee{Host: host, ui: ui}
+	service.RegisterNotifee(notifee)
 
 	return nil
 }
