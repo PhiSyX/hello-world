@@ -15,13 +15,18 @@ import (
 // --------- //
 
 type UI struct {
-	app          *tview.Application
-	history_area *tview.TextView
-	state        *chat.ChatState
-	channel      *chat.Channel
-	input        *UIInput
+	app     *tview.Application
+	channel *chat.Channel
+	history *UIHistory
+	input   *UIInput
+	state   *chat.ChatState
 
 	OkChan chan struct{}
+}
+
+type UIHistory struct {
+	area *tview.TextView
+	list []*string
 }
 
 type UIInput struct {
@@ -35,7 +40,6 @@ type UIInput struct {
 
 func (ui *UI) Run() {
 	defer ui.end()
-
 	err := ui.app.Run()
 	if err != nil {
 		log.Panicln("Erreur lors du lancement de l'application :", err)
@@ -73,7 +77,11 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	ui := &UI{
 		app: app,
 
-		history_area: history_area,
+		history: &UIHistory{
+			area: history_area,
+			list: []*string{},
+		},
+
 		input: &UIInput{
 			model: input_model,
 			field: input_area,
@@ -104,10 +112,6 @@ func build_input_field_area(nick *string, model chan *string) *tview.Flex {
 		SetFieldWidth(0)
 
 	field.SetDoneFunc(func(key tcell.Key) {
-		if !mode_normal {
-			return
-		}
-
 		if key != tcell.KeyEnter {
 			return
 		}

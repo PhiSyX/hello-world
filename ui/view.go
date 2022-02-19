@@ -7,5 +7,5 @@ import "fmt"
 // -------------- //
 
 func (ui *UI) set_topic() {
-	ui.history_area.SetTitle(fmt.Sprintf(" Salon: %s ", ui.channel.Topic.String()))
+	ui.history.area.SetTitle(fmt.Sprintf(" Salon: %s ", ui.channel.Topic.String()))
 }
