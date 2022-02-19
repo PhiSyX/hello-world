@@ -17,11 +17,12 @@ import (
 type UI struct {
 	cli_args *cli.CLI
 
-	app     *tview.Application
-	channel *chat.Channel
-	history *UIHistory
-	input   *UIInput
-	state   *chat.ChatState
+	app      *tview.Application
+	channel  *chat.Channel
+	history  *UIHistory
+	nicklist *UINicklist
+	input    *UIInput
+	state    *chat.ChatState
 
 	OkChan chan struct{}
 }
@@ -34,6 +35,10 @@ type UIHistory struct {
 type UIInput struct {
 	model chan *string
 	field *tview.Flex
+}
+
+type UINicklist struct {
+	area *tview.TextView
 }
 
 // -------------- //
@@ -52,7 +57,7 @@ func (ui *UI) Start(state *chat.ChatState, channel *chat.Channel) {
 	ui.state = state
 	ui.channel = channel
 	ui.set_topic()
-	go ui.handleEvents()
+	go ui.handle_events()
 }
 
 func (ui *UI) end() {
@@ -89,6 +94,10 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 		input: &UIInput{
 			model: input_model,
 			field: input_area,
+		},
+
+		nicklist: &UINicklist{
+			area: nicklist_area,
 		},
 
 		OkChan: make(chan struct{}, 1),

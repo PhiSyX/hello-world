@@ -58,12 +58,12 @@ func main() {
 		log.Panicln("Impossible de créer l'hôte: ", err)
 	}
 
-	channel, err := chat.NewChannel(api.PubSub, cli_args.Options.Channel)
+	channel, err := chat.NewChannel(ctx, api.PubSub, cli_args.Options.Channel, (*api.Host).ID())
 	if err != nil {
 		log.Panicln("Impossible de créer le salon: ", err)
 	}
 
-	state := chat.NewState(ctx, api)
+	state := chat.NewState(ctx, api, cli_args)
 	ui.Start(state, channel)
 
 	<-ui.OkChan
