@@ -24,9 +24,11 @@ type discoveryNotifee struct {
 // Implémentation // -> Interface
 // -------------- //
 
-func (n *discoveryNotifee) HandlePeerFound(addr peer.AddrInfo) {
-	err := (*(n.Host)).Connect(context.Background(), addr)
+func (notifee *discoveryNotifee) HandlePeerFound(addr peer.AddrInfo) {
+	err := (*(notifee.Host)).Connect(context.Background(), addr)
+	notifee.ui.LogDebug("Multicast DNS pair trouvé : ", addr.ID)
 	if err != nil {
+		notifee.ui.LogError("Tentative de connexion à un pair échouée : ", err)
 		return
 	}
 }

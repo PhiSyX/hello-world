@@ -15,6 +15,8 @@ import (
 // --------- //
 
 type UI struct {
+	cli_args *cli.CLI
+
 	app     *tview.Application
 	channel *chat.Channel
 	history *UIHistory
@@ -75,6 +77,8 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	app.SetRoot(root, true)
 
 	ui := &UI{
+		cli_args: cli_args,
+
 		app: app,
 
 		history: &UIHistory{

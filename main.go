@@ -23,8 +23,9 @@ func create_api(ctx *context.Context, cli_args *cli.CLI, ui *ui.UI) (*chat.NodeA
 	}
 
 	if *cli_args.Options.Debug {
+		ui.LogTrace("Adresses hôte: ")
 		for _, addr := range host.Addrs() {
-			log.Println(addr)
+			ui.LogTrace("  ", addr)
 		}
 	}
 
@@ -34,6 +35,7 @@ func create_api(ctx *context.Context, cli_args *cli.CLI, ui *ui.UI) (*chat.NodeA
 	}
 
 	// Multicast DNS
+	ui.LogInfo("Initialisation du Multicast DNS")
 	err = dns.SetupMulticastDNS(ctx, &host, cli_args, ui)
 	if err != nil {
 		return nil, err
