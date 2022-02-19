@@ -1,0 +1,13 @@
+Application Chat pair à pair dans un terminal 
+---------------------------------------------
+
+Commande à exécuter :
+
+    $ go run main.go [ options ] 
+    $ go build
+    $ ./name-executable [ options ]
+
+Les options du CLI sont :
+    --nick    : pseudonyme de l'utilisateur ($Env:USERNAME ou $Env:USER)
+    --channel : nom du channel à rejoindre à la connexion ( défaut: #ibug )
+    --debug   : affiche plus d'informations de débogage
