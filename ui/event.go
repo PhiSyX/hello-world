@@ -11,13 +11,9 @@ func (ui *UI) handle_events() {
 	for {
 		select {
 		case input := <-ui.input.model:
-			if len(ui.history.list) == 0 || *ui.history.list[len(ui.history.list)-1] != *input {
-				ui.history.list = append(ui.history.list, input)
-			}
-
-			message := &chat.Message{
-				Text:   *input,
-				Sender: *ui.state.Sender,
+			message := &chat.Line{
+				Message: *input,
+				Sender:  *ui.state.Sender,
 			}
 
 			err := ui.channel.Send(context.Background(), message)

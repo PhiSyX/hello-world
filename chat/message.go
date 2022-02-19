@@ -8,9 +8,9 @@ import (
 // Structure //
 // --------- //
 
-type Message struct {
-	Text   string        `json:"text"`
-	Sender MessageSender `json:"sender"`
+type Line struct {
+	Message string        `json:"message"`
+	Sender  MessageSender `json:"sender"`
 }
 
 type MessageSender struct {

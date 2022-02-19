@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/libp2p/go-libp2p-core/peer"
+	peer "github.com/libp2p/go-libp2p-core/peer"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 )
 
@@ -13,13 +13,13 @@ import (
 // --------- //
 
 type Channel struct {
-	Message chan *Message
+	Message chan *Line
 	Event   chan *pubsub.PeerEvent
 
-	Context *context.Context
+	Topic *pubsub.Topic
 
-	Topic        *pubsub.Topic
-	Subscription *pubsub.Subscription
+	ctx          *context.Context
+	subscription *pubsub.Subscription
 }
 
 // -------------- //
@@ -38,12 +38,12 @@ func NewChannel(ctx context.Context, ps *pubsub.PubSub, channel_name *string, ni
 	}
 
 	channel := &Channel{
-		Message: make(chan *Message, 128),
+		Message: make(chan *Line, 128),
 
-		Context: &ctx,
+		ctx: &ctx,
 
 		Topic:        topic,
-		Subscription: subscription,
+		subscription: subscription,
 	}
 
 	go channel.read_messages_forever(&nick_id)
@@ -51,7 +51,7 @@ func NewChannel(ctx context.Context, ps *pubsub.PubSub, channel_name *string, ni
 	return channel, nil
 }
 
-func (channel *Channel) Send(ctx context.Context, message *Message) error {
+func (channel *Channel) Send(ctx context.Context, message *Line) error {
 	bytes, err := json.Marshal(message)
 	if err != nil {
 		return err
@@ -66,12 +66,12 @@ func (channel *Channel) Send(ctx context.Context, message *Message) error {
 
 func (channel *Channel) read_messages_forever(nick_id *peer.ID) {
 	for {
-		message, err := channel.Subscription.Next(*channel.Context)
+		message, err := channel.subscription.Next(*channel.ctx)
 		if err != nil {
 			return
 		}
 
-		new_message := new(Message)
+		new_message := new(Line)
 		err = json.Unmarshal(message.Data, new_message)
 		if err != nil {
 			continue

@@ -5,6 +5,7 @@ import (
 
 	chat "github.com/PhiSyX/ibug-p2p-gochat/chat"
 	cli "github.com/PhiSyX/ibug-p2p-gochat/cli"
+
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 )
 
@@ -67,7 +68,7 @@ func (ui *UI) echo_event_part(nick string) {
 	fmt.Fprintln(ui.history.area, prompt, nick)
 }
 
-func (ui *UI) echo_message(line *chat.Message) {
+func (ui *UI) echo_message(line *chat.Line) {
 	var message_color string
 
 	if line.Sender.ID.Pretty() == ui.state.Sender.ID.Pretty() {
@@ -81,5 +82,5 @@ func (ui *UI) echo_message(line *chat.Message) {
 	}
 
 	prompt := cli.Color(message_color, fmt.Sprintf("<%s>", line.Sender.Nick))
-	fmt.Fprintln(ui.history.area, prompt, line.Text)
+	fmt.Fprintln(ui.history.area, prompt, line.Message)
 }

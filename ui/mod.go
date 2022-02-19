@@ -3,11 +3,11 @@ package ui
 import (
 	"log"
 
-	"github.com/PhiSyX/ibug-p2p-gochat/chat"
-	"github.com/PhiSyX/ibug-p2p-gochat/cli"
+	chat "github.com/PhiSyX/ibug-p2p-gochat/chat"
+	cli "github.com/PhiSyX/ibug-p2p-gochat/cli"
 
-	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	cell "github.com/gdamore/tcell/v2"
+	view "github.com/rivo/tview"
 )
 
 // --------- //
@@ -17,7 +17,7 @@ import (
 type UI struct {
 	cli_args *cli.CLI
 
-	app      *tview.Application
+	app      *view.Application
 	channel  *chat.Channel
 	history  *UIHistory
 	nicklist *UINicklist
@@ -28,17 +28,17 @@ type UI struct {
 }
 
 type UIHistory struct {
-	area *tview.TextView
+	area *view.TextView
 	list []*string
 }
 
 type UIInput struct {
 	model chan *string
-	field *tview.Flex
+	field *view.Flex
 }
 
 type UINicklist struct {
-	area *tview.TextView
+	area *view.TextView
 }
 
 // -------------- //
@@ -70,7 +70,7 @@ func (ui *UI) end() {
 // -------- //
 
 func CreateUIFromCLI(cli_args *cli.CLI) *UI {
-	app := tview.NewApplication()
+	app := view.NewApplication()
 
 	input_model := make(chan *string, 32)
 	input_area := build_input_field_area(cli_args.Options.Nick, input_model)
@@ -106,26 +106,26 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	return ui
 }
 
-func build_input_field_area(nick *string, model chan *string) *tview.Flex {
-	area := tview.NewFlex()
+func build_input_field_area(nick *string, model chan *string) *view.Flex {
+	area := view.NewFlex()
 
 	// TODO: VIM mode
-	mode_normal := false           // TODO: true
-	mode_color := tcell.ColorGreen // TODO: tcell.ColorRed
+	mode_normal := false          // TODO: true
+	mode_color := cell.ColorGreen // TODO: cell.ColorRed
 
-	nickname := tview.NewTextView().
+	nickname := view.NewTextView().
 		SetText(*nick).
-		SetTextColor(tcell.ColorBlue)
+		SetTextColor(cell.ColorBlue)
 
-	field := tview.NewInputField().
+	field := view.NewInputField().
 		SetLabelColor(mode_color).
 		SetLabel(" λ ").
-		SetFieldBackgroundColor(tcell.ColorWhite).
-		SetFieldTextColor(tcell.ColorBlack).
+		SetFieldBackgroundColor(cell.ColorWhite).
+		SetFieldTextColor(cell.ColorBlack).
 		SetFieldWidth(0)
 
-	field.SetDoneFunc(func(key tcell.Key) {
-		if key != tcell.KeyEnter {
+	field.SetDoneFunc(func(key cell.Key) {
+		if key != cell.KeyEnter {
 			return
 		}
 
@@ -143,8 +143,8 @@ func build_input_field_area(nick *string, model chan *string) *tview.Flex {
 		AddItem(field, 0, 1, !mode_normal)
 }
 
-func build_history_area(fn func() *tview.Application) *tview.TextView {
-	history_area := tview.NewTextView()
+func build_history_area(fn func() *view.Application) *view.TextView {
+	history_area := view.NewTextView()
 	history_area.SetScrollable(true).SetBorder(true)
 	history_area.SetDynamicColors(true)
 
@@ -155,21 +155,21 @@ func build_history_area(fn func() *tview.Application) *tview.TextView {
 	return history_area
 }
 
-func build_nicklist_area(fn func() *tview.Application) *tview.TextView {
-	nicklist_area := tview.NewTextView()
+func build_nicklist_area(fn func() *view.Application) *view.TextView {
+	nicklist_area := view.NewTextView()
 	nicklist_area.SetScrollable(true).SetBorder(true).SetTitle(" Utilisateurs ")
 	return nicklist_area
 }
 
-func merge_history_and_nicklist_areas(history_area *tview.TextView, nicklist_area *tview.TextView) *tview.Flex {
-	chat_area := tview.NewFlex().
+func merge_history_and_nicklist_areas(history_area *view.TextView, nicklist_area *view.TextView) *view.Flex {
+	chat_area := view.NewFlex().
 		AddItem(history_area, 0, 1, false).
 		AddItem(nicklist_area, 30, 1, false)
 	return chat_area
 }
 
-func merge_chat_and_input_areas(chat_area *tview.Flex, input_area *tview.Flex) *tview.Flex {
-	root := tview.NewFlex().SetDirection(tview.FlexRow).
+func merge_chat_and_input_areas(chat_area *view.Flex, input_area *view.Flex) *view.Flex {
+	root := view.NewFlex().SetDirection(view.FlexRow).
 		AddItem(chat_area, 0, 1, false).
 		AddItem(input_area, 1, 1, true)
 	return root

@@ -7,7 +7,7 @@ import (
 	ui "github.com/PhiSyX/ibug-p2p-gochat/ui"
 
 	host "github.com/libp2p/go-libp2p-core/host"
-	"github.com/libp2p/go-libp2p-core/peer"
+	peer "github.com/libp2p/go-libp2p-core/peer"
 	discovery "github.com/libp2p/go-libp2p/p2p/discovery"
 )
 
@@ -16,7 +16,7 @@ import (
 // --------- //
 
 type discoveryNotifee struct {
-	Host *host.Host
+	host *host.Host
 	ui   *ui.UI
 }
 
@@ -25,7 +25,7 @@ type discoveryNotifee struct {
 // -------------- //
 
 func (notifee *discoveryNotifee) HandlePeerFound(addr peer.AddrInfo) {
-	err := (*(notifee.Host)).Connect(context.Background(), addr)
+	err := (*(notifee.host)).Connect(context.Background(), addr)
 	notifee.ui.LogDebug("Multicast DNS pair trouvé : ", addr.ID)
 	if err != nil {
 		notifee.ui.LogError("Tentative de connexion à un pair échouée : ", err)
@@ -43,7 +43,7 @@ func SetupMulticastDNS(ctx *context.Context, host *host.Host, cli_args *cli.CLI,
 		return err
 	}
 
-	notifee := &discoveryNotifee{Host: host, ui: ui}
+	notifee := &discoveryNotifee{host: host, ui: ui}
 	service.RegisterNotifee(notifee)
 
 	return nil

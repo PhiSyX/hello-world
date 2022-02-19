@@ -11,9 +11,10 @@ import (
 // --------- //
 
 type ChatState struct {
-	Context *context.Context
-	Api     *NodeAPI
-	Sender  *MessageSender
+	Sender *MessageSender
+
+	ctx *context.Context
+	api *NodeAPI
 }
 
 // -------------- //
@@ -22,8 +23,8 @@ type ChatState struct {
 
 func NewState(ctx context.Context, api *NodeAPI, cli_args *cli.CLI) *ChatState {
 	state := &ChatState{
-		Context: &ctx,
-		Api:     api,
+		ctx: &ctx,
+		api: api,
 		Sender: &MessageSender{
 			ID:   (*api.Host).ID(),
 			Nick: *cli_args.Options.Nick,
