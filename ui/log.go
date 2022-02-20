@@ -13,6 +13,11 @@ import (
 // Implémentation //
 // -------------- //
 
+func (ui *UI) Log(args ...interface{}) {
+	prompt := cli.Color("blue", "<SNotice> $server:")
+	fmt.Fprintln(ui.history.area, prompt, fmt.Sprint(args...))
+}
+
 func (ui *UI) LogInfo(args ...interface{}) {
 	if !*ui.cli_args.Options.Debug {
 		return

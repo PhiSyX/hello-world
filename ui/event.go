@@ -11,6 +11,12 @@ func (ui *UI) handle_events() {
 	for {
 		select {
 		case input := <-ui.input.model:
+			// Commandes
+			if strings.HasPrefix(*input, "/") {
+				ui.handle_command(strings.TrimPrefix(*input, "/"))
+				continue
+			}
+
 			message := &chat.Line{
 				Message: *input,
 				Sender:  *ui.state.Sender,
@@ -47,4 +53,17 @@ func (ui *UI) refresh_nicklist() {
 	}
 	ui.nicklist.area.SetText(strings.Join(nicklist_ids, "\n"))
 	ui.app.Draw()
+}
+
+func (ui *UI) handle_command(command string) {
+	args := strings.Split(command, " ")
+
+	switch args[0] {
+	case "help":
+		ui.Log(`Commandes:
+			/exit : quitte le programme
+		`)
+	case "exit":
+		ui.end()
+	}
 }
