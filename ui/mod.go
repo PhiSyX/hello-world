@@ -58,6 +58,7 @@ func (ui *UI) Start(state *chat.ChatState, channel *chat.Channel) {
 	ui.state = state
 	ui.channel = channel
 	ui.set_topic()
+	ui.refresh_nicklist()
 	go ui.handle_events()
 }
 

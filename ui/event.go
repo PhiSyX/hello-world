@@ -58,6 +58,7 @@ func (ui *UI) refresh_nicklist() {
 	for i, nick := range nicklist {
 		nicklist_ids[i] = nick.String()
 	}
+	nicklist_ids = append(nicklist_ids, *ui.cli_args.Options.Nick)
 	ui.areas.nicklist.SetText(strings.Join(nicklist_ids, "\n"))
 	ui.app.Draw()
 }
