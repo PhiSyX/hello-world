@@ -67,13 +67,18 @@ func (ui *UI) handle_command(command string) {
 			/clear : efface le contenu de la fenêtre de chat (libère la mémoire)
 			/exit : quitte le programme
 		`)
+
 	case "clear":
 		memstats := mm.NewMemory()
 		runtime.GC()
 		ui.history.area.Clear()
 		new_memstats := mm.NewMemory()
 		ui.Log(fmt.Sprintf("%fMio de mémoire libérée", memstats.Alloc-new_memstats.Alloc))
+
 	case "exit":
 		ui.end()
+
+	default:
+		ui.Log("Commande inconnue, utilisez `/help` pour lister les commandes disponibles")
 	}
 }
