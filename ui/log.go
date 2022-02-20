@@ -14,7 +14,7 @@ import (
 // -------------- //
 
 func (ui *UI) Log(args ...interface{}) {
-	prompt := cli.Color("blue", "<SNotice> $server:")
+	prompt := cli.Color("blue", "<SNotice> <server-name>:")
 	fmt.Fprintln(ui.history.area, prompt, fmt.Sprint(args...))
 }
 

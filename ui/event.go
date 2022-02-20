@@ -2,9 +2,12 @@ package ui
 
 import (
 	"context"
+	"fmt"
+	"runtime"
 	"strings"
 
 	chat "github.com/PhiSyX/ibug-p2p-gochat/chat"
+	mm "github.com/PhiSyX/ibug-p2p-gochat/mm"
 )
 
 func (ui *UI) handle_events() {
@@ -61,8 +64,15 @@ func (ui *UI) handle_command(command string) {
 	switch args[0] {
 	case "help":
 		ui.Log(`Commandes:
+			/clear : efface le contenu de la fenêtre de chat (libère la mémoire)
 			/exit : quitte le programme
 		`)
+	case "clear":
+		memstats := mm.NewMemory()
+		runtime.GC()
+		ui.history.area.Clear()
+		new_memstats := mm.NewMemory()
+		ui.Log(fmt.Sprintf("%fMio de mémoire libérée", memstats.Alloc-new_memstats.Alloc))
 	case "exit":
 		ui.end()
 	}
