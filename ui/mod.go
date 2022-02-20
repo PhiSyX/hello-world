@@ -103,7 +103,7 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	chat_area := merge_history_and_nicklist_areas(history_area, nicklist_area)
 	root := merge_chat_and_input_areas(chat_area, input_area)
 
-	app.SetRoot(root, true)
+	app.SetRoot(root, true).EnableMouse(true)
 
 	ui := &UI{
 		cli_args: cli_args,
