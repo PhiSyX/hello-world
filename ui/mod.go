@@ -17,22 +17,22 @@ import (
 type UI struct {
 	cli_args *cli.CLI
 
-	app      *view.Application
-	channel  *chat.Channel
-	history  *UIHistory
-	nicklist *UINicklist
-	input    *UIInput
-	state    *chat.ChatState
+	app     *view.Application
+	channel *chat.Channel
+	areas   *UIArea
+	input   *UIInput
+	state   *chat.ChatState
 
 	OkChan chan struct{}
 }
 
-type UIHistory struct {
-	area *view.TextView
+type UIArea struct {
+	input    *view.Flex
+	history  *view.TextView
+	nicklist *view.TextView
 }
 
 type UIInput struct {
-	area        *view.Flex
 	model       chan *string
 	field       *view.InputField
 	history     []*string
@@ -40,7 +40,6 @@ type UIInput struct {
 }
 
 type UINicklist struct {
-	area *view.TextView
 }
 
 // -------------- //
@@ -68,9 +67,9 @@ func (ui *UI) end() {
 }
 
 func (ui *UI) on_input_capture() {
-	ui.input.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+	ui.areas.input.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
 		if evt.Key() == cell.KeyTAB {
-			ui.app.SetFocus(ui.history.area)
+			ui.app.SetFocus(ui.areas.history)
 		} else if evt.Key() == cell.KeyUp || evt.Key() == cell.KeyDown {
 			ui.handle_input_history(evt)
 		}
@@ -78,17 +77,17 @@ func (ui *UI) on_input_capture() {
 		return evt
 	})
 
-	ui.history.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+	ui.areas.history.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
 		if evt.Key() == cell.KeyTAB {
-			ui.app.SetFocus(ui.nicklist.area)
+			ui.app.SetFocus(ui.areas.nicklist)
 		}
 
 		return evt
 	})
 
-	ui.nicklist.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+	ui.areas.nicklist.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
 		if evt.Key() == cell.KeyTAB {
-			ui.app.SetFocus(ui.input.area)
+			ui.app.SetFocus(ui.areas.input)
 		}
 		return evt
 	})
@@ -140,18 +139,15 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 
 		app: app,
 
-		history: &UIHistory{
-			area: history_area,
+		areas: &UIArea{
+			input:    input_area,
+			history:  history_area,
+			nicklist: nicklist_area,
 		},
 
 		input: &UIInput{
-			area:  input_area,
 			model: input_model,
 			field: input_field,
-		},
-
-		nicklist: &UINicklist{
-			area: nicklist_area,
 		},
 
 		OkChan: make(chan struct{}, 1),

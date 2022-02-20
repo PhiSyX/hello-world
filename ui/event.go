@@ -58,7 +58,7 @@ func (ui *UI) refresh_nicklist() {
 	for i, nick := range nicklist {
 		nicklist_ids[i] = nick.String()
 	}
-	ui.nicklist.area.SetText(strings.Join(nicklist_ids, "\n"))
+	ui.areas.nicklist.SetText(strings.Join(nicklist_ids, "\n"))
 	ui.app.Draw()
 }
 
@@ -75,7 +75,7 @@ func (ui *UI) handle_command(command string) {
 	case "clear":
 		memstats := mm.NewMemory()
 		runtime.GC()
-		ui.history.area.Clear()
+		ui.areas.history.Clear()
 		new_memstats := mm.NewMemory()
 		ui.Log(fmt.Sprintf("%fMio de mémoire libérée", memstats.Alloc-new_memstats.Alloc))
 
