@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	peer "github.com/libp2p/go-libp2p-core/peer"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -20,6 +21,7 @@ type Channel struct {
 
 	ctx          *context.Context
 	subscription *pubsub.Subscription
+	topic_event  *pubsub.TopicEventHandler
 }
 
 // -------------- //
@@ -37,16 +39,24 @@ func NewChannel(ctx context.Context, ps *pubsub.PubSub, channel_name *string, ni
 		return nil, err
 	}
 
+	topic_event, err := topic.EventHandler()
+	if err != nil {
+		return nil, err
+	}
+
 	channel := &Channel{
 		Message: make(chan *Line, 128),
+		Event:   make(chan *pubsub.PeerEvent, 128),
 
 		ctx: &ctx,
 
 		Topic:        topic,
 		subscription: subscription,
+		topic_event:  topic_event,
 	}
 
 	go channel.read_messages_forever(&nick_id)
+	go channel.read_events_forever()
 
 	return channel, nil
 }
@@ -78,6 +88,17 @@ func (channel *Channel) read_messages_forever(nick_id *peer.ID) {
 		}
 
 		channel.Message <- new_message
+	}
+}
+
+func (channel *Channel) read_events_forever() {
+	for {
+		event, err := channel.topic_event.NextPeerEvent(*channel.ctx)
+		if err != nil {
+			fmt.Println("Erreur lors de la lecture d'un évènement", err)
+			return
+		}
+		channel.Event <- &event
 	}
 }
 
