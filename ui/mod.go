@@ -29,12 +29,14 @@ type UI struct {
 
 type UIHistory struct {
 	area *view.TextView
-	list []*string
 }
 
 type UIInput struct {
-	model chan *string
-	field *view.Flex
+	area        *view.Flex
+	model       chan *string
+	field       *view.InputField
+	history     []*string
+	current_idx int
 }
 
 type UINicklist struct {
@@ -66,10 +68,13 @@ func (ui *UI) end() {
 }
 
 func (ui *UI) on_input_capture() {
-	ui.input.field.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+	ui.input.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
 		if evt.Key() == cell.KeyTAB {
 			ui.app.SetFocus(ui.history.area)
+		} else if evt.Key() == cell.KeyUp || evt.Key() == cell.KeyDown {
+			ui.handle_input_history(evt)
 		}
+
 		return evt
 	})
 
@@ -83,10 +88,35 @@ func (ui *UI) on_input_capture() {
 
 	ui.nicklist.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
 		if evt.Key() == cell.KeyTAB {
-			ui.app.SetFocus(ui.input.field)
+			ui.app.SetFocus(ui.input.area)
 		}
 		return evt
 	})
+}
+
+func (ui *UI) handle_input_history(evt *cell.EventKey) {
+	switch evt.Key() {
+	case cell.KeyUp:
+		if ui.input.current_idx >= len(ui.input.history) || ui.input.current_idx < 0 {
+			return
+		}
+
+		ui.input.current_idx++
+		ui.input.field.SetText(*ui.input.history[ui.input.current_idx-1])
+
+	case cell.KeyDown:
+		if ui.input.current_idx <= 1 {
+			ui.input.current_idx = 0
+			ui.input.field.SetText("")
+			return
+		}
+
+		ui.input.current_idx--
+		ui.input.field.SetText(*ui.input.history[ui.input.current_idx])
+
+	default:
+		ui.input.current_idx = 0
+	}
 }
 
 // -------- //
@@ -97,7 +127,7 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	app := view.NewApplication()
 
 	input_model := make(chan *string, 32)
-	input_area := build_input_field_area(cli_args.Options.Nick, input_model)
+	input_area, input_field := build_input_field_area(cli_args.Options.Nick, input_model)
 	history_area := build_history_area(app.Draw)
 	nicklist_area := build_nicklist_area(app.Draw)
 	chat_area := merge_history_and_nicklist_areas(history_area, nicklist_area)
@@ -112,12 +142,12 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 
 		history: &UIHistory{
 			area: history_area,
-			list: []*string{},
 		},
 
 		input: &UIInput{
+			area:  input_area,
 			model: input_model,
-			field: input_area,
+			field: input_field,
 		},
 
 		nicklist: &UINicklist{
@@ -132,7 +162,7 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 	return ui
 }
 
-func build_input_field_area(nick *string, model chan *string) *view.Flex {
+func build_input_field_area(nick *string, model chan *string) (*view.Flex, *view.InputField) {
 	area := view.NewFlex()
 
 	// TODO: VIM mode
@@ -166,7 +196,7 @@ func build_input_field_area(nick *string, model chan *string) *view.Flex {
 
 	return area.
 		AddItem(nickname, 6, 0, false).
-		AddItem(field, 0, 1, !mode_normal)
+		AddItem(field, 0, 1, !mode_normal), field
 }
 
 func build_history_area(fn func() *view.Application) *view.TextView {

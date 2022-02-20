@@ -14,6 +14,10 @@ func (ui *UI) handle_events() {
 	for {
 		select {
 		case input := <-ui.input.model:
+			if len(ui.input.history) == 0 || *ui.input.history[len(ui.input.history)-1] != *input {
+				ui.input.history = append(ui.input.history, input)
+			}
+
 			// Commandes
 			if strings.HasPrefix(*input, "/") {
 				ui.handle_command(strings.TrimPrefix(*input, "/"))
