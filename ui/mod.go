@@ -65,6 +65,30 @@ func (ui *UI) end() {
 	ui.app.Stop()
 }
 
+func (ui *UI) on_input_capture() {
+	ui.input.field.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+		if evt.Key() == cell.KeyTAB {
+			ui.app.SetFocus(ui.history.area)
+		}
+		return evt
+	})
+
+	ui.history.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+		if evt.Key() == cell.KeyTAB {
+			ui.app.SetFocus(ui.nicklist.area)
+		}
+
+		return evt
+	})
+
+	ui.nicklist.area.SetInputCapture(func(evt *cell.EventKey) *cell.EventKey {
+		if evt.Key() == cell.KeyTAB {
+			ui.app.SetFocus(ui.input.field)
+		}
+		return evt
+	})
+}
+
 // -------- //
 // Fonction //
 // -------- //
@@ -102,6 +126,8 @@ func CreateUIFromCLI(cli_args *cli.CLI) *UI {
 
 		OkChan: make(chan struct{}, 1),
 	}
+
+	ui.on_input_capture()
 
 	return ui
 }
