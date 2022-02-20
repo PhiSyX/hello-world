@@ -11,3 +11,8 @@ Les options du CLI sont :
     --nick    : pseudonyme de l'utilisateur ($Env:USERNAME ou $Env:USER)
     --channel : nom du channel à rejoindre à la connexion ( défaut: #ibug )
     --debug   : affiche plus d'informations de débogage
+
+Liste des commandes du Chat:
+    /help     : affiche l'aide
+    /clear    : efface le contenu de la fenêtre de chat (libère la mémoire)
+    /exit     : quitte le programme

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	chat "github.com/PhiSyX/ibug-p2p-gochat/chat"
@@ -64,6 +65,8 @@ func main() {
 	}
 
 	state := chat.NewState(ctx, api, cli_args)
+
+	ui.Log(fmt.Sprintf("Hello %s, utilise la commande '/help' pour afficher les commandes disponibles", *cli_args.Options.Nick))
 	ui.Start(state, channel)
 
 	<-ui.OkChan
