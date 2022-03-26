@@ -1,0 +1,6 @@
+Exemple Docker :
+
+$ docker build -t docker-go .
+$ docker run --name docker-go --rm -p 8080:8080 docker-go
+
+Aller vers : http://localhost:8080/foo/bar
