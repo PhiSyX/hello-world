@@ -1,0 +1,3 @@
+Ansible exemple
+
+$ ansible-playbook -i inventory main.yml

@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: récupère la date actuelle.
+      command: date
+      register: current_date
+      changed_when: false
+
+    - name: Affiche la date actuelle.
+      debug:
+        msg: "{{ current_date.stdout }}"
