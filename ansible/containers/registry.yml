@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars:
+      registry_image: registry:2
+
+  tasks:
+      - name: Assure que l'image dans le registre de Docker est présente.
+        docker_image:
+            name: "{{ registry_image }}"
+            source: pull
+
+      - name: Démarre le container Docker Registry.
+        docker_container:
+            name: registry
+            image: "{{ registry_image }}"
+            state: started
+            published_ports:
+                - 5000:5000

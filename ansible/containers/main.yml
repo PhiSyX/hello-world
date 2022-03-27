@@ -1,0 +1,56 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars:
+      image_name: docker-go
+      image_tag: latest
+
+  tasks:
+      - name: Construit l'image docker-go.
+        docker_image:
+            build:
+                path: ../../docker/echo-server/docker-go
+                pull: false
+            name: "{{ image_name }}"
+            tag: "{{ image_tag }}"
+            source: build
+
+      - name: Démarre l'image docker-go.
+        docker_container:
+            name: docker-go
+            image: "{{ image_name }}:{{ image_tag }}"
+            state: started
+            published_ports:
+                - 8080:8080
+
+      - name: Vérifie que docker-go répond.
+        uri:
+            url: http://localhost:8080/foo/bar
+            return_content: true
+        register: docker_go_response
+        failed_when: "'/foo/bar' not in docker_go_response.content"
+
+      - name: Stop et supprime le container docker-go.
+        docker_container:
+            name: docker-go
+            state: absent
+
+  post_tasks:
+      - name: Login Docker.
+        docker_login:
+            registry: "{{ registry_url }}"
+            username: "{{ registry_username }}"
+            password: "{{ registry_password }}"
+        when:
+            - registry_url is defined and registry_url != ''
+            - registry_username is defined and registry_username != ''
+            - registry_password is defined and registry_password != ''
+
+      - name: Ajoute l'image docker-go dans le registre Docker.
+        docker_image:
+            name: "{{ image_name }}"
+            tag: "{{ image_tag }}"
+            repository: "localhost:5000/{{ image_name }}:{{ image_tag }}"
+            push: true
+            source: local

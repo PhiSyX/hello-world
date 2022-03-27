@@ -70,7 +70,7 @@
 
   post_tasks:
       - name: Expose `docker-go` sur l'hôte via minikube.
-        command: minikube service hello-go --url=true
+        command: minikube service docker-go --url=true
         changed_when: false
         register: minikube_service
 

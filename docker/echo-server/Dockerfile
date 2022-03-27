@@ -2,8 +2,8 @@ FROM golang:1-alpine as build
 
 workdir /app
 
-COPY src/ src/
-RUN go build src/docker/docker.go
+COPY docker/ src/
+RUN go build src/docker.go
 
 FROM alpine:latest
 WORKDIR /app
