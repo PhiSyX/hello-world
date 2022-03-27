@@ -1,0 +1,79 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars:
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      image_name: docker-go
+
+  pre_tasks:
+      - name: Vérifie le status de Minikube.
+        command: minikube status
+        register: minikube_status
+        changed_when: false
+        ignore_errors: true
+
+      - name: Exécute Minikube s'il n'est pas démarré.
+        command: minikube start
+        when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
+
+  tasks:
+      - name: Récupère un hash d'une image existante
+        shell: |
+            eval $(minikube docker-env)
+            docker images -q {{ image_name }}
+        register: image_hash
+        changed_when: false
+
+      - name: Construit une image si elle n'est pas déjà construite
+        k8s:
+            state: present
+            definition:
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                    name: docker-go
+                    namespace: default
+                spec:
+                    replicas: 1
+                    selector:
+                        matchLabels:
+                            app: docker-go
+                    template:
+                        metadata:
+                            labels:
+                                app: docker-go
+                        spec:
+                            containers:
+                                - name: docker-go
+                                  image: "{{ image_name }}"
+                                  imagePullPolicy: IfNotPresent
+                                  ports:
+                                      - containerPort: 8080
+
+      - name: Crée un service pour `docker-go`
+        k8s:
+            state: present
+            definition:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                    name: docker-go
+                    namespace: default
+                spec:
+                    type: LoadBalancer
+                    selector:
+                        app: docker-go
+                    ports:
+                        - port: 8080
+                          targetPort: 8080
+
+  post_tasks:
+      - name: Expose `docker-go` sur l'hôte via minikube.
+        command: minikube service hello-go --url=true
+        changed_when: false
+        register: minikube_service
+
+      - name: Affiche l'URL `docker-go`.
+        debug:
+            msg: "URL docker-go: {{ minikube_service['stdout_lines'][0] }}"

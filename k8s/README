@@ -1,0 +1,9 @@
+Kubernetes Exemple
+
+$ ansible-playbook -i inventory main.yml
+
+$ kubectl delete service docker-go
+$ kubectl delete deployment docker-go
+
+$ ansible-playbook -i inventory k8s_scale.yml
+$ ansible-playbook -i inventory k8s_merge.yml
