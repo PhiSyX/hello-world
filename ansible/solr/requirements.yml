@@ -1,4 +1,4 @@
 ---
 roles:
-    - name: geerlingguy.java
-    - name: geerlingguy.solr
+    - name: phisyx-solr.java
+    - name: phisyx-solr.solr

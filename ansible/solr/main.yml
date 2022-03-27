@@ -35,10 +35,10 @@
         delegate_to: "{{ container_name }}"
 
   roles:
-      - name: geerlingguy.java
+      - name: phisyx-solr.java
         delegate_to: "{{ container_name }}"
 
-      - name: geerlingguy.solr
+      - name: phisyx-solr.solr
         delegate_to: "{{ container_name }}"
 
   post_tasks:
