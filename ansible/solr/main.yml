@@ -1,0 +1,62 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars_files:
+      - vars/main.yml
+
+  pre_tasks:
+      - name: Crée et démarre la construction du container.
+        docker_container:
+            image: debian:buster
+            name: "{{ container_name }}"
+            command: sleep infinity
+
+      - name: Ajoute le nouveau container dans l'inventaire.
+        add_host:
+            hostname: "{{ container_name }}"
+            ansible_connection: docker
+            ansible_python_interpreter: /usr/bin/python3
+
+      - name: Assure que Python est correctement installé.
+        raw: >
+            apt-get update &&
+            apt-get install -y --no-install-recommends python3
+        delegate_to: "{{ container_name }}"
+
+      - name: Rassemble le tout à l'intérieur du container.
+        setup:
+        delegate_to: "{{ container_name }}"
+
+      - name: Assure que la commande ps est présente pour Solr.
+        apt:
+            name: procps
+            state: present
+        delegate_to: "{{ container_name }}"
+
+  roles:
+      - name: geerlingguy.java
+        delegate_to: "{{ container_name }}"
+
+      - name: geerlingguy.solr
+        delegate_to: "{{ container_name }}"
+
+  post_tasks:
+      - name: Nettoie le container.
+        shell: |
+            apt-get remove --purge -y python3
+            rm -rf /var/lib/apt/lists/*
+        delegate_to: "{{ container_name }}"
+        args:
+            warn: false
+
+      - name: Commit le container.
+        command: >
+            docker commit
+            -c 'CMD ["/opt/solr/bin/solr", "start", "-f", "-force"]'
+            -c 'WORKDIR /var/solr'
+            {{ container_name }} ansible/solr:{{ solr_version }}
+      - name: Supprime le container.
+        docker_container:
+            name: "{{ container_name }}"
+            state: absent
