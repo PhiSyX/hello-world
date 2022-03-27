@@ -1,0 +1,2 @@
+$ ansible-playbook -i inventory registry.yml
+$ ansible-playbook -i inventory main.yml
