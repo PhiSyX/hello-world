@@ -1,0 +1,12 @@
+[package]
+name = "sha1-cracker"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "sha1-cracker-01"
+path = "./bin/cracker_01.rs"
+
+[dependencies]
+sha-1 = "^0.10"
+hex = "^0.4"
