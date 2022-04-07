@@ -2,48 +2,48 @@ mod error;
 mod port;
 mod subdomain;
 
-use std::{env, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 pub use error::Error;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use reqwest::{blocking::Client, redirect};
+use futures::{stream, StreamExt};
+use reqwest::Client;
 use subdomain::Subdomain;
+use tokio::{sync::Mutex, time::Instant};
 
-fn main() -> Result<(), anyhow::Error> {
+#[tokio::main]
+async fn main() -> Result<(), anyhow::Error> {
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
         return Err(Error::CliUsage.into());
     }
 
-    let http_timeout = Duration::from_secs(5);
-    let http_client = Client::builder()
-        .redirect(redirect::Policy::limited(4))
-        .timeout(http_timeout)
-        .build()?;
+    let http_timeout = Duration::from_secs(10);
+    let http_client = Client::builder().timeout(http_timeout).build()?;
 
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(256)
-        .build()
-        .unwrap();
+    let total_ports = 200;
+    let total_subdomains = 100;
+    let scan_start = Instant::now();
 
-    pool.install(|| {
-        let scan_result: Vec<Subdomain> =
-            Subdomain::enumerate(&http_client, &args[1])
-                .unwrap()
-                .into_par_iter()
-                .map(port::scan)
-                .collect();
+    let subdomains = Subdomain::enumerate(&http_client, &args[1]).await?;
 
-        scan_result.iter().for_each(|subdomain| {
-            println!("{}:", subdomain.domain);
+    let scan_result: Vec<Subdomain> = stream::iter(subdomains.into_iter())
+        .map(|subdomain| port::scan(total_ports, subdomain))
+        .buffer_unordered(total_subdomains)
+        .collect()
+        .await;
 
-            subdomain.open_ports.iter().for_each(|port| {
-                println!("\t{}", port.port);
-            });
+    let scan_duration = scan_start.elapsed();
+    println!("Scan effectué en {scan_duration:?}");
 
-            println!();
+    scan_result.iter().for_each(|subdomain| {
+        println!("{}:", subdomain.domain);
+
+        subdomain.open_ports.iter().for_each(|port| {
+            println!("\t{}: ouvert", port.port);
         });
+
+        println!();
     });
 
     Ok(())

@@ -1,13 +1,22 @@
 use std::{collections::HashSet, time::Duration};
 
-use reqwest::blocking::Client;
+use futures::{stream, StreamExt};
+use reqwest::Client;
 use serde::Deserialize;
 use trust_dns_resolver::{
     config::{ResolverConfig, ResolverOpts},
-    Resolver,
+    name_server::{
+        GenericConnection, GenericConnectionProvider, TokioRuntime,
+    },
+    AsyncResolver,
 };
 
 use crate::{port::Port, Error};
+
+type DnsResolver = AsyncResolver<
+    GenericConnection,
+    GenericConnectionProvider<TokioRuntime>,
+>;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct CrtShEntry {
@@ -28,23 +37,23 @@ impl Subdomain {
         }
     }
 
-    fn resolves(&self) -> bool {
-        let dns_config = ResolverConfig::default();
-        let mut dns_options = ResolverOpts::default();
-        dns_options.timeout = Duration::from_secs(4);
-        let dns_resolver =
-            Resolver::new(dns_config, dns_options).expect("un client DNS");
-        dns_resolver.lookup_ip(&self.domain).is_ok()
-    }
-
-    pub fn enumerate(
+    pub async fn enumerate(
         http_client: &Client,
         target: &str,
     ) -> Result<Vec<Self>, Error> {
         let entries: Vec<CrtShEntry> = http_client
             .get(&format!("https://crt.sh/?q=%25.{}&output=json", target))
-            .send()?
-            .json()?;
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        let dns_config = ResolverConfig::default();
+        let mut dns_options = ResolverOpts::default();
+        dns_options.timeout = Duration::from_secs(4);
+
+        let dns_resolver = AsyncResolver::tokio(dns_config, dns_options)
+            .expect("Un client DNS");
 
         let mut subdomains: HashSet<String> = entries
             .iter()
@@ -59,14 +68,30 @@ impl Subdomain {
             })
             .collect();
 
-        subdomains.insert(target.to_string());
+        subdomains.insert(target.into());
 
-        let subdomains = subdomains
-            .into_iter()
+        let subdomains = stream::iter(subdomains.into_iter())
             .map(Subdomain::new)
-            .filter(|subdomain| subdomain.resolves())
-            .collect();
+            .filter_map(|subdomain| {
+                let dns_resolver = dns_resolver.clone();
+                async move {
+                    if Self::resolves(&dns_resolver, &subdomain).await {
+                        Some(subdomain)
+                    } else {
+                        None
+                    }
+                }
+            })
+            .collect()
+            .await;
 
         Ok(subdomains)
+    }
+
+    async fn resolves(
+        dns_resolver: &DnsResolver,
+        domain: &Subdomain,
+    ) -> bool {
+        dns_resolver.lookup_ip(&domain.domain).await.is_ok()
     }
 }
