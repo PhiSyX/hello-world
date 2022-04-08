@@ -1,0 +1,68 @@
+<<<<<<< HEAD
+.vscode
+.idea
+target/
+*.lock
+rustlings/*
+!rustlings/exercises/
+.editorconfig
+.rustfmt.toml
+*.exe
+*.pdb
+# Github template
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.lock
+
+*.iso
+*.bin
+
+.vscode/
+testdata/
+target/
+.editorconfig
+
+*/os/Dockerfile
+*.elf
+=======
+.vscode/
+.idea/
+/target
+
+*.unstage.*
+*.unstage
+
+config/tls/*
+!config/tls/README.md
+>>>>>>> miku-devserver/main

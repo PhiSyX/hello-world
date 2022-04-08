@@ -1,0 +1,10 @@
+$dark: #cc6161;
+$light: #e7cbf3;
+
+:root {
+  --root_bg: #{$dark};
+}
+
+[data-theme="light"] {
+  --root_bg: #{$light};
+}

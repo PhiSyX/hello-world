@@ -1,0 +1,20 @@
+{
+  "env": "development",
+  "hostname": "localhost",
+  "port": 443,
+  "tls": {
+    "key": "config/tls/localhost.pvk",
+    "cer": "config/tls/localhost.cer"
+  },
+  "shared": {
+    "paths": {
+      "static": "public/",
+      "client": "client/"
+    }
+  },
+  "cache": true,
+  "alias": {
+    "preact": "https://cdn.skypack.dev/preact",
+    "preact/hooks": "https://cdn.skypack.dev/preact/hooks"
+  }
+}
