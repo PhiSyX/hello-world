@@ -3,7 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use std::process::{Command, Stdio};
+use std::{
+    io::Read,
+    process::{Command, Stdio},
+};
 
 fn main() {
     tauri::Builder::default()
@@ -14,30 +17,34 @@ fn main() {
 
 #[derive(serde::Serialize)]
 struct CommandOutput {
+    pid: u32,
     program: &'static str,
-    status: String,
     output: Vec<String>,
 }
 
 #[derive(serde::Serialize)]
 enum CommandError {
     UnableToRunProgram,
-    UnableToGetUtf8String,
+    FailedToOpenStdout,
 }
 
 #[tauri::command]
 fn call_for_test_executable() -> Result<CommandOutput, CommandError> {
     let executable = "for-test.exe";
 
-    let output = Command::new(executable)
+    let child = Command::new(executable)
         .stdout(Stdio::piped())
-        .output()
+        .spawn()
         .map_err(|_| CommandError::UnableToRunProgram)?;
 
+    let pid = child.id();
 
-    let status = output.status.to_string();
-    let stdout = String::from_utf8(output.stdout)
-        .map_err(|_| CommandError::UnableToGetUtf8String)?
+    let mut output =
+        child.stdout.ok_or(CommandError::FailedToOpenStdout)?;
+    let mut buf = String::new();
+    let _ = output.by_ref().read_to_string(&mut buf);
+
+    let stdout = buf
         .split('\n')
         .map(|a| a.to_string())
         .collect::<Vec<String>>();
@@ -45,6 +52,6 @@ fn call_for_test_executable() -> Result<CommandOutput, CommandError> {
     Ok(CommandOutput {
         program: executable,
         output: stdout,
-        status,
+        pid,
     })
 }
