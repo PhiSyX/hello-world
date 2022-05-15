@@ -61,5 +61,8 @@ body {
 }
 
 #app {
+    margin-top: 60px;
     padding: 16px;
+    height: calc(100% - (90px));
+    overflow: auto;
 }
