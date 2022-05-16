@@ -7,7 +7,6 @@ body {
 }
 
 body {
-    border: 1px solid red !important;
     user-select: none;
     background-color: #1d2125;
     color: #fff;

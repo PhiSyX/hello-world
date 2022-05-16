@@ -8,9 +8,20 @@ use std::{
     process::{Command, Stdio},
 };
 
+use tauri::Manager;
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![call_for_test_executable])
+        .setup(|app| {
+            let main_window =
+                app.get_window("main").expect("the main window");
+
+            window_shadows::set_shadow(&main_window, true)
+                .expect("Unsupported platform!");
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -44,10 +55,8 @@ fn call_for_test_executable() -> Result<CommandOutput, CommandError> {
     let mut buf = String::new();
     let _ = output.by_ref().read_to_string(&mut buf);
 
-    let stdout = buf
-        .split('\n')
-        .map(|a| a.to_string())
-        .collect::<Vec<String>>();
+    let stdout =
+        buf.lines().map(|a| a.to_string()).collect::<Vec<String>>();
 
     Ok(CommandOutput {
         program: executable,
