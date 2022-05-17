@@ -1,0 +1,11 @@
+[package]
+name = "egui"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "./custom_window_frame.rs"
+name = "custom_window_frame"
+
+[dependencies]
+eframe = "^0.18"
