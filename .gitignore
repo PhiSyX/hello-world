@@ -43,6 +43,11 @@ rustlings/*
 *.out
 *.app
 *.lock
+*ilk
+*.suo
+*.ipch
+*.db
+*.bat
 
 *.iso
 *.bin
