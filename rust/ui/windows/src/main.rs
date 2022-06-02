@@ -1,7 +1,12 @@
-use core::slice;
-use std::{mem, ops::AddAssign, sync::Mutex};
+// Lancer en mode release, car évidement plus fluide
+// @see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
+// @see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
 
-use lazy_static::lazy_static;
+use std::{
+    mem,
+    sync::atomic::{AtomicPtr, Ordering},
+};
+
 use windows::Win32::{
     Foundation::*,
     Graphics::Gdi::*,
@@ -9,42 +14,53 @@ use windows::Win32::{
     UI::WindowsAndMessaging::*,
 };
 
-// @see https://docs.microsoft.com/en-us/windows/win32/api/winuser/
-// @see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
-
-#[derive(Default)]
 struct AppState {
     running: bool,
-    bitmap: Bitmap,
+    backbuffer: OffscreenBuffer,
 }
 
-struct Bitmap {
+struct OffscreenBuffer {
     info: BITMAPINFO,
     memory: *mut core::ffi::c_void,
     width: i32,
     height: i32,
+    pitch: i32,
+    byte_per_pixel: i32,
 }
 
-lazy_static! {
-    static ref APP_STATE: Mutex<AppState> =
-        Mutex::new(AppState::default());
+struct WindowDimension {
+    width: i32,
+    height: i32,
 }
-const BYTE_PER_PIXEL: u8 = 4;
+
+lazy_static::lazy_static! {
+    static ref GLOBAL_APP_STATE: AtomicPtr<AppState> =
+        AtomicPtr::new(Box::into_raw(Box::new(AppState::default())));
+}
 
 fn main() {
-    let instance = unsafe { GetModuleHandleA(None) }.expect("L'instance");
-
-    let win_class = WNDCLASSA {
-        style: CS_OWNDC | CS_HREDRAW | CS_VREDRAW,
-        lpfnWndProc: Some(main_window_callback),
-        hInstance: instance,
-        lpszClassName: windows::core::PCSTR(
-            b"RustWindowClass" as *const u8,
-        ),
-        ..Default::default()
-    };
-
     unsafe {
+        let instance = GetModuleHandleA(None).expect("L'instance");
+
+        let win_class = WNDCLASSA {
+            style: CS_HREDRAW | CS_VREDRAW,
+            lpfnWndProc: Some(main_window_callback),
+            hInstance: instance,
+            lpszClassName: windows::core::PCSTR(
+                b"RustWindowClass" as *const u8,
+            ),
+            ..Default::default()
+        };
+
+        let global_app_state =
+            &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
+
+        win32_resize_dib_section(
+            &mut global_app_state.backbuffer,
+            1280,
+            720,
+        );
+
         let atom = RegisterClassA(&win_class);
         assert!(atom != 0);
 
@@ -66,41 +82,38 @@ fn main() {
         let mut offset_x = 0;
         let mut offset_y = 0;
 
-        APP_STATE.lock().unwrap().running = true;
+        global_app_state.running = true;
 
-        while APP_STATE.lock().unwrap().running {
+        while global_app_state.running {
             let mut msg = MSG::default();
 
             while PeekMessageA(&mut msg, None, 0, 0, PM_REMOVE) != false {
                 if msg.message == WM_QUIT {
-                    APP_STATE.lock().unwrap().running = false;
+                    global_app_state.running = false;
                 }
 
                 TranslateMessage(&msg);
                 DispatchMessageA(&msg);
             }
 
-            render_weird_gradient(offset_x, offset_y);
+            render_weird_gradient(
+                &mut global_app_state.backbuffer,
+                offset_x,
+                offset_y,
+            );
 
             let device_context: HDC = GetDC(window_handle);
-            let mut client_rect: RECT = Default::default();
-            GetClientRect(window_handle, &mut client_rect);
+            let dimension = WindowDimension::new(window_handle);
 
-            let window_width = client_rect.right - client_rect.left;
-            let window_height = client_rect.bottom - client_rect.top;
-
-            win32_update_window(
+            win32_display_buffer_in_window(
                 device_context,
-                &client_rect,
-                0,
-                0,
-                window_width,
-                window_height,
+                dimension,
+                &global_app_state.backbuffer,
             );
             ReleaseDC(window_handle, device_context);
 
             offset_x += 1;
-            offset_y += 2;
+            offset_y += 1;
         }
     }
 }
@@ -114,25 +127,24 @@ unsafe extern "system" fn main_window_callback(
     match message {
         | WM_SIZE => {
             println!("WM_SIZE");
-            let mut client_rect: RECT = Default::default();
-            GetClientRect(window, &mut client_rect);
-
-            let w = client_rect.right - client_rect.left;
-            let h = client_rect.bottom - client_rect.top;
-
-            win32_resize_dib_section(w, h);
+            let global_app_state =
+                &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
 
             Default::default()
         }
         | WM_DESTROY => {
             println!("WM_DESTROY");
-            APP_STATE.lock().unwrap().running = false;
+            let global_app_state =
+                &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
+            global_app_state.running = false;
             PostQuitMessage(0);
             Default::default()
         }
         | WM_CLOSE => {
             println!("WM_CLOSE");
-            APP_STATE.lock().unwrap().running = false;
+            let global_app_state =
+                &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
+            global_app_state.running = false;
             PostQuitMessage(0);
             Default::default()
         }
@@ -147,14 +159,15 @@ unsafe extern "system" fn main_window_callback(
 
             let device_context = BeginPaint(window, &mut paint);
 
-            let x = paint.rcPaint.left;
-            let y = paint.rcPaint.top;
-            let w = paint.rcPaint.right - x;
-            let h = paint.rcPaint.bottom - y;
+            let global_app_state =
+                &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
 
-            let mut client_rect: RECT = Default::default();
-            GetClientRect(window, &mut client_rect);
-            win32_update_window(device_context, &client_rect, x, y, w, h);
+            let dimension = WindowDimension::new(window);
+            win32_display_buffer_in_window(
+                device_context,
+                dimension,
+                &global_app_state.backbuffer,
+            );
 
             EndPaint(window, &paint);
             Default::default()
@@ -164,40 +177,37 @@ unsafe extern "system" fn main_window_callback(
     }
 }
 
-fn win32_resize_dib_section(width: i32, height: i32) {
+fn win32_resize_dib_section(
+    backbuffer: &mut OffscreenBuffer,
+    width: i32,
+    height: i32,
+) {
     // TODO: bulletproof this.
-    // Maybe don't free first, free after, then free first if that fails.
+    // Maybe don't free first, free after, then free first if that
+    // fails.
 
-    if !APP_STATE.lock().unwrap().bitmap.memory.is_null() {
-        unsafe {
-            VirtualFree(
-                APP_STATE.lock().unwrap().bitmap.memory,
-                0,
-                MEM_RELEASE,
-            )
-        };
+    if !backbuffer.memory.is_null() {
+        unsafe { VirtualFree(backbuffer.memory, 0, MEM_RELEASE) };
     }
 
-    let mut app_state = APP_STATE.lock().unwrap();
+    backbuffer.width = width;
+    backbuffer.height = height;
+    backbuffer.byte_per_pixel = 4;
 
-    app_state.bitmap.width = width;
-    app_state.bitmap.height = height;
+    let bitmap_width = backbuffer.width;
+    let bitmap_height = backbuffer.height;
 
-    let bitmap_width = app_state.bitmap.width;
-    let bitmap_height = app_state.bitmap.height;
+    backbuffer.info.bmiHeader.biSize =
+        mem::size_of_val(&backbuffer.info.bmiHeader) as u32;
+    backbuffer.info.bmiHeader.biWidth = bitmap_width;
+    backbuffer.info.bmiHeader.biHeight = -bitmap_height;
 
-    app_state.bitmap.info.bmiHeader.biSize =
-        mem::size_of_val(&app_state.bitmap.info.bmiHeader) as u32;
-    app_state.bitmap.info.bmiHeader.biWidth = bitmap_width;
-    app_state.bitmap.info.bmiHeader.biHeight = -bitmap_height;
-    app_state.bitmap.info.bmiHeader.biPlanes = 1;
-    app_state.bitmap.info.bmiHeader.biBitCount = 32;
-    app_state.bitmap.info.bmiHeader.biCompression = BI_RGB as u32;
+    backbuffer.pitch = width * backbuffer.byte_per_pixel;
 
     let bitmap_memory_size =
-        bitmap_width * bitmap_height * BYTE_PER_PIXEL as i32;
+        (bitmap_width * bitmap_height) * backbuffer.byte_per_pixel as i32;
 
-    app_state.bitmap.memory = unsafe {
+    backbuffer.memory = unsafe {
         VirtualAlloc(
             core::ptr::null_mut(),
             bitmap_memory_size as usize,
@@ -207,69 +217,102 @@ fn win32_resize_dib_section(width: i32, height: i32) {
     };
 }
 
-fn win32_update_window(
+unsafe fn win32_display_buffer_in_window(
     device_context: HDC,
-    client_rect: &RECT,
-    x: i32,
-    y: i32,
-    w: i32,
-    h: i32,
+    dimension: WindowDimension,
+    backbuffer: &OffscreenBuffer,
 ) {
-    let bitmap = &APP_STATE.lock().unwrap().bitmap;
-    let window_width = client_rect.right - client_rect.left;
-    let window_height = client_rect.bottom - client_rect.top;
-    unsafe {
-        StretchDIBits(
-            device_context,
-            0,
-            0,
-            bitmap.width,
-            bitmap.height,
-            0,
-            0,
-            window_width,
-            window_height,
-            bitmap.memory,
-            &bitmap.info,
-            DIB_RGB_COLORS,
-            SRCCOPY,
-        )
-    };
+    // TODO: aspect ratio correction.
+    StretchDIBits(
+        device_context,
+        0,
+        0,
+        dimension.width,
+        dimension.height,
+        0,
+        0,
+        backbuffer.width,
+        backbuffer.height,
+        backbuffer.memory,
+        &backbuffer.info,
+        DIB_RGB_COLORS,
+        SRCCOPY,
+    );
 }
 
-unsafe fn render_weird_gradient(offset_x: i32, offset_y: i32) {
-    let state = APP_STATE.lock().unwrap();
+unsafe fn render_weird_gradient(
+    backbuffer: &mut OffscreenBuffer,
+    offset_x: i32,
+    offset_y: i32,
+) {
+    let mut row = backbuffer.memory;
 
-    let width = state.bitmap.width;
-    let height = state.bitmap.height;
-    let size = ((width - BYTE_PER_PIXEL as i32) * height) as usize;
+    for y in 0..backbuffer.height {
+        let mut pixel = row as *mut [u8; 4];
 
-    slice::from_raw_parts_mut(state.bitmap.memory as *mut u32, size)
-        .chunks_mut(width as usize)
-        .enumerate()
-        .for_each(|(x, row)| {
-            let blue = offset_x.wrapping_add(x as i32);
-            row.iter_mut().enumerate().for_each(|(y, pixel)| {
-                let green = offset_y.wrapping_add(y as i32);
-                *pixel = ((blue << 8) | green) as u32;
-            });
-        });
+        for x in 0..backbuffer.width {
+            let blue = x + offset_x;
+            let green = y + offset_y;
+            *pixel = [blue as u8, green as u8, 0, 0];
+            pixel = pixel.offset(1);
+        }
+
+        row = row.offset(backbuffer.pitch as isize);
+    }
 }
 
 // -------------- //
 // Implémentation //
 // -------------- //
 
-unsafe impl Send for AppState {}
-unsafe impl Sync for AppState {}
-
-impl Default for Bitmap {
-    fn default() -> Self {
+impl AppState {
+    const fn default() -> Self {
         Self {
-            info: Default::default(),
-            memory: std::ptr::null_mut(),
-            width: Default::default(),
-            height: Default::default(),
+            running: true,
+            backbuffer: OffscreenBuffer::default(),
         }
+    }
+}
+
+impl OffscreenBuffer {
+    const fn default() -> Self {
+        Self {
+            info: BITMAPINFO {
+                bmiHeader: BITMAPINFOHEADER {
+                    biSize: 0,
+                    biWidth: 0,
+                    biHeight: 0,
+                    biPlanes: 1,
+                    biBitCount: 32,
+                    biCompression: BI_RGB as u32,
+                    biSizeImage: 0,
+                    biXPelsPerMeter: 0,
+                    biYPelsPerMeter: 0,
+                    biClrUsed: 0,
+                    biClrImportant: 0,
+                },
+                bmiColors: [RGBQUAD {
+                    rgbBlue: 0,
+                    rgbGreen: 0,
+                    rgbRed: 0,
+                    rgbReserved: 0,
+                }; 1],
+            },
+            memory: std::ptr::null_mut(),
+            width: 0,
+            height: 0,
+            pitch: 0,
+            byte_per_pixel: 4,
+        }
+    }
+}
+
+impl WindowDimension {
+    fn new(window: HWND) -> Self {
+        let mut client_rect: RECT = Default::default();
+        unsafe { GetClientRect(window, &mut client_rect) };
+        let width = client_rect.right - client_rect.left;
+        let height = client_rect.bottom - client_rect.top;
+        Self { width, height }
     }
 }
