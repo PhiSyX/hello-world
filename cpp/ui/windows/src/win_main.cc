@@ -29,23 +29,23 @@ global_variable int         bitmap_h;
 global_variable int byte_per_pixel = 4;
 
 internal void
-render_weird_gradient(int offset_x, int offset_y) 
+render_weird_gradient(int offset_x, int offset_y)
 {
   int w = bitmap_w;
   int h = bitmap_h;
- 
+
   int pitch = w * byte_per_pixel;
   u8 * row = (u8 *)bitmap_memory;
-  for (int y = 0; y < bitmap_h; ++y) {
+  for (int y = 0; y < h; ++y) {
     u32 * pixel = (u32 *)row;
 
-    for (int x = 0; x < bitmap_w; ++x) {
+    for (int x = 0; x < w; ++x) {
         u8 blue = (x + offset_x);
         u8 green = (y + offset_y);
         /*
           Memory:    BB GG RR xx
           Register:  xx RR GG BB
-          
+
           Pixel 32-bits
         */
         *pixel++ = ((green << 8) | blue);
@@ -85,11 +85,11 @@ win32_resize_dib_section(int w, int h)
 }
 
 internal void
-win32_update_window(HDC device_context, RECT *WindowRect,
+win32_update_window(HDC device_context, RECT *client_rect,
                     int x, int y, int w, int h)
 {
-  int window_w = WindowRect->right - WindowRect->left;
-  int window_h = WindowRect->bottom - WindowRect->top;
+  int window_w = client_rect->right - client_rect->left;
+  int window_h = client_rect->bottom - client_rect->top;
   StretchDIBits(device_context,
                 0, 0, bitmap_w, bitmap_h,
                 0, 0, window_w, window_h,
@@ -124,7 +124,6 @@ MainWindowCallback(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
     } break;
 
     case WM_ACTIVATEAPP: {
-      
       OutputDebugStringA("WM_ACTIVATEAPP\n");
     } break;
 
@@ -188,7 +187,6 @@ WinMain(HINSTANCE hInstance,
 
       running = true;
       while (running) {
-        
         MSG message;
 
         while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
