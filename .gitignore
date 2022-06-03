@@ -8,6 +8,8 @@ rustlings/*
 .rustfmt.toml
 *.exe
 *.pdb
+*.sln
+
 # Github template
 
 # Prerequisites
