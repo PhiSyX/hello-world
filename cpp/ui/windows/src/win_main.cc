@@ -235,7 +235,6 @@ MainWindowCallback(HWND window, UINT message, WPARAM w_param, LPARAM l_param)
         // NOTE: for the example
         if (was_down) {
           running = false;
-          PostQuitMessage(0);
         }
       } else if (vk_code == VK_SPACE) {
       }

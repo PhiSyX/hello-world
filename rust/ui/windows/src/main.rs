@@ -1,6 +1,8 @@
 // Lancer en mode release, car évidement plus fluide
 // @see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
 // @see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
+// @see https://docs.microsoft.com/en-us/windows/win32/xinput/
+// @see https://docs.microsoft.com/en-us/windows/win32/inputdev/
 
 use std::{
     mem,
@@ -11,8 +13,9 @@ use windows::Win32::{
     Foundation::*,
     Graphics::Gdi::*,
     System::{LibraryLoader::*, Memory::*},
-    UI::WindowsAndMessaging::*,
+    UI::{Input::XboxController::*, WindowsAndMessaging::*},
 };
+use windows_sys::Win32::UI::Input::KeyboardAndMouse::*;
 
 struct AppState {
     running: bool,
@@ -79,8 +82,8 @@ fn main() {
             std::ptr::null(),
         );
 
-        let mut offset_x = 0;
-        let mut offset_y = 0;
+        let mut offset_x: i32 = 0;
+        let mut offset_y: i32 = 0;
 
         global_app_state.running = true;
 
@@ -94,6 +97,22 @@ fn main() {
 
                 TranslateMessage(&msg);
                 DispatchMessageA(&msg);
+            }
+
+            for controller_idx in 0..XUSER_MAX_COUNT {
+                let mut state = XINPUT_STATE::default();
+                if XInputGetState(controller_idx, &mut state) == 0 {
+                    // NOTE: this controller is plugged in
+                    // TODO: see if controller_state.dwPacketNumber
+                    // increments too rapidly
+                    let pad = &state.Gamepad;
+
+                    let pad_left_stick_x = pad.sThumbLX;
+                    let pad_left_stick_y = pad.sThumbLY;
+
+                    offset_x += (pad_left_stick_x >> 12) as i32;
+                    offset_y += (pad_left_stick_y >> 12) as i32;
+                }
             }
 
             render_weird_gradient(
@@ -127,11 +146,9 @@ unsafe extern "system" fn main_window_callback(
     match message {
         | WM_SIZE => {
             println!("WM_SIZE");
-            let global_app_state =
-                &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
-
             Default::default()
         }
+
         | WM_DESTROY => {
             println!("WM_DESTROY");
             let global_app_state =
@@ -140,6 +157,7 @@ unsafe extern "system" fn main_window_callback(
             PostQuitMessage(0);
             Default::default()
         }
+
         | WM_CLOSE => {
             println!("WM_CLOSE");
             let global_app_state =
@@ -148,10 +166,52 @@ unsafe extern "system" fn main_window_callback(
             PostQuitMessage(0);
             Default::default()
         }
+
         | WM_ACTIVATEAPP => {
             println!("WM_ACTIVATEAPP");
             Default::default()
         }
+
+        | WM_SYSKEYDOWN | WM_SYSKEYUP | WM_KEYDOWN | WM_KEYUP => {
+            let vk_code = w_param.0 as u8 as char;
+            let was_down = (l_param.0 & (1 << 30)) != 0;
+            let is_down = (l_param.0 & (1 << 31)) == 0;
+
+            if was_down == is_down {
+                return Default::default();
+            }
+
+            match vk_code {
+                | 'Z' => {
+                    println!("Z");
+                }
+                | 'Q' => {
+                    println!("Q");
+                }
+                | 'S' => {
+                    println!("S");
+                }
+                | 'D' => {
+                    println!("D");
+                }
+
+                // NOTE: for the example
+                | ch if ch == VK_ESCAPE as u8 as char => {
+                    if was_down {
+                        println!("ESCAPE");
+
+                        let global_app_state =
+                            &mut *GLOBAL_APP_STATE.load(Ordering::SeqCst);
+
+                        global_app_state.running = false;
+                    }
+                }
+                | _ => {}
+            }
+
+            Default::default()
+        }
+
         | WM_PAINT => {
             println!("WM_PAINT");
 
