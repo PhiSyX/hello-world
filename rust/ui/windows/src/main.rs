@@ -9,11 +9,15 @@ use std::{
     sync::atomic::{AtomicPtr, Ordering},
 };
 
-use windows::Win32::{
-    Foundation::*,
-    Graphics::Gdi::*,
-    System::{LibraryLoader::*, Memory::*},
-    UI::{Input::XboxController::*, WindowsAndMessaging::*},
+use windows::{
+    core::GUID,
+    Win32::{
+        Foundation::*,
+        Graphics::Gdi::*,
+        Media::Audio::{DirectSound::*, *},
+        System::{LibraryLoader::*, Memory::*},
+        UI::{Input::XboxController::*, WindowsAndMessaging::*},
+    },
 };
 use windows_sys::Win32::UI::Input::KeyboardAndMouse::*;
 
@@ -80,6 +84,12 @@ fn main() {
             None,
             instance,
             std::ptr::null(),
+        );
+
+        init_d_sound(
+            &window_handle,
+            48000,
+            48000 * mem::size_of::<i16>() * 2,
         );
 
         let mut offset_x: i32 = 0;
@@ -271,7 +281,7 @@ fn win32_resize_dib_section(
         VirtualAlloc(
             core::ptr::null_mut(),
             bitmap_memory_size as usize,
-            MEM_COMMIT,
+            MEM_RESERVE | MEM_COMMIT,
             PAGE_READWRITE,
         )
     };
@@ -318,6 +328,78 @@ unsafe fn render_weird_gradient(
         }
 
         row = row.offset(backbuffer.pitch as isize);
+    }
+}
+
+unsafe fn init_d_sound(
+    window: &HWND,
+    samples_per_sec: u32,
+    buffer_size: usize,
+) {
+    let mut maybe_direct_sound = Default::default();
+    const DEVICE: *const GUID = &GUID::zeroed() as *const GUID;
+    DirectSoundCreate(DEVICE, &mut maybe_direct_sound, None)
+        .expect("DirectSoundCreate failed");
+
+    if let Some(direct_sound) = maybe_direct_sound.as_ref() {
+        direct_sound
+            .SetCooperativeLevel(window, DSSCL_PRIORITY)
+            .expect("SetCooperativeLevel failed");
+    }
+
+    let sound_buffer_desc = DSBUFFERDESC {
+        dwSize: mem::size_of::<DSBUFFERDESC>() as u32,
+        dwFlags: DSBCAPS_PRIMARYBUFFER,
+        ..Default::default()
+    };
+
+    let mut maybe_primary_buffer = Default::default();
+    if let Some(direct_sound) = maybe_direct_sound.as_ref() {
+        direct_sound
+            .CreateSoundBuffer(
+                &sound_buffer_desc,
+                &mut maybe_primary_buffer,
+                None,
+            )
+            .expect("CreateSoundBuffer failed");
+    }
+
+    let mut wave_format = WAVEFORMATEX {
+        wFormatTag: WAVE_FORMAT_PCM as u16,
+        nChannels: 2,
+        nSamplesPerSec: samples_per_sec,
+        wBitsPerSample: 16,
+        cbSize: 0,
+        ..Default::default()
+    };
+    wave_format.nBlockAlign =
+        (wave_format.nChannels * wave_format.wBitsPerSample) / 8;
+    wave_format.nAvgBytesPerSec =
+        wave_format.nSamplesPerSec * wave_format.nBlockAlign as u32;
+
+    if let Some(primary_buffer) = maybe_primary_buffer {
+        primary_buffer
+            .SetFormat(&wave_format)
+            .expect("SetFormat failed");
+    }
+
+    let sound_buffer_desc = DSBUFFERDESC {
+        dwSize: mem::size_of::<DSBUFFERDESC>() as u32,
+        dwFlags: DSBCAPS_GETCURRENTPOSITION2,
+        dwBufferBytes: buffer_size as u32,
+        lpwfxFormat: &mut wave_format,
+        ..Default::default()
+    };
+    let mut secondary_buffer = Default::default();
+
+    if let Some(direct_sound) = maybe_direct_sound.as_ref() {
+        direct_sound
+            .CreateSoundBuffer(
+                &sound_buffer_desc,
+                &mut secondary_buffer,
+                None,
+            )
+            .expect("CreateSoundBuffer failed");
     }
 }
 
