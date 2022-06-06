@@ -1,3 +1,4 @@
+#include <atlstr.h>
 #include <dsound.h>
 #include <stdint.h>
 #include <windows.h>
@@ -16,11 +17,13 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+typedef uint32_t usize;
 
 typedef int8_t i8;
 typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
+typedef int32_t isize;
 
 struct OffscreenBuffer
 {
@@ -41,6 +44,7 @@ struct WindowDimension
 // TODO: this is a global variable for now.
 global_variable bool running;
 global_variable OffscreenBuffer global_backbuffer;
+global_variable LPDIRECTSOUNDBUFFER global_sound_buffer;
 
 // NOTE: XInputGetState
 #define X_INPUT_GET_STATE(name)                                                \
@@ -109,61 +113,85 @@ win32_load_x_input(void)
 }
 
 internal void
-init_d_sound(HWND window, i32 samples_per_sec, i32 buffer_size)
+init_d_sound(HWND window, i32 buffer_size, i32 samples_per_sec)
 {
   // NOTE: load the library
   HMODULE dsound_library = LoadLibraryA("dsound.dll");
 
   if (!dsound_library) {
-    OutputDebugStringA("dsound.dll not found\n");
+    MessageBoxA(window, "dsound.dll not found", 0, 0);
     return;
   }
 
   direct_sound_create* DirectSoundCreate =
     (direct_sound_create*)GetProcAddress(dsound_library, "DirectSoundCreate");
   if (!DirectSoundCreate) {
-    OutputDebugStringA("DirectSoundCreate not found\n");
+    MessageBoxA(window, "DirectSoundCreate not found", "Error", MB_OK);
     return;
   }
 
   // NOTE: get a DirectSound object! (coop)
 
   LPDIRECTSOUND direct_sound;
-  DirectSoundCreate(0, &direct_sound, 0);
-  direct_sound->SetCooperativeLevel(window, DSSCL_PRIORITY);
+  if (!SUCCEEDED(DirectSoundCreate(0, &direct_sound, 0))) {
+    MessageBoxA(window, "DirectSoundCreate failed", 0, 0);
+    return;
+  }
 
-  // NOTE: create a primary sound buffer
-  DSBUFFERDESC sound_buffer_desc_p = {};
-  sound_buffer_desc_p.dwSize = sizeof(sound_buffer_desc_p);
-  sound_buffer_desc_p.dwFlags = DSBCAPS_PRIMARYBUFFER;
+  if (!SUCCEEDED(direct_sound->SetCooperativeLevel(window, DSSCL_PRIORITY))) {
+    MessageBoxA(window, "SetCooperativeLevel failed", 0, 0);
+    return;
+  }
 
-  LPDIRECTSOUNDBUFFER primary_buffer;
-  direct_sound->CreateSoundBuffer(&sound_buffer_desc_p, &primary_buffer, 0);
+  if (DirectSoundCreate && SUCCEEDED(DirectSoundCreate(0, &direct_sound, 0))) {
+    WAVEFORMATEX wave_format = {};
+    wave_format.wFormatTag = WAVE_FORMAT_PCM;
+    wave_format.nChannels = 2;
+    wave_format.nSamplesPerSec = samples_per_sec;
+    wave_format.wBitsPerSample = 16;
+    wave_format.nBlockAlign =
+      (wave_format.nChannels * wave_format.wBitsPerSample) / 8;
+    wave_format.nAvgBytesPerSec =
+      wave_format.nSamplesPerSec * wave_format.nBlockAlign;
+    wave_format.cbSize = 0;
 
-  WAVEFORMATEX wave_format = {};
-  wave_format.wFormatTag = WAVE_FORMAT_PCM;
-  wave_format.nChannels = 2;
-  wave_format.nSamplesPerSec = samples_per_sec;
-  wave_format.wBitsPerSample = 16;
-  wave_format.nBlockAlign =
-    (wave_format.nChannels * wave_format.wBitsPerSample) / 8;
-  wave_format.nAvgBytesPerSec =
-    wave_format.nSamplesPerSec * wave_format.nBlockAlign;
-  wave_format.cbSize = 0;
-  primary_buffer->SetFormat(&wave_format);
+    if (SUCCEEDED(direct_sound->SetCooperativeLevel(window, DSSCL_PRIORITY))) {
+      DSBUFFERDESC buffer_description = {};
+      buffer_description.dwSize = sizeof(buffer_description);
+      buffer_description.dwFlags = DSBCAPS_PRIMARYBUFFER;
 
-  // NOTE: create a secondary sound buffer
-  DSBUFFERDESC sound_buffer_desc_s = {};
-  sound_buffer_desc_s.dwSize = sizeof(sound_buffer_desc_s);
-  sound_buffer_desc_s.dwFlags = DSBCAPS_PRIMARYBUFFER;
-  sound_buffer_desc_s.dwBufferBytes = buffer_size;
-  sound_buffer_desc_s.lpwfxFormat = &wave_format;
+      // NOTE: "Create" a primary buffer
+      // TODO: DSBCAPS_GLOBALFOCUS?
+      LPDIRECTSOUNDBUFFER primary_buffer;
+      if (SUCCEEDED(direct_sound->CreateSoundBuffer(
+            &buffer_description, &primary_buffer, 0))) {
+        HRESULT error = primary_buffer->SetFormat(&wave_format);
+        if (!SUCCEEDED(error)) {
+          MessageBoxA(window, "SetFormat failed", 0, 0);
+          return;
+        }
+      } else {
+        // TODO: Diagnostic
+      }
+    } else {
+      // TODO: Diagnostic
+    }
 
-  LPDIRECTSOUNDBUFFER secondary_buffer;
+    // TODO: DSBCAPS_GETCURRENTPOSITION2
+    DSBUFFERDESC buffer_description = {};
+    buffer_description.dwSize = sizeof(buffer_description);
+    buffer_description.dwFlags = 0;
+    buffer_description.dwBufferBytes = buffer_size;
+    buffer_description.lpwfxFormat = &wave_format;
 
-  direct_sound->CreateSoundBuffer(&sound_buffer_desc_s, &secondary_buffer, 0);
-
-  // NOTE: start it playing!
+    HRESULT error = direct_sound->CreateSoundBuffer(
+      &buffer_description, &global_sound_buffer, 0);
+    if (!SUCCEEDED(error)) {
+      MessageBoxA(window, "Secondary buffer created", 0, 0);
+    }
+  } else {
+    // TODO: Diagnostic
+  }
 }
 
 internal WindowDimension
@@ -341,92 +369,159 @@ WinMain(HINSTANCE hInstance,
 
   resize_dib_section(&global_backbuffer, 1920, 720);
 
-  if (RegisterClassA(&win_class)) {
-    HWND window_handle = CreateWindowExA(0,
-                                         win_class.lpszClassName,
-                                         "Cpp Window",
-                                         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                         CW_USEDEFAULT,
-                                         CW_USEDEFAULT,
-                                         CW_USEDEFAULT,
-                                         CW_USEDEFAULT,
-                                         NULL,
-                                         NULL,
-                                         hInstance,
-                                         NULL);
+  auto atom = RegisterClassA(&win_class);
+  if (atom == 0) {
+    return 1;
+  }
 
-    if (window_handle) {
-      int offset_x = 0;
-      int offset_y = 0;
+  HWND window_handle = CreateWindowExA(0,
+                                       win_class.lpszClassName,
+                                       "Cpp Window",
+                                       WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                       CW_USEDEFAULT,
+                                       CW_USEDEFAULT,
+                                       CW_USEDEFAULT,
+                                       CW_USEDEFAULT,
+                                       NULL,
+                                       NULL,
+                                       hInstance,
+                                       NULL);
+  if (!window_handle) {
+    return 0;
+  }
 
-      init_d_sound(window_handle, 48000, 48000 * sizeof(i16) * 2);
+  // NOTE: since we specified CS_OWNDC, we can just get one device context
+  // and use it forever because we are not sharing it with anyone.
+  auto device_context = GetDC(window_handle);
 
-      running = true;
-      while (running) {
-        MSG message;
+  // NOTE: Graphics
+  i32 offset_x = 0;
+  i32 offset_y = 0;
 
-        while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
-          if (message.message == WM_QUIT) {
-            running = false;
-          }
+  // NOTE: Sound
+  int samples_per_second = 48000;
+  i16 tone_hz = 256;
+  i16 tone_volume = 800;
+  usize running_sample_idx = 0;
+  int square_wave_period = samples_per_second / tone_hz;
+  int half_square_wave_period = square_wave_period / 2;
+  int bytes_per_sample = sizeof(i16) * 2;
+  int secondary_buffer_size = samples_per_second * bytes_per_sample;
 
-          TranslateMessage(&message);
-          DispatchMessage(&message);
-        }
+  init_d_sound(window_handle, secondary_buffer_size, samples_per_second);
+  global_sound_buffer->Play(0, 0, DSBPLAY_LOOPING);
 
-        for (DWORD controller_idx = 0; controller_idx < XUSER_MAX_COUNT;
-             ++controller_idx) {
-          XINPUT_STATE controller_state;
-          if (XInputGetState(controller_idx, &controller_state) ==
-              ERROR_SUCCESS) {
-            // NOTE: this controller is plugged in
-            // TODO: see if controller_state.dwPacketNumber increments too
-            // rapidly
-            XINPUT_GAMEPAD* pad = &controller_state.Gamepad;
+  running = true;
+  while (running) {
+    MSG message;
 
-            bool pad_up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
-            bool pad_down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-            bool pad_left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-            bool pad_right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
-            bool pad_start = (pad->wButtons & XINPUT_GAMEPAD_START);
-            bool pad_back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
-            bool pad_left_shoulder =
-              (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
-            bool pad_right_shoulder =
-              (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
-            bool pad_a = (pad->wButtons & XINPUT_GAMEPAD_A);
-            bool pad_b = (pad->wButtons & XINPUT_GAMEPAD_B);
-            bool pad_x = (pad->wButtons & XINPUT_GAMEPAD_X);
-            bool pad_y = (pad->wButtons & XINPUT_GAMEPAD_Y);
+    while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
+      if (message.message == WM_QUIT) {
+        running = false;
+      }
 
-            i16 pad_left_stick_x = pad->sThumbLX;
-            i16 pad_left_stick_y = pad->sThumbLY;
+      TranslateMessage(&message);
+      DispatchMessage(&message);
+    }
 
-            offset_x += pad_left_stick_x >> 12;
-            offset_y += pad_left_stick_y >> 12;
-          } else {
-            // NOTE: this controller is not available
-          }
-        }
+    // TODO: should we poll this more frequently
+    for (DWORD controller_idx = 0; controller_idx < XUSER_MAX_COUNT;
+         ++controller_idx) {
+      XINPUT_STATE controller_state;
+      if (XInputGetState(controller_idx, &controller_state) == ERROR_SUCCESS) {
+        // NOTE: this controller is plugged in
+        // TODO: see if controller_state.dwPacketNumber increments too
+        // rapidly
+        XINPUT_GAMEPAD* pad = &controller_state.Gamepad;
 
-        render_weird_gradient(&global_backbuffer, offset_x, offset_y);
+        bool pad_up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
+        bool pad_down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
+        bool pad_left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
+        bool pad_right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
+        bool pad_start = (pad->wButtons & XINPUT_GAMEPAD_START);
+        bool pad_back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
+        bool pad_left_shoulder = (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
+        bool pad_right_shoulder =
+          (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
+        bool pad_a = (pad->wButtons & XINPUT_GAMEPAD_A);
+        bool pad_b = (pad->wButtons & XINPUT_GAMEPAD_B);
+        bool pad_x = (pad->wButtons & XINPUT_GAMEPAD_X);
+        bool pad_y = (pad->wButtons & XINPUT_GAMEPAD_Y);
 
-        auto device_context = GetDC(window_handle);
-        auto dimension = get_window_dimension(window_handle);
+        i16 pad_left_stick_x = pad->sThumbLX;
+        i16 pad_left_stick_y = pad->sThumbLY;
 
-        display_buffer_in_window(device_context,
-                                 &global_backbuffer,
-                                 dimension.width,
-                                 dimension.height);
-
-        ReleaseDC(window_handle, device_context);
-
-        ++offset_x;
-        offset_y += 2;
+        offset_x += pad_left_stick_x >> 12;
+        offset_y += pad_left_stick_y >> 12;
+      } else {
+        // NOTE: this controller is not available
       }
     }
-  } else {
-    // todo: Logging
+
+    render_weird_gradient(&global_backbuffer, offset_x, offset_y);
+
+    // NOTE: DirectSound output
+    DWORD play_cursor;
+    DWORD write_cursor;
+    if (SUCCEEDED(global_sound_buffer->GetCurrentPosition(&play_cursor,
+                                                          &write_cursor))) {
+      DWORD byte_to_lock =
+        running_sample_idx * bytes_per_sample % secondary_buffer_size;
+
+      DWORD byte_to_write;
+      if (byte_to_lock > play_cursor) {
+        byte_to_write = (secondary_buffer_size - byte_to_lock);
+        byte_to_write += play_cursor;
+      } else {
+        byte_to_write = play_cursor - byte_to_lock;
+      }
+
+      VOID* region_1;
+      DWORD region_1_size;
+      VOID* region_2;
+      DWORD region_2_size;
+
+      if (SUCCEEDED(global_sound_buffer->Lock(byte_to_lock,
+                                              byte_to_write,
+                                              &region_1,
+                                              &region_1_size,
+                                              &region_2,
+                                              &region_2_size,
+                                              0))) {
+        // TODO: assert that region_1_size and region_2_size is valid
+        i16* sample_out = (i16*)region_1;
+        DWORD region1_sample_count = region_1_size / bytes_per_sample;
+        DWORD region_2_sample_count = region_2_size / bytes_per_sample;
+        for (DWORD idx = 0; idx < region1_sample_count; ++idx) {
+          i16 sample_value =
+            ((running_sample_idx++ / half_square_wave_period) % 2)
+              ? tone_volume
+              : -tone_volume;
+          *sample_out++ = sample_value;
+          *sample_out++ = sample_value;
+        }
+        for (DWORD idx = 0; idx < region_2_sample_count; ++idx) {
+          i16 sample_value =
+            ((running_sample_idx++ / half_square_wave_period) % 2)
+              ? tone_volume
+              : -tone_volume;
+          *sample_out++ = sample_value;
+          *sample_out++ = sample_value;
+        }
+
+        // Observe "clicking" effect if you _dont_ unlock
+        global_sound_buffer->Unlock(
+          region_1, region_1_size, region_2, region_2_size);
+      }
+    }
+
+    auto dimension = get_window_dimension(window_handle);
+
+    display_buffer_in_window(
+      device_context, &global_backbuffer, dimension.width, dimension.height);
+
+    ++offset_x;
+    offset_y += 2;
   }
 
   return 0;
