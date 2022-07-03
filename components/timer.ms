@@ -39,17 +39,8 @@ enum State {
 // Implémentation //
 // -------------- //
 
-/// Décrémente de 1 le compteur.
-impl Timer fn decrement(&mut self) {
-    debug_assert!(
-        matches!(self.state, Some(State::Decrement)),
-        "État invalide."
-    );
-    self.decrement_by(1);
-}
-
 /// Incrémente de 1 le compteur.
-impl Timer fn increment(&mut self) {
+fn increment(&mut Timer) {
     debug_assert!(
         matches!(self.state, Some(State::Increment)),
         "État invalide."
@@ -57,9 +48,26 @@ impl Timer fn increment(&mut self) {
     self.increment_by(1);
 }
 
-impl Timer {
-    /// Décrémente de N le compteur.
-    fn decrement_by(&mut self, per: u8) {
+// Les deux façons de déclarer des méthodes liées à une structure de données 
+// ci-dessous sont valides dans MikuScript.
+//
+// @example ```ms
+// let mut timer = Timer {...};
+// timer.decrement();       // <------------------------------.
+// timer.decrement_by(10);  // <-------------------------.    |
+// ```                                                   |    |
+/// Décrémente de 1 le compteur.                         |    |
+fn decrement(&mut Timer) { // <--------------------------+----'
+    debug_assert!(                                    /* | */
+        matches!(self.state, Some(State::Decrement)), /* | */
+        "État invalide."                              /* | */
+    );                                                /* | */
+    self.decrement_by(1);                             /* | */
+}                                                     /* | */
+                                                      /* | */
+impl Timer {                                          /* | */
+    /// Décrémente de N le compteur.                     |
+    fn decrement_by(&mut self, per: u8) { // <-----------'
         self.data -= per as isize;
     }
 
