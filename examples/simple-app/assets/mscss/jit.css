@@ -1,0 +1,55 @@
+/* Any copyright is dedicated to the Public Domain.
+ * https://creativecommons.org/publicdomain/zero/1.0/ */
+
+/*! -- PhiSyX ------------------------------------------------------- 2022 -- */
+/*!    Ce fichier contient des règles personnalisées, cela veut dire qu'il
+/*!    s'agit de CSS invalides. Autrement dit ne fonctionnera pas sans 
+/*!    MikuScript.
+/*!    
+/*!    Inspirée de la syntaxe de base, et de la syntaxe SCSS.
+/*! ------------------------------------------------------------------------- */
+
+:jit {
+    --multiple-of: 8; /* accessible via `multiple_of` dans .ms */
+}
+
+@function space($space: number, $bypass: bool = false) {
+    @if $space <= 20 or $bypass == true {
+        @return calc(var(--space) * $space);
+    }
+
+    $div = Math::round(math.div($space, var(--multiple-of)));
+    @return calc(var(--space) * $div);
+}
+
+@rule ($overflow?: UserOverflow)
+    where UserOverflow extends Overflow
+    where UserOverflow is x | y
+-> .scroll:<$overflow> {
+    @if not $overflow {
+        /* overflow: auto; */
+        --value-overflow: auto;
+    }
+
+    @if $overflow == x {
+        overflow-x: auto;
+        width: 100%;
+    } @else if $overflow == y {
+        overflow-y: auto;
+        height: 100%;
+    } @else {
+        overflow: var(--value-overflow);
+    }
+}
+
+@rule ($margin: number) -> .m=<$margin>  { margin: space($margin);        }
+@rule ($margin: number) -> .mt=<$margin> { margin-top: space($margin);    }
+@rule ($margin: number) -> .mr=<$margin> { margin-right: space($margin);  }
+@rule ($margin: number) -> .ml=<$margin> { margin-bottom: space($margin); }
+@rule ($margin: number) -> .ml=<$margin> { margin-left: space($margin);   }
+
+@rule ($padding: number) -> .p=<$padding>  { padding: space($padding);        }
+@rule ($padding: number) -> .pt=<$padding> { padding-top: space($padding);    }
+@rule ($padding: number) -> .pr=<$padding> { padding-right: space($padding);  }
+@rule ($padding: number) -> .pl=<$padding> { padding-bottom: space($padding); }
+@rule ($padding: number) -> .pl=<$padding> { padding-left: space($padding);   }

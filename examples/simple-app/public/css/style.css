@@ -1,0 +1,17 @@
+/* Any copyright is dedicated to the Public Domain.
+ * https://creativecommons.org/publicdomain/zero/1.0/ */
+
+@use "@mikuscript/css-reset";
+
+:root {
+    --font-size: 16px;
+    --space: 0.5rem;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+
+    background: #ff0000;
+}
