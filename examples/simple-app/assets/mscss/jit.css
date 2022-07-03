@@ -11,6 +11,21 @@
 
 :jit {
     --multiple-of: 8; /* accessible via `multiple_of` dans .ms */
+
+    --paddings: [     /* accessible via `paddings` dans .ms */
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+    ];
+}
+
+@function alias($prop: string) {
+    @return $prop
+        .split('-')
+        .filter_map(|$p| $p.get(0))
+        .join("");
 }
 
 @function space($space: number, $bypass: bool = false) {
@@ -18,38 +33,45 @@
         @return calc(var(--space) * $space);
     }
 
-    $div = Math::round(math.div($space, var(--multiple-of)));
+    $div = Math::round(Math::div($space, var(--multiple-of)));
     @return calc(var(--space) * $div);
 }
 
-@rule ($overflow?: UserOverflow)
+@rule ($user_overflow?: UserOverflow)
     where UserOverflow extends Overflow
     where UserOverflow is x | y
--> .scroll:<$overflow> {
-    @if not $overflow {
+-> .scroll:<$user_overflow> {
+    /* --user-overflow est défini automatiquement avec comme valeur 
+       la valeur de $user_overflow */
+
+    @if not $user_overflow {
         /* overflow: auto; */
-        --value-overflow: auto;
+        --user-overflow: auto;
     }
 
-    @if $overflow == x {
+    @if $user_overflow == x {
         overflow-x: auto;
         width: 100%;
-    } @else if $overflow == y {
+    } @else if $user_overflow == y {
         overflow-y: auto;
         height: 100%;
     } @else {
-        overflow: var(--value-overflow);
+        overflow: var(--user-overflow);
     }
 }
 
-@rule ($margin: number) -> .m=<$margin>  { margin: space($margin);        }
-@rule ($margin: number) -> .mt=<$margin> { margin-top: space($margin);    }
-@rule ($margin: number) -> .mr=<$margin> { margin-right: space($margin);  }
-@rule ($margin: number) -> .ml=<$margin> { margin-bottom: space($margin); }
-@rule ($margin: number) -> .ml=<$margin> { margin-left: space($margin);   }
+@rule ($margin: number) -> .m=<$margin>  { margin:        space(var(--margin)); }
+@rule ($margin: number) -> .mt=<$margin> { margin-top:    space(var(--margin)); }
+@rule ($margin: number) -> .mr=<$margin> { margin-right:  space(var(--margin)); }
+@rule ($margin: number) -> .ml=<$margin> { margin-bottom: space(var(--margin)); }
+@rule ($margin: number) -> .ml=<$margin> { margin-left:   space(var(--margin)); }
 
-@rule ($padding: number) -> .p=<$padding>  { padding: space($padding);        }
-@rule ($padding: number) -> .pt=<$padding> { padding-top: space($padding);    }
-@rule ($padding: number) -> .pr=<$padding> { padding-right: space($padding);  }
-@rule ($padding: number) -> .pl=<$padding> { padding-bottom: space($padding); }
-@rule ($padding: number) -> .pl=<$padding> { padding-left: space($padding);   }
+@for $prop in var(--paddings) {
+    $prop_alias = alias($prop);
+
+    @rule ($padding: number) -> .<$prop_alias>=<$padding> {
+        /* --padding est défini automatiquement avec comme valeur 
+            la valeur de $padding */
+        <$prop>: space(var(--padding));
+    }
+}
