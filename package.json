@@ -1,26 +1,26 @@
 {
-    "name": "@mikuscript/playground",
-    "description": "MikuScript Playground : terrain de jeu pour tester et développer MikuScript.",
-    "authors": [
-        "Mike 'PhiSyX' S. <738010+PhiSyX@users.noreply.github.com>"
-    ],
-    "version": "0.1.0",
-    "license": "MPL",
-    "example": [
-        {
-            "name": "simple-app",
-            "path": "./examples/simple-app"
-        }
-    ],
-    "lib": {
-        "path": "./lib.ms"
-    },
-    "workspaces": {
-        "members": [
-            "components"
-        ]
-    },
-    "dependencies": {
-        "@mikuscript/playground-components": "./components"
-    }
+	"name": "@mikuscript/playground",
+	"description": "MikuScript Playground : terrain de jeu pour tester et développer MikuScript.",
+	"authors": [
+		"Mike 'PhiSyX' S. <738010+PhiSyX@users.noreply.github.com>"
+	],
+	"version": "0.1.0",
+	"license": "MPL",
+	"example": [
+		{
+			"name": "simple-app",
+			"path": "./examples/simple-app"
+		}
+	],
+	"lib": {
+		"path": "./lib.ms"
+	},
+	"workspaces": {
+		"members": [
+			"components"
+		]
+	},
+	"dependencies": {
+		"@mikuscript/playground-components": "./components"
+	}
 }

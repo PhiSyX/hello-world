@@ -3,61 +3,61 @@
 
 /*! -- PhiSyX ------------------------------------------------------- 2022 -- */
 /*!    Ce fichier contient des règles personnalisées, cela veut dire qu'il
-/*!    s'agit de CSS invalides. Autrement dit ne fonctionnera pas sans 
+/*!    s'agit de CSS invalides. Autrement dit ne fonctionnera pas sans
 /*!    MikuScript.
-/*!    
+/*!
 /*!    Inspirée de la syntaxe de base, et de la syntaxe SCSS.
 /*! ------------------------------------------------------------------------- */
 
 :jit {
-    --multiple-of: 8; /* accessible via `multiple_of` dans .ms */
+	--multiple-of: 8; /* accessible via `multiple_of` dans .ms */
 
-    --paddings: [     /* accessible via `paddings` dans .ms */
-        "padding",
-        "padding-top",
-        "padding-right",
-        "padding-bottom",
-        "padding-left",
-    ];
+	--paddings: [     /* accessible via `paddings` dans .ms */
+		"padding",
+		"padding-top",
+		"padding-right",
+		"padding-bottom",
+		"padding-left",
+	];
 }
 
 @function alias($prop: string) {
-    @return $prop
-        .split('-')
-        .filter_map(|$p| $p.get(0))
-        .join("");
+	@return $prop
+		.split('-')
+		.filter_map(|$p| $p.get(0))
+		.join("");
 }
 
 @function space($space: number, $bypass: bool = false) {
-    @if $space <= 20 or $bypass == true {
-        @return calc(var(--space) * $space);
-    }
+	@if $space <= 20 or $bypass == true {
+		@return calc(var(--space) * $space);
+	}
 
-    $div = Math::round(Math::div($space, var(--multiple-of)));
-    @return calc(var(--space) * $div);
+	$div = Math::round(Math::div($space, var(--multiple-of)));
+	@return calc(var(--space) * $div);
 }
 
 @rule ($user_overflow?: UserOverflow)
-    where UserOverflow extends Overflow
-    where UserOverflow is x | y
+	where UserOverflow extends Overflow
+	where UserOverflow is x | y
 -> .scroll:<$user_overflow> {
-    /* --user-overflow est défini automatiquement avec comme valeur 
-       la valeur de $user_overflow */
+	/* --user-overflow est défini automatiquement avec comme valeur
+	   la valeur de $user_overflow */
 
-    @if not $user_overflow {
-        /* overflow: auto; */
-        --user-overflow: auto;
-    }
+	@if not $user_overflow {
+		/* overflow: auto; */
+		--user-overflow: auto;
+	}
 
-    @if $user_overflow == x {
-        overflow-x: auto;
-        width: 100%;
-    } @else if $user_overflow == y {
-        overflow-y: auto;
-        height: 100%;
-    } @else {
-        overflow: var(--user-overflow);
-    }
+	@if $user_overflow == x {
+		overflow-x: auto;
+		width: 100%;
+	} @else if $user_overflow == y {
+		overflow-y: auto;
+		height: 100%;
+	} @else {
+		overflow: var(--user-overflow);
+	}
 }
 
 @rule ($margin: number) -> .m=<$margin>  { margin:        space(var(--margin)); }
@@ -67,11 +67,11 @@
 @rule ($margin: number) -> .ml=<$margin> { margin-left:   space(var(--margin)); }
 
 @for $prop in var(--paddings) {
-    $prop_alias = alias($prop);
+	$prop_alias = alias($prop);
 
-    @rule ($padding: number) -> .<$prop_alias>=<$padding> {
-        /* --padding est défini automatiquement avec comme valeur 
-            la valeur de $padding */
-        <$prop>: space(var(--padding));
-    }
+	@rule ($padding: number) -> .<$prop_alias>=<$padding> {
+		/* --padding est défini automatiquement avec comme valeur
+			la valeur de $padding */
+		<$prop>: space(var(--padding));
+	}
 }

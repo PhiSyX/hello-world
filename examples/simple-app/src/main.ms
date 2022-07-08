@@ -5,33 +5,33 @@
 use mikuscript_playground::Counter;
 
 import @css "assets/mscss/jit.css" {
-    multiple_of: 8;
+	multiple_of: 8;
 };
 
 import @html "index.html" {
-    head {
-        title = "Mon super titre!";
+	head {
+		title = "Mon super titre!";
 
-        style = @css "assets/mscss/jit.css";
-    }
+		style = @css "assets/mscss/jit.css";
+	}
 
-    body { // @slot
-        <h2>Cette balise est générée depuis le script "./src/main.ms".</h2>
+	body { // @slot
+		<h2>Cette balise est générée depuis le script "./src/main.ms".</h2>
 
-        <Counter />
-    }
+		<Counter />
+	}
 };
 
 async fn main() {
-    let server_config = mikuscript::ServerConfig::try_from("config/site.json")
-        .expect("Le fichier de configuration du serveur.");
+	let server_config = mikuscript::ServerConfig::try_from("config/site.json")
+		.expect("Le fichier de configuration du serveur.");
 
-    let routes = mikuscript::routes!(
-        [ GET ] "/" => (@html "index.html").render()
-    );
+	let routes = mikuscript::routes!(
+		[ GET ] "/" => (@html "index.html").render()
+	);
 
-    #[launch]
-    mikuscript::server! server_config {
-        mikuscript::serve(routes)
-    };
+	#[launch]
+	mikuscript::server! server_config {
+		mikuscript::serve(routes)
+	};
 }
