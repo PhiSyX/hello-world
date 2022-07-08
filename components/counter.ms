@@ -15,7 +15,7 @@ struct Props {
     start?: isize, 
 }
 
-struct Timer {
+struct Counter {
     state?: State,
 
     #[reactive]
@@ -40,7 +40,7 @@ enum State {
 // -------------- //
 
 /// Incrémente de 1 le compteur.
-fn increment(&mut Timer) {
+fn increment(&mut Counter) {
     debug_assert!(
         matches!(self.state, Some(State::Increment)),
         "État invalide."
@@ -52,12 +52,12 @@ fn increment(&mut Timer) {
 // ci-dessous sont valides dans MikuScript.
 //
 // @example ```ms
-// let mut timer = Timer {...};
-// timer.decrement();       // <------------------------------.
-// timer.decrement_by(10);  // <-------------------------.    |
+// let mut counter = Counter {...};
+// counter.decrement();       // <------------------------------.
+// counter.decrement_by(10);  // <-------------------------.    |
 // ```                                                   |    |
 /// Décrémente de 1 le compteur.                         |    |
-fn decrement(&mut Timer) { // <--------------------------+----'
+fn decrement(&mut Counter) { // <--------------------------+----'
     debug_assert!(                                    /* | */
         matches!(self.state, Some(State::Decrement)), /* | */
         "État invalide."                              /* | */
@@ -65,7 +65,7 @@ fn decrement(&mut Timer) { // <--------------------------+----'
     self.decrement_by(1);                             /* | */
 }                                                     /* | */
                                                       /* | */
-impl Timer {                                          /* | */
+impl Counter {                                          /* | */
     /// Décrémente de N le compteur.                     |
     fn decrement_by(&mut self, per: u8) { // <-----------'
         self.data -= per as isize;
@@ -79,28 +79,28 @@ impl Timer {                                          /* | */
 
 #[component]
 export func Render(props: Props) -> HTMLElement {
-    let mut timer = Timer { 
+    let mut counter = Counter { 
         state: None,
         data: props.start.unwrap_or(0)
     };
 
     let onClick = |state: State| {
-        timer.state = Some(state);
+        counter.state = Some(state);
 
         let x = props.per.unwrap_or(1);
 
-        match timer.state {
+        match counter.state {
             State::Increment => {
-                timer.increment_by(x);
+                counter.increment_by(x);
             }
 
             State::Decrement => {
-                timer.decrement_by(x);
+                counter.decrement_by(x);
             }
         };
     };
 
-    return <div class="timer-component">
+    return <div class="counter-component">
         <button @click={ onClick(State::Increment) }>
             {{ State::Increment | stringify }}
         </button>
@@ -111,6 +111,6 @@ export func Render(props: Props) -> HTMLElement {
 
         <hr />
 
-        <output>{{ timer.data }}</output>
+        <output>{{ counter.data }}</output>
     </div>
 }

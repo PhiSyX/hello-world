@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use mikuscript_playground::Timer;
+use mikuscript_playground::Counter;
 
 import @css "assets/mscss/jit.css" {
     multiple_of: 8;
@@ -18,7 +18,7 @@ import @html "index.html" {
     body { // @slot
         <h2>Cette balise est générée depuis le script "./src/main.ms".</h2>
 
-        <Timer />
+        <Counter />
     }
 };
 
