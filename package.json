@@ -17,7 +17,8 @@
 	},
 	"workspaces": {
 		"members": [
-			"components"
+			"components",
+			"examples/syntaxes"
 		]
 	},
 	"dependencies": {

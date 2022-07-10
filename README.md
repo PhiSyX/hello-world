@@ -5,3 +5,10 @@
 ```
 mikuscript run --example simple-app
 ```
+
+## Tests
+
+```
+mikuscript test --all
+mikuscript test -w @mikuscript/playground-syntaxes
+```
