@@ -19,6 +19,8 @@ import @html "index.html" {
 		<h2>Cette balise est générée depuis le script "./src/main.ms".</h2>
 
 		<Counter />
+
+		<Counter start="10" per="2" />
 	}
 };
 

@@ -11,14 +11,16 @@ use mikuscript::dom::element::HTMLElement;
 
 /// Propriétés du composant.
 struct Props {
-	per?: u8
-	start?: isize,
+	per?: u8, // `?` avant le `:` signifie que la valeur de la propriété est
+	          // optionnelle.
+	start: Option<isize>, // <- Cela équivaut à faire ceci.
 }
 
 struct Counter {
 	state?: State,
 
-	#[reactive]
+	#[reactive] // <- Dès que la propriété `data` change, le composant est
+	            // re-rendu.
 	data: isize,
 }
 
@@ -28,11 +30,8 @@ struct Counter {
 // ----------- //
 
 enum State {
-	#[fmt("Incrémenter")]
-	Increment,
-
-	#[fmt("Décrementer")]
-	Decrement,
+	Increment = "Incrémenter",
+	Decrement = "Décrementer",
 }
 
 // -------------- //
@@ -41,7 +40,7 @@ enum State {
 
 /// Incrémente de 1 le compteur.
 fn increment(&mut Counter) {
-	debug_assert!(
+	assert!(
 		matches!(self.state, Some(State::Increment)),
 		"État invalide."
 	);
@@ -53,19 +52,19 @@ fn increment(&mut Counter) {
 //
 // @example ```ms
 // let mut counter = Counter {...};
-// counter.decrement();       // <------------------------------.
-// counter.decrement_by(10);  // <-------------------------.    |
-// ```                                                   |    |
-/// Décrémente de 1 le compteur.                         |    |
-fn decrement(&mut Counter) { // <--------------------------+----'
-	debug_assert!(                                    /* | */
+// counter.decrement();       // <--------------------------.
+// counter.decrement_by(10);  // <-----------------------.  |
+// ```                                                   |  |
+/// Décrémente de 1 le compteur.                         |  |
+fn decrement(&mut Counter) { // <------------------------+--'
+	assert!(                                          /* | */
 		matches!(self.state, Some(State::Decrement)), /* | */
 		"État invalide."                              /* | */
 	);                                                /* | */
 	self.decrement_by(1);                             /* | */
 }                                                     /* | */
 													  /* | */
-impl Counter {                                          /* | */
+impl Counter {                                        /* | */
 	/// Décrémente de N le compteur.                     |
 	fn decrement_by(&mut self, per: u8) { // <-----------'
 		self.data -= per as isize;
@@ -77,13 +76,15 @@ impl Counter {                                          /* | */
 	}
 }
 
-#[component]
+#[component<Counter>]
 export func Render(props: Props) -> HTMLElement {
 	let mut counter = Counter {
 		state: None,
 		data: props.start.unwrap_or(0)
 	};
 
+
+	// Callback
 	let onClick = |state: State| {
 		counter.state = Some(state);
 
