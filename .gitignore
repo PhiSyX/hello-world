@@ -1,0 +1,14 @@
+.vscode
+target/
+
+.editorconfig
+*.toml
+*.lock
+*.mod
+*.hi
+*.o
+*.out
+cpp
+haskell
+
+*.old
