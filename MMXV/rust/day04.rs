@@ -10,21 +10,33 @@ fn main() {
 	let part01 = solve_part_01(PUZZLE.trim());
 	println!("--- Part One ---");
 	println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+    let part02 = solve_part_02(PUZZLE.trim());
+    println!("--- Part Two ---");
+    println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
-fn solve_part_01(input: &str) -> usize {
+fn solve<const N: usize>(input: &str) -> usize {
 	let mut id = 0;
 
 	loop {
 		let base = format!("{input}{id}");
 		let digest = md5::compute(base);
 
-		if digest[0..2] == [0; 2] && digest[2] < 0xF {
+		if digest[0..N] == [0; N] && digest[2] < 0xF {
 			break id;
 		}
 
 		id += 1;
 	}
+}
+
+fn solve_part_01(input: &str) -> usize {
+	solve::<2>(input)
+}
+
+fn solve_part_02(input: &str) -> usize {
+	solve::<3>(input)
 }
 
 #[cfg(test)]
