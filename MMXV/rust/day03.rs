@@ -13,6 +13,10 @@ fn main() {
 	let part01 = solve_part_01(PUZZLE);
 	println!("--- Part One ---");
 	println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+	let part02 = solve_part_02(PUZZLE);
+	println!("--- Part Two ---");
+	println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn parse_direction(input: &'static str) -> impl Iterator<Item = Direction> {
@@ -31,6 +35,27 @@ fn solve_part_01(input: &'static str) -> usize {
 	parse_direction(input).for_each(|direction| {
 		visited.insert(coordinate.at(direction));
 	});
+
+	visited.len()
+}
+
+fn solve_part_02(input: &'static str) -> usize {
+	let (santa, robo_santa): (Vec<Coordinate>, Vec<Coordinate>) =
+		parse_direction(input)
+			.collect::<Vec<_>>()
+			.chunks(2)
+			.scan(
+				(Coordinate::default(), Coordinate::default()),
+				|(acc1, acc2), directions| {
+					Some((acc1.at(directions[0]), acc2.at(directions[1])))
+				},
+			)
+			.unzip();
+
+	let mut visited: HashSet<Coordinate> =
+		santa.into_iter().chain(robo_santa).collect();
+
+	visited.insert(Coordinate::default());
 
 	visited.len()
 }
@@ -72,6 +97,7 @@ where
 
 #[derive(Debug)]
 #[derive(PartialEq, Eq)]
+#[derive(Copy, Clone)]
 enum Direction {
 	North,
 	East,
@@ -113,5 +139,23 @@ mod tests {
 	fn test_example_01_03() {
 		let puzzle_input: &str = "^v^v^v^v^v";
 		assert_eq!(solve_part_01(puzzle_input), 2);
+	}
+
+	#[test]
+	fn test_example_02_01() {
+		let puzzle_input: &str = "^v";
+		assert_eq!(solve_part_02(puzzle_input), 3);
+	}
+
+	#[test]
+	fn test_example_02_02() {
+		let puzzle_input: &str = "^>v<";
+		assert_eq!(solve_part_02(puzzle_input), 3);
+	}
+
+	#[test]
+	fn test_example_02_03() {
+		let puzzle_input: &str = "^v^v^v^v^v";
+		assert_eq!(solve_part_02(puzzle_input), 11);
 	}
 }
