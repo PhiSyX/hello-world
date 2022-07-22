@@ -8,6 +8,10 @@ fn main() {
 	let part01 = filter_line(PUZZLE, solve_part_01).count();
 	println!("--- Part One ---");
 	println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+	let part02 = filter_line(PUZZLE, solve_part_02).count();
+	println!("--- Part Two ---");
+	println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn solve_part_01(line: &str) -> bool {
@@ -51,6 +55,32 @@ fn does_not_contains_chars(line: &str, size: u8) -> bool {
 		})
 }
 
+fn solve_part_02(line: &str) -> bool {
+	contains_pair_letters(line, 2) && contains_repeated_letter(line, 3)
+}
+
+fn contains_pair_letters(line: &str, nb: u8) -> bool {
+	let chars = line.chars().collect::<Vec<_>>();
+
+	let mut windows = chars.windows(nb as usize);
+
+	while let Some(window) = windows.next() {
+		let following = windows.clone().skip(1).find(|w2| w2 == &window);
+		if following.is_some() {
+			return true;
+		}
+	}
+
+	false
+}
+
+fn contains_repeated_letter(line: &str, nb: u8) -> bool {
+	line.chars()
+		.collect::<Vec<char>>()
+		.windows(nb as usize)
+		.any(|arr| arr.first() == arr.get(2))
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -78,5 +108,25 @@ mod tests {
 	#[test]
 	fn test_example_01_05() {
 		assert!(!solve_part_01("dvszwmarrgswjxmb"));
+	}
+
+	#[test]
+	fn test_example_02_01() {
+		assert!(solve_part_02("qjhvhtzxzqqjkmpb"));
+	}
+
+	#[test]
+	fn test_example_02_02() {
+		assert!(solve_part_02("xxyxx"));
+	}
+
+	#[test]
+	fn test_example_02_03() {
+		assert!(!solve_part_02("uurcxstgmygtbstg"));
+	}
+
+	#[test]
+	fn test_example_02_04() {
+		assert!(!solve_part_02("ieodomkazucvgmuy"));
 	}
 }
