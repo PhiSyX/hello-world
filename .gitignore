@@ -8,7 +8,8 @@ target/
 *.hi
 *.o
 *.out
-cpp
-haskell
 
 *.old
+
+dist-newstyle
+*.cabal
