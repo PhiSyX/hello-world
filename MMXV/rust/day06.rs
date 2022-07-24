@@ -15,6 +15,10 @@ fn main() {
 	let part01 = solve_part_01::<GRID_SIZE>(PUZZLE);
 	println!("--- Part One ---");
 	println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+	let part02 = solve_part_02::<GRID_SIZE>(PUZZLE);
+	println!("--- Part Two ---");
+	println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn solve_part_01<const N: usize>(input: &str) -> usize {
@@ -24,6 +28,18 @@ fn solve_part_01<const N: usize>(input: &str) -> usize {
 		| Light::TurnOn => *p = 1,
 		| Light::TurnOff => *p = 0,
 		| Light::Toggle => *p = if *p == 0 { 1 } else { 0 },
+	});
+
+	grid.iter().sum()
+}
+
+fn solve_part_02<const N: usize>(input: &str) -> usize {
+	let mut grid = Grid::<N>::default();
+
+	parse(input, &mut grid, |p, lt| match lt {
+		| Light::TurnOn => *p += 1,
+		| Light::TurnOff => *p = p.saturating_sub(1),
+		| Light::Toggle => *p += 2,
 	});
 
 	grid.iter().sum()
@@ -199,5 +215,17 @@ mod tests {
 	fn test_example_01_03() {
 		let line = "turn off 499,499 through 500,500";
 		assert_eq!(solve_part_01::<1000>(line), 0);
+	}
+
+	#[test]
+	fn test_example_02_01() {
+		let line = "turn on 0,0 through 0,0";
+		assert_eq!(solve_part_02::<1000>(line), 1);
+	}
+
+	#[test]
+	fn test_example_02_02() {
+		let line = "toggle 0,0 through 999,999";
+		assert_eq!(solve_part_02::<1000>(line), 2_000_000);
 	}
 }
