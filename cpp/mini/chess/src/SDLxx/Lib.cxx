@@ -1,7 +1,8 @@
 #include <SDL.h>
+
 #include <SDLxx/Lib.hxx>
 
-namespace SDLpp
+namespace SDLxx
 {
 	Lib::Lib()
 	{
@@ -13,7 +14,7 @@ namespace SDLpp
 		SDL_Quit();
 	}
 
-	bool Lib::PollEvent(SDL_Event* event)
+	bool Lib::PollEvent(SDL_Event *event)
 	{
 		return SDL_PollEvent(event) > 0;
 	}

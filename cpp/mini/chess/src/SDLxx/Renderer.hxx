@@ -3,33 +3,44 @@
 #include <cstdint>
 #include <string>
 
-struct SDL_Renderer;
+#include <MovablePtr.hxx>
 
-namespace SDLpp
+struct SDL_Renderer;
+struct SDL_Rect;
+
+namespace SDLxx
 {
+	class Surface;
+	class Texture;
 	class Window;
 
 	class Renderer
 	{
-		public:
-			Renderer(const Renderer&) = delete;
-			Renderer(Renderer&& renderer) noexcept;
-			~Renderer();
+	public:
+		Renderer() = default;
+		Renderer(const Renderer &) = delete;
+		Renderer(Renderer &&renderer) noexcept = default;
+		~Renderer();
 
-			void Clear();
+		void Clear();
 
-			void Present();
+		Texture CreateTextureFromSurface(const Surface &surface);
 
-			void SetDrawColor(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a);
+		void Present();
 
-			Renderer& operator=(const Renderer&) = delete;
-			Renderer& operator=(Renderer&& renderer) noexcept;
+		void RenderCopy(const Texture &texture);
+		void RenderCopy(const Texture &texture, const SDL_Rect &destinationRect);
 
-		private:
-			friend Window;
+		void SetDrawColor(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a);
 
-			explicit Renderer(SDL_Renderer* handle);
+		Renderer &operator=(const Renderer &) = delete;
+		Renderer &operator=(Renderer &&renderer) noexcept = default;
 
-			SDL_Renderer* m_handle;
+	private:
+		friend Window;
+
+		explicit Renderer(SDL_Renderer *handle);
+
+		MovablePtr<SDL_Renderer> m_handle;
 	};
 }
