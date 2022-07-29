@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 class Board;
 class Resources;
 
@@ -21,6 +23,7 @@ public:
 	BoardDrawer &operator=(BoardDrawer &&) = default;
 
 	void Draw(SDLxx::Renderer &renderer, const Board &board);
+	static constexpr std::size_t CellSize = 64;
 
 private:
 	const Resources &m_resources;

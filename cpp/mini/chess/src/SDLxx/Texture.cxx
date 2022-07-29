@@ -3,13 +3,14 @@
 #include <utility>
 
 #include <SDL.h>
-#include <SDLxx/Texture.hxx>
+
 #include <SDLxx/Renderer.hxx>
 #include <SDLxx/Surface.hxx>
+#include <SDLxx/Texture.hxx>
 
 namespace SDLxx
 {
-	Texture::Texture(SDL_Texture *handle) : m_handle(handle)
+	Texture::Texture(SDL_Texture *handle, ConstructToken) : m_handle(handle)
 	{
 	}
 
@@ -38,7 +39,7 @@ namespace SDLxx
 		return SDL_QueryTexture(const_cast<SDL_Texture *>(m_handle.Get()), format, access, width, height); //< SDL is not const-correct
 	}
 
-	Texture Texture::LoadFromFile(Renderer &renderer, const std::string &filepath)
+	std::shared_ptr<Texture> Texture::LoadFromFile(Renderer &renderer, const std::string &filepath)
 	{
 		Surface surface = Surface::LoadFromFile(filepath);
 		return renderer.CreateTextureFromSurface(surface);

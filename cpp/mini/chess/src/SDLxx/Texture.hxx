@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include <MovablePtr.hxx>
@@ -15,8 +16,13 @@ namespace SDLxx
 
 	class Texture
 	{
+		struct ConstructToken
+		{
+		};
+
 	public:
 		Texture() = default;
+		explicit Texture(SDL_Texture *handle, ConstructToken);
 		Texture(const Texture &) = delete;
 		Texture(Texture &&) noexcept = default;
 		~Texture();
@@ -28,12 +34,10 @@ namespace SDLxx
 		Texture &operator=(const Texture &) = delete;
 		Texture &operator=(Texture &&) noexcept = default;
 
-		static Texture LoadFromFile(Renderer &renderer, const std::string &filepath);
+		static std::shared_ptr<Texture> LoadFromFile(Renderer &renderer, const std::string &filepath);
 
 	private:
 		friend class Renderer;
-
-		explicit Texture(SDL_Texture *handle);
 
 		const SDL_Texture *GetHandle() const;
 

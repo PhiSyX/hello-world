@@ -2,6 +2,7 @@
 #include <utility>
 
 #include <SDL.h>
+
 #include <SDLxx/Renderer.hxx>
 #include <SDLxx/Surface.hxx>
 #include <SDLxx/Texture.hxx>
@@ -24,9 +25,9 @@ namespace SDLxx
 		SDL_RenderClear(m_handle);
 	}
 
-	Texture Renderer::CreateTextureFromSurface(const Surface &surface)
+	std::shared_ptr<Texture> Renderer::CreateTextureFromSurface(const Surface &surface)
 	{
-		return Texture(SDL_CreateTextureFromSurface(m_handle, const_cast<SDL_Surface *>(surface.GetHandle()))); //< SDL isn't const-correct
+		return std::make_shared<Texture>(SDL_CreateTextureFromSurface(m_handle, const_cast<SDL_Surface *>(surface.GetHandle())), Texture::ConstructToken{}); //< SDL isn't const-correct
 	}
 
 	void Renderer::Present()
@@ -45,6 +46,18 @@ namespace SDLxx
 	{
 		assert(m_handle);
 		SDL_RenderCopy(m_handle, const_cast<SDL_Texture *>(texture.GetHandle()), nullptr, &destinationRect);
+	}
+
+	void Renderer::RenderCopy(const Texture &texture, const SDL_Rect &sourceRect, const SDL_Rect &destinationRect)
+	{
+		assert(m_handle);
+		SDL_RenderCopy(m_handle, const_cast<SDL_Texture *>(texture.GetHandle()), &sourceRect, &destinationRect);
+	}
+
+	void Renderer::RenderCopy(const Texture &texture, const SDL_Rect &sourceRect, const SDL_Rect &destinationRect, double angle, const SDL_Point &center, SDL_RendererFlip flip)
+	{
+		assert(m_handle);
+		SDL_RenderCopyEx(m_handle, const_cast<SDL_Texture *>(texture.GetHandle()), &sourceRect, &destinationRect, angle, &center, flip);
 	}
 
 	void Renderer::SetDrawColor(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)

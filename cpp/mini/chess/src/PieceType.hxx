@@ -1,11 +1,17 @@
 #pragma once
 
+#include <cstddef>
+
 enum class PieceType
 {
+	Bishop,
 	King,
+	Knight,
+	Pawn,
 	Queen,
 	Rook,
-	Bishop,
-	Knight,
-	Pawn
+
+	Max = Rook
 };
+
+constexpr std::size_t PieceCount = static_cast<std::size_t>(PieceType::Max) + 1;
