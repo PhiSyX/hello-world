@@ -22,7 +22,9 @@ public:
 	BoardDrawer &operator=(const BoardDrawer &) = delete;
 	BoardDrawer &operator=(BoardDrawer &&) = default;
 
-	void Draw(SDLxx::Renderer &renderer, const Board &board);
+	void Draw(SDLxx::Renderer &renderer, const Board &board) const;
+	bool GetHoveringPiece(int x, int y, std::size_t &cellX, std::size_t &cellY) const;
+
 	static constexpr std::size_t CellSize = 64;
 
 private:
