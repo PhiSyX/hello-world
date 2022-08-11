@@ -80,15 +80,14 @@ impl Counter {                                        /* | */
 export func Render(props: Props) -> HTMLElement {
 	let mut counter = Counter {
 		state: None,
-		data: props.start.unwrap_or(0)
+		data: unwrap_or! { props.start | 0 }
 	};
-
 
 	// Callback
 	let onClick = |state: State| {
 		counter.state = Some(state);
 
-		let x = props.per.unwrap_or(1);
+		let x = unwrap_or { props.per | 1 };
 
 		match counter.state {
 			State::Increment => {

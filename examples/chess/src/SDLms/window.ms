@@ -1,4 +1,4 @@
-use SDLxx::Window;
+use SDLms::Window;
 
 export struct Window {
 	handle?: cxx!(SDL::SDL_Window),

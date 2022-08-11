@@ -17,7 +17,7 @@ enum MyEnum {
 // Fonctions liées à ces structures de données
 
 fn my_struct_fn(&MyStruct, a: i32, b: i32) -> i32 {
-	return (a + b) + (self.a + self.b.unwrap_or_default());
+	return (a + b) + (self.a + unwrap_or_default!(self.b));
 }
 
 fn my_enum_fn(&MyEnum, a: i32, b: i32) -> i32 {
@@ -32,7 +32,7 @@ fn my_enum_fn(&MyEnum, a: i32, b: i32) -> i32 {
 
 impl MyStruct {
 	fn my_struct_fn2(&self, a: i32, b: i32) -> i32 {
-		return (a + b) + (self.a + self.b.unwrap_or_default());
+		return (a + b) + (self.a + unwrap_or_default!(self.b));
 	}
 }
 
