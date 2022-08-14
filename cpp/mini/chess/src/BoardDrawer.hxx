@@ -1,8 +1,10 @@
 #pragma once
 
+#include <bitset>
 #include <cstddef>
 
-class Board;
+#include <Board.hxx> //< TODO: Replace by Constants.hxx
+
 class Resources;
 
 namespace SDLxx
@@ -22,12 +24,15 @@ public:
 	BoardDrawer &operator=(const BoardDrawer &) = delete;
 	BoardDrawer &operator=(BoardDrawer &&) = default;
 
+	void ClearOverlay();
 	void Draw(SDLxx::Renderer &renderer, const Board &board) const;
-	bool GetHoveringPiece(int x, int y, std::size_t &cellX, std::size_t &cellY) const;
+	void EnableOverlay(std::size_t cellX, std::size_t cellY, bool enable = true);
+	bool GetHoveringCell(int x, int y, std::size_t &cellX, std::size_t &cellY) const;
 
 	static constexpr std::size_t CellSize = 64;
 
 private:
+	std::bitset<Board::Width * Board::Height> m_overlaidCells;
 	const Resources &m_resources;
 	int m_height;
 	int m_width;

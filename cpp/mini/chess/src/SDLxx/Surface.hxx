@@ -16,11 +16,10 @@ namespace SDLxx
 		Surface(const Surface &) = delete;
 		Surface(Surface &&) noexcept = default;
 		~Surface();
-
-		void SetColorKey(std::uint8_t r, std::uint8_t g, std::uint8_t b, bool enable = true);
-
 		Surface &operator=(const Surface &) = delete;
 		Surface &operator=(Surface &&) noexcept = default;
+
+		void SetColorKey(std::uint8_t r, std::uint8_t g, std::uint8_t b, bool enable = true);
 
 		static Surface LoadFromFile(const std::string &filepath);
 

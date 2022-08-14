@@ -1,5 +1,4 @@
 #include <SDL.h>
-
 #include <SDLxx/Renderer.hxx>
 #include <SDLxx/Texture.hxx>
 
@@ -13,6 +12,11 @@ BoardDrawer::BoardDrawer(const Resources &resources, int width, int height) : m_
 {
 }
 
+void BoardDrawer::ClearOverlay()
+{
+	m_overlaidCells.reset();
+}
+
 void BoardDrawer::Draw(SDLxx::Renderer &renderer, const Board &board) const
 {
 	SDL_Rect textureRect = m_resources.marbleAndStoneBoardTexture->GetRect();
@@ -20,7 +24,6 @@ void BoardDrawer::Draw(SDLxx::Renderer &renderer, const Board &board) const
 	textureRect.y = m_height / 2 - textureRect.h / 2;
 
 	renderer.RenderCopy(*m_resources.marbleAndStoneBoardTexture, textureRect);
-	// renderer.RenderCopy(m_resources.whitePiecesTexture, SDL_Rect{ 0, 0, 128, 128 }, textureRect);
 
 	int drawX = textureRect.x + CellSize / 2;
 	int drawY = textureRect.y + CellSize / 2;
@@ -29,11 +32,18 @@ void BoardDrawer::Draw(SDLxx::Renderer &renderer, const Board &board) const
 	{
 		for (std::size_t x = 0; x < Board::Width; ++x)
 		{
+			// Compute grid coordinates
 			std::size_t cellX = x;
 			std::size_t cellY = y;
 			std::swap(cellX, cellY);
 			cellX = Board::Width - cellX - 1;
 
+			// Draw overlay
+			std::size_t cellIndex = Board::GetCellIndex(cellX, cellY);
+			if (m_overlaidCells[cellIndex])
+				m_resources.selectionOverlaySprite.Render(renderer, drawX, drawY);
+
+			// Draw piece, if any
 			const Board::CellContent *content = board.GetCell(cellX, cellY);
 			if (content)
 			{
@@ -52,7 +62,13 @@ void BoardDrawer::Draw(SDLxx::Renderer &renderer, const Board &board) const
 	}
 }
 
-bool BoardDrawer::GetHoveringPiece(int x, int y, std::size_t &cellX, std::size_t &cellY) const
+void BoardDrawer::EnableOverlay(std::size_t cellX, std::size_t cellY, bool enable)
+{
+	std::size_t cellIndex = Board::GetCellIndex(cellX, cellY);
+	m_overlaidCells[cellIndex] = enable;
+}
+
+bool BoardDrawer::GetHoveringCell(int x, int y, std::size_t &cellX, std::size_t &cellY) const
 {
 	SDL_Rect textureRect = m_resources.marbleAndStoneBoardTexture->GetRect();
 	textureRect.x = m_width / 2 - textureRect.w / 2;

@@ -1,8 +1,8 @@
 #include <cassert>
 #include <stdexcept>
 
-#include <SDLxx/Sprite.hxx>
 #include <SDLxx/Renderer.hxx>
+#include <SDLxx/Sprite.hxx>
 
 namespace SDLxx
 {

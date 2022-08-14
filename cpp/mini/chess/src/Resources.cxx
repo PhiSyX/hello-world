@@ -9,6 +9,9 @@ Resources Resources::Load(SDLxx::Renderer &renderer)
 	Resources resources;
 	resources.marbleAndStoneBoardTexture = SDLxx::Texture::LoadFromFile(renderer, "resources/Top Down/Boards/Full Boards/Marble and Stone 512x552.png");
 
+	auto selectionOverlayTexture = SDLxx::Texture::LoadFromFile(renderer, "resources/selection_overlay.png");
+	resources.selectionOverlaySprite = SDLxx::Sprite(std::move(selectionOverlayTexture), SDL_Rect{0, 0, 64, 64}, SDL_Point{32, 32});
+
 	SDLxx::Surface blackPieceSurface = SDLxx::Surface::LoadFromFile("resources/Top Down/Pieces/Black/Black - Marble 1 128x128.png");
 	blackPieceSurface.SetColorKey(0, 128, 128);
 

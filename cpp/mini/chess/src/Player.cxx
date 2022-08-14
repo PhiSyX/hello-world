@@ -1,4 +1,5 @@
 #include <cassert>
+
 #include <SDL.h>
 
 #include <BoardDrawer.hxx>
@@ -19,36 +20,40 @@ void Player::HandleEvent(const SDL_Event &event)
 		const Board &board = m_game.GetBoard();
 		const BoardDrawer &boardDrawer = m_game.GetBoardDrawer();
 		std::size_t cellX, cellY;
-		if (boardDrawer.GetHoveringPiece(event.button.x, event.button.y, cellX, cellY))
+		if (boardDrawer.GetHoveringCell(event.button.x, event.button.y, cellX, cellY))
 		{
 			if (!m_selectedPiece)
 			{
 				if (const Board::CellContent *content = board.GetCell(cellX, cellY))
 				{
 					if (content->ownerIndex == m_playerIndex)
+					{
 						m_selectedPiece = SelectedPiece{cellX, cellY};
+						m_game.NotifyPieceSelection(cellX, cellY);
+					}
 				}
 			}
 			else
 			{
 				const SelectedPiece &selectedPiece = *m_selectedPiece;
 				if (selectedPiece.x == cellX && selectedPiece.y == cellY)
+				{
 					m_selectedPiece.reset(); //< unselect
+					m_game.NotifyPieceDeselection();
+				}
 				else
 				{
-					assert(m_moveCallback);
-					if (m_moveCallback(selectedPiece.x, selectedPiece.y, cellX, cellY))
+					if (m_game.MovePiece(selectedPiece.x, selectedPiece.y, cellX, cellY))
 						m_selectedPiece.reset();
 				}
 			}
 		}
-	} break;
+		break;
+	}
 	}
 }
 
-void Player::StartTurn(MoveCallback moveCallback)
+void Player::StartTurn()
 {
 	assert(!m_selectedPiece.has_value());
-
-	m_moveCallback = std::move(moveCallback);
 }

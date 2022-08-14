@@ -2,7 +2,6 @@
 #include <utility>
 
 #include <SDL.h>
-
 #include <SDLxx/Renderer.hxx>
 #include <SDLxx/Surface.hxx>
 #include <SDLxx/Texture.hxx>

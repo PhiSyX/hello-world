@@ -5,6 +5,7 @@
 #include <string>
 
 #include <SDL.h>
+
 #include <MovablePtr.hxx>
 
 namespace SDLxx

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <SDLxx/Sprite.hxx>
+
 #include <PieceType.hxx>
 
 namespace SDLxx
@@ -19,6 +20,7 @@ struct Resources
 	std::shared_ptr<SDLxx::Texture> marbleAndStoneBoardTexture;
 	std::shared_ptr<SDLxx::Texture> blackPiecesTexture;
 	std::shared_ptr<SDLxx::Texture> whitePiecesTexture;
+	SDLxx::Sprite selectionOverlaySprite;
 
 	int pieceCenterOffsetX;
 	int pieceCenterOffsetY;

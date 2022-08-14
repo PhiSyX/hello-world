@@ -26,13 +26,12 @@ namespace SDLxx
 		Texture(const Texture &) = delete;
 		Texture(Texture &&) noexcept = default;
 		~Texture();
+		Texture &operator=(const Texture &) = delete;
+		Texture &operator=(Texture &&) noexcept = default;
 
 		SDL_Rect GetRect() const;
 
 		int Query(std::uint32_t *format, int *access, int *width, int *height) const;
-
-		Texture &operator=(const Texture &) = delete;
-		Texture &operator=(Texture &&) noexcept = default;
 
 		static std::shared_ptr<Texture> LoadFromFile(Renderer &renderer, const std::string &filepath);
 
