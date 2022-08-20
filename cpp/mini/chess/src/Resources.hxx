@@ -20,6 +20,7 @@ struct Resources
 	std::shared_ptr<SDLxx::Texture> marbleAndStoneBoardTexture;
 	std::shared_ptr<SDLxx::Texture> blackPiecesTexture;
 	std::shared_ptr<SDLxx::Texture> whitePiecesTexture;
+	SDLxx::Sprite movementOverlaySprite;
 	SDLxx::Sprite selectionOverlaySprite;
 
 	int pieceCenterOffsetX;

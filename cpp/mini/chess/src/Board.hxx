@@ -25,6 +25,7 @@ public:
 	void UpdateCell(std::size_t x, std::size_t y, PieceType pieceType, std::size_t ownerIndex);
 
 	static std::size_t GetCellIndex(std::size_t x, std::size_t y);
+	static std::size_t GetDistance(std::size_t from, std::size_t to);
 
 	static constexpr std::size_t Width = 8;
 	static constexpr std::size_t Height = 8;
