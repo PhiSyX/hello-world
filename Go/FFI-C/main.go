@@ -4,6 +4,7 @@ package main
 // #cgo LDFLAGS: -L${SRCDIR}/test -lffi
 // #include "add.c"
 // #include "sub.c"
+
 import "C"
 
 func main() {
