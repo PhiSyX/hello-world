@@ -11,6 +11,7 @@ use std::{
 
 use windows::{
     core::GUID,
+    s,
     Win32::{
         Foundation::*,
         Graphics::Gdi::*,
@@ -74,7 +75,7 @@ fn main() {
         let window_handle = CreateWindowExA(
             Default::default(),
             win_class.lpszClassName,
-            "Rust Window",
+            s!("Rust Window"),
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -343,7 +344,7 @@ unsafe fn init_d_sound(
 
     if let Some(direct_sound) = maybe_direct_sound.as_ref() {
         direct_sound
-            .SetCooperativeLevel(window, DSSCL_PRIORITY)
+            .SetCooperativeLevel(*window, DSSCL_PRIORITY)
             .expect("SetCooperativeLevel failed");
     }
 

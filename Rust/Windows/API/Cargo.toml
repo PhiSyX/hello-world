@@ -3,11 +3,12 @@ name = "windows-ui"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "windows-api"
+path = "src/api.rs"
 
 [dependencies]
-windows = { version = "0.37.0", features = [
-    "alloc",
+windows = { version = "0.39.0", features = [
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
     "Win32_Media_Audio_DirectSound",
@@ -16,7 +17,7 @@ windows = { version = "0.37.0", features = [
     "Win32_UI_Input_XboxController",
     "Win32_UI_WindowsAndMessaging",
 ] }
-windows-sys = { version = "0.36.0", features = [
+windows-sys = { version = "0.36.1", features = [
     "Win32_UI_Input_KeyboardAndMouse",
 ] }
 lazy_static = "1.4.0"
