@@ -119,10 +119,18 @@ fn main() {
 	let part01 = solve_part_01(PUZZLE, "a");
 	println!("--- Part One ---");
 	println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+	let part02 = solve_part_02(PUZZLE, "a", "b");
+	println!("--- Part Two ---");
+	println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn solve_part(input: &'static str, wire: &str) -> Memoize {
-	let mut cache: Map = parse_input(input).collect();
+	let cache: Map = parse_input(input).collect();
+	solve_in_cache(cache, wire)
+}
+
+fn solve_in_cache(mut cache: Map, wire: &str) -> Memoize {
 	let bit: Bitwise = wire.into();
 	unsafe {
 		cache
@@ -135,6 +143,18 @@ fn solve_part(input: &'static str, wire: &str) -> Memoize {
 
 fn solve_part_01(input: &'static str, wire: &str) -> u16 {
 	solve_part(input, wire).into_value()
+}
+
+fn solve_part_02(input: &'static str, wire1: &str, wire2: &str) -> u16 {
+	let w1 = solve_part(input, wire1);
+	let mut cache: Map = parse_input(input).collect();
+
+	let bit2: Bitwise = wire2.into();
+	if let Some(w2c) = cache.get_mut(&bit2) {
+		*w2c = w1;
+	}
+
+	solve_in_cache(cache, wire1).into_value()
 }
 
 fn parse_input(
