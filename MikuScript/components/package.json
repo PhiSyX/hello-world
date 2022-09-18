@@ -1,0 +1,8 @@
+{
+    "name": "@mikuscript/playground-components",
+    "version": "0.1.0",
+    "license": "MPL",
+    "lib": {
+        "path": "./lib.ms"
+    }
+}

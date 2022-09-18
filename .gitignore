@@ -61,3 +61,4 @@ target/
 
 */os/Dockerfile
 *.elf
+dist/

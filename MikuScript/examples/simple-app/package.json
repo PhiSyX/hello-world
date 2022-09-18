@@ -1,0 +1,19 @@
+{
+	"name": "@mikuscript/simple-app",
+	"description": "MikuScript Playground : Simple App.",
+	"authors": [
+		"Mike 'PhiSyX' S. <738010+PhiSyX@users.noreply.github.com>"
+	],
+	"version": "0.1.0",
+	"license": "MPL",
+	"bin": [
+		{
+			"name": "simple-app",
+			"path": "./src/main.ms"
+		}
+	],
+	"dependencies": {
+		"@mikuscript/css-reset": "../../../mikuscript/css/std/reset",
+		"@mikuscript/playground": ".."
+	}
+}
