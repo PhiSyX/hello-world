@@ -32,3 +32,7 @@ main = do
     putStrLn $ "--- Part One ---"
     let part01 = t' 40 s
     putStrLn $ "\t Your puzzle answer is " ++ show (length part01)
+
+    putStrLn $ "--- Part Two ---"
+    let part02 = t' 10 part01
+    putStrLn $ "\t Your puzzle answer is " ++ show (length part02)
