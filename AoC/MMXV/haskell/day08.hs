@@ -13,8 +13,14 @@ solve_part01 ('"': line) = 1 + overhead line
             overhead []                             = error ( "ne termine pas par une quote: " ++ line )
 solve_part01 line = error ( "ne commence pas par une quote: " ++ line )
 
+solve_part02 :: String -> Int
+solve_part02 s = 2 + count '"' s + count '\\' s
+
 sum_by :: (n -> Int) -> [n] -> Int
 sum_by f = sum . map f
+
+count :: Char -> String -> Int
+count ch = length . filter (== ch)
 
 main :: IO ()
 main = do
@@ -24,3 +30,5 @@ main = do
 
     putStrLn $ "--- Part One ---"
     putStrLn $ "\t Your puzzle answer is " ++ show ( sum_by solve_part01 line )
+    putStrLn $ "--- Part Two ---"
+    putStrLn $ "\t Your puzzle answer is " ++ show ( sum_by solve_part02 line )
