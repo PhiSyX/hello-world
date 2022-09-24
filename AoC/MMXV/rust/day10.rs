@@ -43,9 +43,17 @@ fn main() {
 
     println!("--- Part One ---");
     let part01 = solve_part01(PUZZLE);
-    println!("\tYour puzzle answer is {}.", solved_output(part01).len());
+    println!("\tYour puzzle answer is {}.", solved_output(part01.len()));
+
+    println!("--- Part Two ---");
+    let part02 = solve_part02(part01.as_ref());
+    println!("\tYour puzzle answer is {}.", solved_output(part02.len()));
 }
 
 fn solve_part01(input: &str) -> String {
     repeat(input, 0..40)
+}
+
+fn solve_part02(input: &str) -> String {
+    repeat(input, 0..10)
 }
