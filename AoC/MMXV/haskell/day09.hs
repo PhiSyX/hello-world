@@ -44,3 +44,5 @@ main = do
 
     putStrLn $ "--- Part One ---"
     putStrLn $ "\t Your puzzle answer is " ++ show ( minimum totals )
+    putStrLn $ "--- Part Two ---"
+    putStrLn $ "\t Your puzzle answer is " ++ show ( maximum totals )
