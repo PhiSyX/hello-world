@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <fstream>
+#include <functional>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 typedef unsigned int usize;
@@ -107,12 +109,17 @@ check_pairs(std::vector<int> const& indexes)
 }
 
 const std::string
-get_passwd(std::string const& input)
+get_passwd(std::string const& input,
+		   std::optional<std::function<void(std::vector<int>&)>> const& part_fn)
 {
 	std::vector<isize> indexes;
 
 	for (auto const& ch : input) {
 		indexes.push_back(from_ch(ch));
+	}
+
+	if (part_fn) {
+		part_fn.value()(indexes);
 	}
 
 	bool is_valid{ false };
@@ -148,7 +155,13 @@ get_passwd(std::string const& input)
 const std::string
 solve_part01(std::string const& input)
 {
-	return get_passwd(input);
+	return get_passwd(input, std::nullopt);
+}
+
+const std::string
+solve_part02(std::string const& input)
+{
+	return get_passwd(input, [](auto& indexes) { incr_passwd(indexes); });
 }
 
 int
@@ -170,6 +183,10 @@ main(int argc, char* argv[])
 	std::cout << "--- Part One ---" << std::endl;
 	auto const part01{ solve_part01(input) };
 	std::cout << "\t Your puzzle answer is " << part01 << "." << std::endl;
+
+	std::cout << "--- Part Two ---" << std::endl;
+	auto const part02{ solve_part02(part01) };
+	std::cout << "\t Your puzzle answer is " << part02 << "." << std::endl;
 
 	return EXIT_SUCCESS;
 }
