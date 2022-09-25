@@ -54,10 +54,18 @@ function main() {
 	console.log("--- Part One ---");
 	let part01 = solve_part01(PUZZLE);
 	console.log("\tYour puzzle answer is ", part01);
+
+	console.log("--- Part One ---");
+	let part02 = solve_part02(PUZZLE);
+	console.log("\tYour puzzle answer is ", part02);
 }
 
 function solve_part01(input: PuzzleJson): number {
 	return reducer(false)(input)
+}
+
+function solve_part02(input: PuzzleJson): number {
+	return reducer(true)(input)
 }
 
 main();
