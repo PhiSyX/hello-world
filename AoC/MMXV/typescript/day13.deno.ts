@@ -12,6 +12,28 @@ async function include_str<T>(filename: string): Promise<string> {
 	return decoder.decode(buffer);
 }
 
+function parse(line: string): [string, string, number] {
+	let words = split_by_whitespace(line.slice(0, -1));
+	let [l, r, g, v] = [words[0], words[10], words[2], words[3]];
+	let n: number;
+	switch (g) {
+		case "gain":
+			{
+				n = parseInt(v, 10);
+			} break;
+
+		case "lose":
+			{
+				n = - parseInt(v, 10);
+			} break;
+
+		default:
+			throw new Error(`Valeur inattendue -- {g}`);
+	}
+
+	return [l, r, n]
+}
+
 function lines(str: string): Array<string> {
 	return str.split(/\r|\n/g).filter(Boolean);
 }
@@ -54,8 +76,26 @@ function permutations<T>(iter: Iter<T>, len?: number): Array<Array<T>> {
 	return result;
 }
 
+function max(iter: Iter<number>): number {
+	return [...iter].reduce((max, v) => max >= v ? max : v, -Infinity);
+}
+
 function sum(iter: Iter<number>): number {
 	return [...iter].reduce((a, b) => a + b, 0);
+}
+
+function happiness(map: Map<string, number>, peoples: Set<string>): number {
+	const mget = (arr: Array<string>, a: number, b: number) =>
+		map.get(`${arr.at(a)}@${arr.at(b)}`)!
+	return max(
+		permutations(peoples, peoples.size).map((relations) =>
+			sum(
+				array_windows(relations, 2)
+					.map((arr) => mget(arr, 0, 1) + mget(arr, 1, 0))
+			)
+				+ mget(relations, -1, 0)
+				+ mget(relations, 0, -1))
+	);
 }
 
 function main() {
@@ -64,6 +104,10 @@ function main() {
 	console.log("--- Part One ---");
 	let part01 = solve_part01(PUZZLE);
 	console.log("\tYour puzzle answer is ", part01);
+
+	console.log("--- Part Two ---");
+	let part02 = solve_part02(PUZZLE);
+	console.log("\tYour puzzle answer is ", part02);
 }
 
 function solve_part01(input: string): number {
@@ -71,42 +115,27 @@ function solve_part01(input: string): number {
 	let peoples = new Set<string>();
 
 	for (const line of lines(input)) {
-		let words = split_by_whitespace(line.slice(0, -1));
-		let [l, r, g, v] = [words[0], words[10], words[2], words[3]];
-		let n: number;
-		switch (g) {
-			case "gain":
-				{
-					n = parseInt(v, 10);
-				} break;
-
-			case "lose":
-				{
-					n = - parseInt(v, 10);
-				} break;
-
-			default:
-				throw new Error(`Valeur inattendue -- {g}`);
-		}
+		let [l, r, n] = parse(line);
 		map.set(`${l}@${r}`, n);
 		peoples.add(l);
 	}
 
-	const mget = (arr: Array<string>, a: number, b: number) =>
-		map.get(`${arr[a]}@${arr[b]}`)!;
+	return happiness(map, peoples);
+}
 
-	let happiness = Math.max(
-		...permutations(peoples, peoples.size).map((relations) => {
-			return sum(
-					array_windows(relations, 2)
-						.map((arr) => mget(arr, 0, 1) + mget(arr, 1, 0))
-				)
-				+ map.get(`${relations.at(-1)!}@${relations[0]}`)!
-				+ map.get(`${relations[0]}@${relations.at(-1)!}`)!;
-		})
-	);
+function solve_part02(input: string): number {
+	let map = new Map<string, number>();
+	let peoples = new Set<string>();
+	peoples.add("me");
 
-	return happiness;
+	for (const line of lines(input)) {
+		let [l, r, n] = parse(line);
+		map.set(`${l}@${r}`, n);
+		map.set(`me@${r}`, 0);
+		map.set(`${l}@me`, 0);
+		peoples.add(l);
+	}
+	return happiness(map, peoples);
 }
 
 main();
