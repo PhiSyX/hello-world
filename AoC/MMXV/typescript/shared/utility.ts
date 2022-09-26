@@ -13,6 +13,12 @@ function array_windows(iter: Iter<string>, size: number): Array<Array<string>> {
 }
 
 export
+function dbg<T>(args: T): T {
+	console.log(args);
+	return args;
+}
+
+export
 function permutations<T>(iter: Iter<T>, size?: number): Array<Array<T>> {
 	let pool = [...iter];
 	let len = size ?? pool.length;
