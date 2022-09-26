@@ -2,6 +2,8 @@
 
 import { assertEquals } from "https://deno.land/std@0.157.0/testing/asserts.ts";
 
+import { include_json } from "./shared/index.ts";
+
 type PuzzleJson = Array<
 	| string
 	| number
@@ -10,12 +12,6 @@ type PuzzleJson = Array<
 >;
 
 const PUZZLE: PuzzleJson = await include_json("../puzzles/day12.txt");
-
-async function include_json<T>(filename: string): Promise<T> {
-	let buffer = await Deno.readFile(filename);
-	let decoder = new TextDecoder("UTF-8");
-	return JSON.parse(decoder.decode(buffer));
-}
 
 const reducer = (c: boolean) => (arr: PuzzleJson): number => {
 	return arr
