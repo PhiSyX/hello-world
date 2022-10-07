@@ -1,0 +1,16 @@
+[package]
+name = "web-yew-client"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "./lib.rs"
+
+[[bin]]
+name = "client"
+path = "./bin.rs"
+
+[dependencies]
+yew = { git = "https://github.com/yewstack/yew", features = ["hydration"] }
+yew-router = { git = "https://github.com/yewstack/yew", package = "yew-router" }
+wasm-bindgen = "^0.2"
