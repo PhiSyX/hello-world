@@ -1,15 +1,16 @@
 use core::fmt;
+use core::str::FromStr;
 
-use mmxxii_rust::solved_output;
+use mmxxii_rust::{filter_map_line, solved_output};
 
 const PUZZLE: &str = include_str!("../puzzles/day04.txt");
 
 struct Range {
-    start: i32,
-    end: i32,
+    start: u8, // il n'y a pas de nombre plus haut que 255 dans l'input.
+    end: u8,
 }
 
-impl std::str::FromStr for Range {
+impl FromStr for Range {
     type Err = std::num::ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -57,37 +58,31 @@ fn main() {
     println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
+fn parse(input: &'static str) -> impl Iterator<Item = (Range, Range)> {
+    filter_map_line(input, |line| {
+        line.split_once(',').and_then(|(l, r)| {
+            let left = l.parse().ok();
+            let right = r.parse().ok();
+            left.zip(right)
+        })
+    })
+}
+
 fn solve_part01(input: &'static str) -> impl fmt::Display {
-    input
-        .lines()
-        .filter_map(|line| {
-            let Some((l, r)) = line.split_once(',') else {
-                return None;
-            };
-            l.parse::<Range>().ok().zip(r.parse::<Range>().ok())
-        })
-        .fold(0, |mut acc, (r1, r2)| {
-            if r1.contains(&r2) || r2.contains(&r1) {
-                acc += 1;
-            }
-            acc
-        })
+    parse(input).fold(0, |mut acc, (r1, r2)| {
+        if r1.contains(&r2) || r2.contains(&r1) {
+            acc += 1;
+        }
+        acc
+    })
 }
 
 fn solve_part02(input: &'static str) -> impl fmt::Display {
-    input
-        .lines()
-        .filter_map(|line| {
-            let Some((l, r)) = line.split_once(',') else {
-                return None;
-            };
-            l.parse::<Range>().ok().zip(r.parse::<Range>().ok())
-        })
-        .fold(0, |mut acc, (r1, r2)| {
-            let intersection = r1.intersection(&r2);
-            if !intersection.is_empty() {
-                acc += 1;
-            }
-            acc
-        })
+    parse(input).fold(0, |mut acc, (r1, r2)| {
+        let intersection = r1.intersection(&r2);
+        if !intersection.is_empty() {
+            acc += 1;
+        }
+        acc
+    })
 }
