@@ -64,6 +64,10 @@ fn main() {
     let part01 = solve_part01(PUZZLE).expect("part 01");
     println!("--- Part One ---");
     println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+    let part02 = solve_part02(PUZZLE).expect("part 02");
+    println!("--- Part Two ---");
+    println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn parse(
@@ -107,6 +111,22 @@ fn solve_part01(input: &'static str) -> Option<impl fmt::Display> {
         let crates = crate_stacks
             .get_mut(crane_operation.from)?
             .remove(crane_operation.total);
+
+        crate_stacks.get_mut(crane_operation.to)?.add(crates);
+    }
+
+    display_crates(&crate_stacks).into()
+}
+
+fn solve_part02(input: &'static str) -> Option<impl fmt::Display> {
+    let (mut crate_stacks, crane_operations) = parse(input)?;
+
+    for crane_operation in crane_operations {
+        let mut crates = crate_stacks
+            .get_mut(crane_operation.from)?
+            .remove(crane_operation.total);
+
+        crates.reverse();
 
         crate_stacks.get_mut(crane_operation.to)?.add(crates);
     }
