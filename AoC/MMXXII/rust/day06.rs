@@ -1,5 +1,5 @@
 use core::fmt;
-use std::ops::Add;
+use core::ops::Add;
 
 use itertools::*;
 use mmxxii_rust::solved_output;
@@ -12,14 +12,26 @@ fn main() {
     let part01 = solve_part01(PUZZLE);
     println!("--- Part One ---");
     println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+    let part02 = solve_part02(PUZZLE);
+    println!("--- Part Two ---");
+    println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
-fn solve_part01(input: &'static str) -> impl fmt::Display {
+fn solve<const N: usize>(input: &'static str) -> usize {
     input
         .chars()
         .collect::<Vec<_>>()
-        .windows(4)
-        .position(|chars| chars.iter().sorted().dedup().count() == 4)
+        .windows(N)
+        .position(|chars| chars.iter().sorted().dedup().count() == N)
         .unwrap_or_default()
-        .add(4)
+        .add(N)
+}
+
+fn solve_part01(input: &'static str) -> impl fmt::Display {
+    solve::<4>(input)
+}
+
+fn solve_part02(input: &'static str) -> impl fmt::Display {
+    solve::<14>(input)
 }
