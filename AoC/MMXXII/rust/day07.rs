@@ -6,6 +6,7 @@ use core::{
 };
 use std::rc::Rc;
 
+use itertools::*;
 use mmxxii_rust::solved_output;
 
 const PUZZLE: &str = include_str!("../puzzles/day07.txt");
@@ -196,9 +197,13 @@ fn main() {
     let part01 = solve_part01(PUZZLE);
     println!("--- Part One ---");
     println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+    let part02 = solve_part02(PUZZLE);
+    println!("--- Part Two ---");
+    println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
-fn solve_part01(input: &'static str) -> impl fmt::Display {
+fn build_tree(input: &'static str) -> Rc<Node> {
     let cmds: Vec<_> = input
         .split("$ ")
         .map(|cmd| cmd.trim())
@@ -221,13 +226,37 @@ fn solve_part01(input: &'static str) -> impl fmt::Display {
 
     fd.change_directory("/");
 
-    fd.traverse().iter().fold(0, |mut total, node| {
-        let size = node.size();
+    fd
+}
 
-        if size < 100_000 {
-            total += node.size();
-        }
+fn solve_part01(input: &'static str) -> impl fmt::Display {
+    build_tree(input)
+        .traverse()
+        .iter()
+        .fold(0, |mut total, node| {
+            let size = node.size();
 
-        total
-    })
+            if size < 100_000 {
+                total += node.size();
+            }
+
+            total
+        })
+}
+
+fn solve_part02(input: &'static str) -> impl fmt::Display {
+    let tree = build_tree(input);
+    let total_size = tree.size();
+
+    let folder_size = 70_000_000;
+    let remaining_space = folder_size - total_size;
+    let needed_space = 30_000_000 - remaining_space;
+
+    tree.traverse()
+        .into_iter()
+        .map(|dir| dir.size())
+        .filter(|size| *size > needed_space)
+        .sorted()
+        .next()
+        .unwrap_or_default()
 }
