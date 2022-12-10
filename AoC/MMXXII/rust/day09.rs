@@ -65,6 +65,10 @@ fn main() {
     let part01 = solve_part01(PUZZLE);
     println!("--- Part One ---");
     println!("\tYour puzzle answer is {}.", solved_output(part01));
+
+    let part02 = solve_part02(PUZZLE);
+    println!("--- Part Two ---");
+    println!("\tYour puzzle answer is {}.", solved_output(part02));
 }
 
 fn solve<const N: usize>(input: &'static str) -> usize {
@@ -97,11 +101,13 @@ fn solve<const N: usize>(input: &'static str) -> usize {
         }
     }
 
-    dbg!(&tail_positions);
-
     tail_positions.len()
 }
 
 fn solve_part01(input: &'static str) -> impl fmt::Display {
     solve::<2>(input)
+}
+
+fn solve_part02(input: &'static str) -> impl fmt::Display {
+    solve::<10>(input)
 }
