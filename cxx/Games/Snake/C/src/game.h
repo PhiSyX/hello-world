@@ -30,6 +30,6 @@ void
 run_game(struct Game*);
 
 void
-destroy_game(void);
+destroy_game(struct Game game);
 
 #endif

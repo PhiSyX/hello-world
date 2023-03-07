@@ -121,8 +121,8 @@ run_game(struct Game* game)
 		}
 
 		if (!pause) {
-			if (contains_tail_snake(game->snake,
-									game->snake.body[game->snake.length - 1])) {
+			if (contains_tail_snake(
+				  &game->snake, &game->snake.body[game->snake.length - 1])) {
 				return;
 			}
 

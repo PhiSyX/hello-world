@@ -34,8 +34,8 @@ create_apple(usize x, usize y);
 void destroy_snake(struct Snake);
 
 bool
-contains_tail_snake(const struct Snake snake,
-					const struct Coordinates coordinates);
+contains_tail_snake(const struct Snake* snake,
+					const struct Coordinates* coordinates);
 
 bool
 does_snake_eat_apple(struct Snake* snake, struct Coordinates* apple);
