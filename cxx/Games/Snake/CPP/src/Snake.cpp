@@ -70,18 +70,6 @@ Snake::is_head(const Coordinates& coordinates)
 	return head.x == coordinates.x && head.y == coordinates.y;
 }
 
-static inline void
-_increment(std::size_t* n, std::size_t min, std::size_t max)
-{
-	*n = *n >= max ? min : *n + 1;
-}
-
-static inline void
-_decrement(std::size_t* n, std::size_t min, std::size_t max)
-{
-	*n = *n <= min ? max : *n - 1;
-}
-
 void
 Snake::move_head()
 {
@@ -89,19 +77,19 @@ Snake::move_head()
 
 	switch (m_direction) {
 		case Direction::Top: {
-			_decrement(&head.y, 0, CASE_HEIGHT - 1);
+			head.decrement_y(0, CASE_HEIGHT - 1);
 		} break;
 
 		case Direction::Left: {
-			_decrement(&head.x, 0, CASE_WIDTH - 1);
+			head.decrement_x(0, CASE_HEIGHT - 1);
 		} break;
 
 		case Direction::Bottom: {
-			_increment(&head.y, 0, CASE_HEIGHT - 1);
+			head.increment_y(0, CASE_HEIGHT - 1);
 		} break;
 
 		case Direction::Right: {
-			_increment(&head.x, 0, CASE_WIDTH - 1);
+			head.increment_x(0, CASE_WIDTH - 1);
 		} break;
 	}
 }
