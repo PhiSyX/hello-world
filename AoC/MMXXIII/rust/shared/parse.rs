@@ -7,3 +7,13 @@ pub fn filter_map_line<T>(input: &'static str, filter_fn: fn(&str) -> Option<T>)
 {
 	input.lines().filter_map(filter_fn)
 }
+
+pub fn charsln_iter(input: &'static str) -> impl Iterator<Item = Vec<char>> + 'static
+{
+	input.lines().map(|line| line.chars().collect())
+}
+
+pub fn charsln(input: &'static str) -> Vec<Vec<char>>
+{
+	charsln_iter(input).collect()
+}
