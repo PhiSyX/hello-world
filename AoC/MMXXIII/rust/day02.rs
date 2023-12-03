@@ -134,7 +134,7 @@ fn parse_game<'a>(line: &'a str) -> Option<(usize, impl Iterator<Item = CubeColo
 {
 	let (raw_game, raw_rgb_cubes) = line.split_once(':')?;
 
-	let game_id: usize = raw_game.split_ascii_whitespace().last()?.parse().ok()?;
+	let game_id: usize = raw_game.trim_start_matches("Game ").parse().ok()?;
 
 	Some((
 		game_id,
