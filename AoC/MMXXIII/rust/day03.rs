@@ -8,30 +8,32 @@ fn solve_part01(input: &'static str) -> usize
 {
 	let mut gears = Vec::new();
 
-	parse(input, |_, symbols, value, (start, end), (_, y)| {
-		let mut number = false;
+	parse(input, |_, symbols, number, (start, end), (ys, ya)| {
+		let mut is_number = false;
 
-		for nx in (start.saturating_sub(1))..=(end.saturating_add(1)) {
-			for ny in (y.saturating_sub(1))..=(y.saturating_add(1)) {
-				number |= symbols.contains(&(nx, ny));
+		for nx in start..=end {
+			for ny in ys..=ya {
+				is_number |= symbols.contains(&(nx, ny));
 			}
 		}
 
-		gears.push((value, number));
+		if is_number {
+			gears.push(number);
+		}
 	});
 
-	gears.iter().filter_map(|gear| gear.1.then_some(gear.0)).sum()
+	gears.iter().sum()
 }
 
 fn solve_part02(input: &'static str) -> usize
 {
 	let mut ratios = HashMap::new();
 
-	parse(input, |chars, symbols, value, (start, end), (_, y)| {
-		for nx in (start.saturating_sub(1))..=(end.saturating_add(1)) {
-			for ny in (y.saturating_sub(1))..=(y.saturating_add(1)) {
+	parse(input, |chars, symbols, number, (start, end), (ys, ya)| {
+		for nx in start..=end {
+			for ny in ys..=ya {
 				if symbols.contains(&(nx, ny)) && chars[ny][nx] == '*' {
-					ratios.entry((nx, ny)).or_insert(vec![]).push(value);
+					ratios.entry((nx, ny)).or_insert(vec![]).push(number);
 				}
 			}
 		}
@@ -53,13 +55,12 @@ fn parse(
 	let mut symbols = HashSet::new();
 
 	for (y, line) in chars.iter().enumerate() {
-		for (x, ch) in line.iter().enumerate() {
-			match ch {
-				| '0'..='9' | '.' => continue,
-				| _ => {
-					symbols.insert((x, y));
-				}
-			}
+		for x in line
+			.iter()
+			.enumerate()
+			.filter_map(|(idx, ch)| (!matches!(ch, '0'..='9' | '.')).then_some(idx))
+		{
+			symbols.insert((x, y));
 		}
 	}
 
@@ -70,7 +71,13 @@ fn parse(
 			};
 			let [s, e] = [p, x - 1];
 			let v = String::from_iter(&line[s..=e]).parse().ok()?;
-			callback(&chars, &mut symbols, v, (s, e), (x, y));
+			callback(
+				&chars,
+				&mut symbols,
+				v,
+				(s.saturating_sub(1), e.saturating_add(1)),
+				(y.saturating_sub(1), y.saturating_add(1)),
+			);
 			Some(0)
 		};
 
