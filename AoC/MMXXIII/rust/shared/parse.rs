@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 pub fn filter_line(input: &str, filter_fn: fn(&str) -> bool) -> impl Iterator<Item = &str>
 {
 	input.lines().filter(move |line| filter_fn(line))
@@ -16,4 +18,11 @@ pub fn charsln_iter(input: &'static str) -> impl Iterator<Item = Vec<char>> + 's
 pub fn charsln(input: &'static str) -> Vec<Vec<char>>
 {
 	charsln_iter(input).collect()
+}
+
+pub fn parse_line<T>(input: &'static str) -> impl Iterator<Item = T>
+where
+	T: FromStr,
+{
+	input.lines().filter_map(|item| T::from_str(item).ok())
 }
