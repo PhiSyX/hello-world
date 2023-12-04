@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::ops::{Add, AddAssign};
 use std::str::FromStr;
 
 use mmxxiii_rust::{parse_line, solved_output};
@@ -61,16 +62,13 @@ fn solve_part02(input: &'static str) -> usize
 {
 	parse_line::<Card>(input)
 		.fold(HashMap::new(), |mut ids, card| {
-			let winning_numbers = card.contains_winning_numbers().count();
-
-			let card_id_mut = ids.entry(card.id).or_default();
-			*card_id_mut += 1;
+			let card_id_mut: &mut usize = ids.entry(card.id).or_default();
+			card_id_mut.add_assign(1);
 			let card_id_cp = *card_id_mut;
-
-			for card_id in card.id + 1..=(card.id + winning_numbers) {
-				*ids.entry(card_id).or_default() += card_id_cp;
+			let winning_numbers = card.contains_winning_numbers().count();
+			for card_id in card.id.add(1)..=(card.id.add(winning_numbers)) {
+				ids.entry(card_id).or_default().add_assign(card_id_cp);
 			}
-
 			ids
 		})
 		.values()
